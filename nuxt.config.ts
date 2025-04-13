@@ -22,7 +22,7 @@ export default defineNuxtConfig({
       enabled: true
     },
     meta: {
-      title: "CoMiles – Elevating Ride Experiences",
+      title: "CoMiles Admin – Elevating Ride Experiences",
       author: "Marquis",
       mobileAppIOS: false,
       mobileApp: true,
