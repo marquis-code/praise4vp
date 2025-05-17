@@ -14,8 +14,13 @@ export default defineNuxtConfig({
       isCustomElement: tag => tag === 'cursor-fx'
     }
   },
-  plugins: ["~/plugins/aos.client.ts"],
+  plugins: ["~/plugins/aos.client.ts", "~/plugins/googleMaps.client.ts"],
   css: ["/assets/css/main.css"],
+  runtimeConfig: {
+    public: {
+      googleMapsApiKey: process.env.VITE_GOOGLE_MAPS_API_KEY,
+    },
+  },
   modules: ['@kevinmarrec/nuxt-pwa', "@nuxtjs/tailwindcss"],
   pwa: {
     workbox: {
@@ -40,5 +45,10 @@ export default defineNuxtConfig({
   },
   app: {
     baseURL: process.env.DEPLOYMENT_TARGET === "s3" ? '/landing-page/' : '/'
-  }
+  },
+  vite: {
+    optimizeDeps: {
+      include: ['fast-deep-equal'],
+    },
+  },
 });

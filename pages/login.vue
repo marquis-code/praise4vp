@@ -66,10 +66,10 @@
   <script setup lang="ts">
   import { ref } from 'vue'
   import { useRouter } from 'vue-router'
-  import { useAuth } from '~/composables/useAuth'
+  import { useAdminLogin } from '@/composables/auth/useAdminLogin'
   
   const router = useRouter()
-  const { login } = useAuth()
+  const { loginAdmin } = useAdminLogin()
   
   const email = ref('')
   const password = ref('')
@@ -78,7 +78,11 @@
   const handleLogin = async () => {
     isLoading.value = true
     try {
-      await login(email.value, password.value)
+      const payloadObj = {
+        email: email.value,
+        password: password.value
+      }
+      await loginAdmin(payloadObj)
       router.push('/dashboard')
     } catch (error) {
       console.error('Login failed:', error)

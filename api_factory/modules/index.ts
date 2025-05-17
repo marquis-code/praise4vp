@@ -1,3 +1,6 @@
 export * from './auth'
-export * from './waitlist'
+export * from './drivers'
+export * from './passengers'
+export * from './trips'
+export * from './dashboard'
 export * from '../axios.config'
