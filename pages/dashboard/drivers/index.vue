@@ -116,7 +116,7 @@
     </div>
     
     <!-- List View -->
-    <div v-else class="bg-white rounded-lg shadow overflow-hidden animate-fadeIn">
+    <div v-else class="bg-white rounded-lg overflow-x-auto shadow overflow-hidden animate-fadeIn">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
@@ -499,10 +499,16 @@ import {
   Grid, List, AlertTriangle, X
 } from 'lucide-vue-next';
 import { useGetDrivers } from "@/composables/modules/drivers/useGetDrivers";
+import { useEnableDriverAccount } from "@/composables/modules/drivers/useActivateAccount"
+import { useDisableDriverAccount } from "@/composables/modules/drivers/useDeactivateAccount"
 import { Driver } from '@/types/drivers';
 import { definePageMeta } from '#imports'
 
 const { loading: fetchingDrivers, drivers: driversList } = useGetDrivers();
+const { loading: enabling,
+  enableAccount } = useEnableDriverAccount()
+const { loading: disabling,
+  disableAccount } = useDisableDriverAccount()
 
 // View mode
 const viewMode = ref<'grid' | 'list'>('grid');
@@ -820,7 +826,41 @@ const banDriver = async () => {
   
   try {
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    // await new Promise(resolve => setTimeout(resolve, 1500));
+
+    const driver = selectedDriver?.value;
+    if (!driver) return;
+
+    const action = driver.isDisabled ? enableAccount : disableAccount;
+    const actionText = driver.isDisabled ? 'unbanned' : 'banned';
+
+    await action(driver._id).then(() => {
+      toastMessage.value = `${driver.firstName} ${driver.lastName} has been ${actionText} successfully.`;
+      showToast.value = true;
+      closeModal();
+    });
+
+
+    // if(!selectedDriver?.value?.isDisabled) {
+    //   await disableAccount(selectedDriver.value._id).then(() => {
+    //         // Show success toast
+    // toastMessage.value = `${selectedDriver.value.firstName} ${selectedDriver.value.lastName} has been banned successfully.`;
+    // showToast.value = true;
+    
+    // // Close modal
+    // closeModal();
+    //   })
+    // } else {
+    //   await enableAccount(selectedDriver.value._id).then(() => {
+    //         // Show success toast
+    // toastMessage.value = `${selectedDriver.value.firstName} ${selectedDriver.value.lastName} has been banned successfully.`;
+    // showToast.value = true;
+    
+    // // Close modal
+    // closeModal();
+    //   })
+    // }
+
     
     // Make actual API call here
     // const response = await fetch(`/api/drivers/${selectedDriver.value._id}/ban`, {
@@ -834,23 +874,17 @@ const banDriver = async () => {
     //   throw new Error('Failed to ban driver');
     // }
     
-    // Show success toast
-    toastMessage.value = `${selectedDriver.value.firstName} ${selectedDriver.value.lastName} has been banned successfully.`;
-    showToast.value = true;
     
-    // Close modal
-    closeModal();
+    // // Auto-hide toast after 3 seconds
+    // setTimeout(() => {
+    //   showToast.value = false;
+    // }, 3000);
     
-    // Auto-hide toast after 3 seconds
-    setTimeout(() => {
-      showToast.value = false;
-    }, 3000);
-    
-    // Update local state (in a real app, you'd refetch the data)
-    const index = driversList.value.findIndex(d => d._id === selectedDriver.value?._id);
-    if (index !== -1) {
-      driversList.value[index].isDisabled = true;
-    }
+    // // Update local state (in a real app, you'd refetch the data)
+    // const index = driversList.value.findIndex(d => d._id === selectedDriver.value?._id);
+    // if (index !== -1) {
+    //   driversList.value[index].isDisabled = true;
+    // }
     
   } catch (error) {
     console.error('Error banning driver:', error);

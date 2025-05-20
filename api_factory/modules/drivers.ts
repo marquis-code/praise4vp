@@ -8,5 +8,13 @@ export const drivers_api = {
     $_get_driver_by_id: (id: string) => {
         const url = `/drivers/${id}`
         return GATEWAY_ENDPOINT.get(url)
+    },
+    $_disable_account: (id: string) => {
+        const url = `/drivers/${id}/deactivate`
+        return GATEWAY_ENDPOINT.get(url)
+    },
+    $_enable_account: (id: string) => {
+        const url = `/drivers/${id}/activate`
+        return GATEWAY_ENDPOINT.get(url)
     }
 }
