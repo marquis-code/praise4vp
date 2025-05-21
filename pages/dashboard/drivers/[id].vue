@@ -39,7 +39,7 @@
           <div class="flex flex-col md:flex-row md:items-center">
             <div class="flex-shrink-0 mb-4 md:mb-0">
               <img 
-                :src="driver.photoURL || avatarImage" 
+                src="@/assets/img/avatar-male.svg" 
                 alt="Driver photo" 
                 class="h-24 w-24 rounded-full object-cover border border-gray-200"
               />
@@ -277,6 +277,24 @@
             <div class="flex flex-col md:flex-row justify-between mb-4">
               <h3 class="text-lg font-medium text-gray-900 mb-2 md:mb-0">Trip Filters</h3>
               <div class="flex space-x-2">
+                <!-- View Toggle Buttons -->
+                <div class="flex border border-gray-300 rounded-md overflow-hidden mr-2">
+                  <button 
+                    @click="viewMode = 'grid'"
+                    class="px-3 py-2 text-sm font-medium transition-colors duration-150 flex items-center"
+                    :class="viewMode === 'grid' ? 'bg-primary text-white' : 'bg-white text-gray-700 hover:bg-gray-50'"
+                  >
+                    <LayoutGrid class="h-4 w-4" />
+                  </button>
+                  <button 
+                    @click="viewMode = 'list'"
+                    class="px-3 py-2 text-sm font-medium transition-colors duration-150 flex items-center"
+                    :class="viewMode === 'list' ? 'bg-primary text-white' : 'bg-white text-gray-700 hover:bg-gray-50'"
+                  >
+                    <List class="h-4 w-4" />
+                  </button>
+                </div>
+                
                 <button 
                   @click="resetTripFilters"
                   class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-150"
@@ -389,8 +407,8 @@
             </p>
           </div>
           
-          <!-- Trips Grid -->
-          <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Trips Grid View -->
+          <div v-else-if="viewMode === 'grid'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div 
               v-for="trip in paginatedTrips" 
               :key="trip._id" 
@@ -480,6 +498,109 @@
                 >
                   View Details
                 </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Trips List View -->
+          <div v-else-if="viewMode === 'list'" class="space-y-4">
+            <div 
+              v-for="trip in paginatedTrips" 
+              :key="trip._id" 
+              class="bg-white rounded-lg shadow overflow-hidden hover:shadow-md transition-shadow duration-200"
+            >
+              <div class="p-5">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                  <div class="flex-1">
+                    <div class="flex items-center mb-2">
+                      <h3 class="text-lg font-medium text-gray-900 capitalize mr-3">{{ trip.type }} Trip</h3>
+                      <span 
+                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                        :class="getTripStatusClass(trip.status)"
+                      >
+                        {{ formatTripStatus(trip.status) }}
+                      </span>
+                    </div>
+                    
+                    <p class="text-sm text-gray-500 mb-3">{{ formatDate(trip.createdAt) }}</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <!-- Passenger -->
+                      <div class="flex items-start">
+                        <div class="flex-shrink-0 mt-1">
+                          <div class="h-5 w-5 rounded-full bg-blue-100 flex items-center justify-center">
+                            <User class="h-3 w-3 text-blue-600" />
+                          </div>
+                        </div>
+                        <div class="ml-3">
+                          <p class="text-xs text-gray-500">Passenger</p>
+                          <p class="text-sm font-medium text-gray-900">
+                            {{ getPrimaryPassengerName(trip) }}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <!-- Fare -->
+                      <div class="flex items-start">
+                        <div class="flex-shrink-0 mt-1">
+                          <div class="h-5 w-5 rounded-full bg-yellow-100 flex items-center justify-center">
+                            <DollarSign class="h-3 w-3 text-yellow-600" />
+                          </div>
+                        </div>
+                        <div class="ml-3">
+                          <p class="text-xs text-gray-500">Total Fare</p>
+                          <p class="text-sm font-medium text-gray-900">
+                            {{ formatCurrency(getTotalTripFare(trip)) }}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="mt-3 border-t border-gray-100 pt-3">
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Origin -->
+                        <div class="flex items-start">
+                          <div class="flex-shrink-0 mt-1">
+                            <div class="h-5 w-5 rounded-full bg-green-100 flex items-center justify-center">
+                              <Circle class="h-3 w-3 text-green-600" />
+                            </div>
+                          </div>
+                          <div class="ml-3">
+                            <p class="text-xs text-gray-500">From</p>
+                            <p class="text-sm font-medium text-gray-900">
+                              {{ getFirstPassengerOriginAddress(trip) }}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <!-- Destination -->
+                        <div class="flex items-start">
+                          <div class="flex-shrink-0 mt-1">
+                            <div class="h-5 w-5 rounded-full bg-red-100 flex items-center justify-center">
+                              <MapPin class="h-3 w-3 text-red-600" />
+                            </div>
+                          </div>
+                          <div class="ml-3">
+                            <p class="text-xs text-gray-500">To</p>
+                            <p class="text-sm font-medium text-gray-900">
+                              {{ getFirstPassengerDestinationAddress(trip) }}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="mt-4 md:mt-0 md:ml-4 flex justify-end">
+                    <button 
+                      @click="viewTripDetails(trip._id)"
+                      class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-primary bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-150"
+                    >
+                      <Eye class="mr-2 h-4 w-4" />
+                      View Details
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -707,7 +828,8 @@ import { useRouter, useRoute } from 'vue-router';
 import { 
   ArrowLeft, Star, Phone, Edit, ChevronLeft, ChevronRight, 
   AlertCircle, FileX, Circle, MapPin, User, DollarSign,
-  Download, X, CheckCircle, RefreshCw, Car, XCircle, Wallet
+  Download, X, CheckCircle, RefreshCw, Car, XCircle, Wallet,
+  LayoutGrid, List, Eye
 } from 'lucide-vue-next';
 import avatarImage from "@/assets/icons/avatar.svg";
 import { useGetDriverById } from "@/composables/modules/drivers/useGetDriversById";
@@ -728,6 +850,9 @@ const tabs = [
   { name: 'Trip History', value: 'trips' }
 ];
 const activeTab = ref('details');
+
+// View mode toggle (grid or list)
+const viewMode = ref<'grid' | 'list'>('grid');
 
 // Trip history pagination
 const tripCurrentPage = ref(1);
@@ -1295,3 +1420,4 @@ definePageMeta({
   animation: slideIn 0.4s ease-in-out;
 }
 </style>
+

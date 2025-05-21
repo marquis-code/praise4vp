@@ -11,10 +11,10 @@ export const drivers_api = {
     },
     $_disable_account: (id: string) => {
         const url = `/drivers/${id}/deactivate`
-        return GATEWAY_ENDPOINT.get(url)
+        return GATEWAY_ENDPOINT.patch(url)
     },
     $_enable_account: (id: string) => {
         const url = `/drivers/${id}/activate`
-        return GATEWAY_ENDPOINT.get(url)
+        return GATEWAY_ENDPOINT.patch(url)
     }
 }

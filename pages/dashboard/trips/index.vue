@@ -99,7 +99,26 @@
     <div class="bg-white rounded-lg shadow overflow-hidden transition-all duration-300">
       <!-- Table Header -->
       <div class="flex flex-col md:flex-row md:items-center justify-between p-4 border-b border-gray-200">
-        <h2 class="text-lg font-medium text-gray-900 mb-2 md:mb-0">Trip History</h2>
+        <div class="flex items-center">
+          <h2 class="text-lg font-medium text-gray-900 mb-2 md:mb-0 mr-4">Trip History</h2>
+          <!-- View Toggle -->
+          <div class="flex border border-gray-300 rounded-md overflow-hidden">
+            <button 
+              @click="viewMode = 'list'"
+              class="px-3 py-2 text-sm font-medium transition-colors duration-150 flex items-center"
+              :class="viewMode === 'list' ? 'bg-primary text-white' : 'bg-white text-gray-700 hover:bg-gray-50'"
+            >
+              <IconList class="h-4 w-4" />
+            </button>
+            <button 
+              @click="viewMode = 'grid'"
+              class="px-3 py-2 text-sm font-medium transition-colors duration-150 flex items-center"
+              :class="viewMode === 'grid' ? 'bg-primary text-white' : 'bg-white text-gray-700 hover:bg-gray-50'"
+            >
+              <IconGrid class="h-4 w-4" />
+            </button>
+          </div>
+        </div>
         <div class="relative">
           <input
             v-model="searchQuery"
@@ -113,27 +132,135 @@
         </div>
       </div>
 
+      <!-- Loading State -->
+      <div v-if="loading" class="p-8 text-center">
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
+        <p class="mt-2 text-gray-600">Loading trips...</p>
+      </div>
+      
+      <!-- Empty State -->
+      <div v-else-if="filteredTrips.length === 0" class="p-8 text-center">
+        <IconInbox class="mx-auto h-12 w-12 text-gray-400" />
+        <h3 class="mt-2 text-sm font-medium text-gray-900">No trips found</h3>
+        <p class="mt-1 text-sm text-gray-500">Try adjusting your search or filter criteria.</p>
+      </div>
+
       <!-- Mobile View -->
-      <div class="md:hidden">
-        <div v-if="loading" class="p-8 text-center">
-          <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
-          <p class="mt-2 text-gray-600">Loading trips...</p>
+      <div v-else-if="$isMobile" class="divide-y divide-gray-200">
+        <div 
+          v-for="trip in filteredTrips" 
+          :key="trip._id"
+          class="p-4 animate-fadeIn transition-all duration-300 hover:bg-gray-50 relative"
+        >
+          <div class="flex justify-between items-start mb-2">
+            <div>
+              <span 
+                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize"
+                :class="getStatusClass(trip.status)"
+              >
+                {{ trip.status }}
+              </span>
+              <span 
+                v-if="trip.isScheduled" 
+                class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+              >
+                Scheduled
+              </span>
+            </div>
+            <div class="relative">
+              <button 
+                @click.stop="toggleDropdown(trip._id)"
+                class="p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+              >
+                <IconMoreVertical class="h-5 w-5 text-gray-500" />
+              </button>
+              
+              <div 
+                v-if="activeDropdown === trip._id"
+                class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 py-1"
+              >
+                <button 
+                  @click.stop="handleTripAction('view', trip)"
+                  class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                >
+                  <IconEye class="h-4 w-4 mr-2" />
+                  View Details
+                </button>
+                <button 
+                  @click.stop="handleTripAction('edit', trip)"
+                  class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                >
+                  <IconEdit class="h-4 w-4 mr-2" />
+                  Edit Trip
+                </button>
+                <button 
+                  v-if="trip.status !== 'cancelled' && trip.status !== 'completed'"
+                  @click.stop="handleTripAction('cancel', trip)"
+                  class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center"
+                >
+                  <IconX class="h-4 w-4 mr-2" />
+                  Cancel Trip
+                </button>
+                <button 
+                  v-if="trip.isScheduled && trip.status !== 'cancelled' && trip.status !== 'completed'"
+                  @click.stop="handleTripAction('reschedule', trip)"
+                  class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                >
+                  <IconCalendar class="h-4 w-4 mr-2" />
+                  Reschedule
+                </button>
+                <button 
+                  @click.stop="handleTripAction('invoice', trip)"
+                  class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                >
+                  <IconFileText class="h-4 w-4 mr-2" />
+                  Generate Invoice
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="flex items-center mb-2">
+            <IconUser class="h-5 w-5 text-gray-400 mr-2" />
+            <span class="text-sm font-medium">{{ trip?.primaryUserId?.firstName }} {{ trip?.primaryUserId?.lastName }}</span>
+          </div>
+          
+          <div class="flex items-center mb-2">
+            <IconUserCheck class="h-5 w-5 text-gray-400 mr-2" />
+            <span class="text-sm">{{ trip?.driverId?.firstName }} {{ trip?.driverId?.lastName }}</span>
+          </div>
+          
+          <div class="flex items-center mb-2">
+            <IconMapPin class="h-5 w-5 text-gray-400 mr-2" />
+            <span class="text-sm truncate">{{ getOriginAddress(trip) }}</span>
+          </div>
+          
+          <div class="flex items-center mb-2">
+            <IconFlag class="h-5 w-5 text-gray-400 mr-2" />
+            <span class="text-sm truncate">{{ getDestinationAddress(trip) }}</span>
+          </div>
+          
+          <div class="flex items-center justify-between mt-3">
+            <div class="flex items-center">
+              <IconClock class="h-5 w-5 text-gray-400 mr-2" />
+              <span class="text-xs text-gray-500">{{ formatDate(trip.createdAt) }}</span>
+            </div>
+            <div class="text-sm font-medium">
+              {{ formatCurrency(getTotalFare(trip)) }}
+            </div>
+          </div>
         </div>
-        
-        <div v-else-if="filteredTrips.length === 0" class="p-8 text-center">
-          <IconInbox class="mx-auto h-12 w-12 text-gray-400" />
-          <h3 class="mt-2 text-sm font-medium text-gray-900">No trips found</h3>
-          <p class="mt-1 text-sm text-gray-500">Try adjusting your search or filter criteria.</p>
-        </div>
-        
-        <div v-else class="divide-y divide-gray-200">
-          <div 
-            v-for="trip in filteredTrips" 
-            :key="trip._id"
-            class="p-4 animate-fadeIn transition-all duration-300 hover:bg-gray-50"
-            @click="navigateToTripDetails(trip._id)"
-          >
-            <div class="flex justify-between items-start mb-2">
+      </div>
+
+      <!-- Desktop Grid View -->
+      <div v-else-if="viewMode === 'grid'" class="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div 
+          v-for="trip in filteredTrips" 
+          :key="trip._id"
+          class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden animate-fadeIn relative"
+        >
+          <div class="p-4">
+            <div class="flex justify-between items-start mb-4">
               <div>
                 <span 
                   class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize"
@@ -148,30 +275,92 @@
                   Scheduled
                 </span>
               </div>
-              <ModulesTripsActions :trip="trip" @action="handleTripAction" />
+              <div class="relative">
+                <button 
+                  @click.stop="toggleDropdown(trip._id)"
+                  class="p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                >
+                  <IconMoreVertical class="h-5 w-5 text-gray-500" />
+                </button>
+                
+                <div 
+                  v-if="activeDropdown === trip._id"
+                  class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 py-1"
+                >
+                  <button 
+                    @click.stop="handleTripAction('view', trip)"
+                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                  >
+                    <IconEye class="h-4 w-4 mr-2" />
+                    View Details
+                  </button>
+                  <button 
+                    @click.stop="handleTripAction('edit', trip)"
+                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                  >
+                    <IconEdit class="h-4 w-4 mr-2" />
+                    Edit Trip
+                  </button>
+                  <button 
+                    v-if="trip.status !== 'cancelled' && trip.status !== 'completed'"
+                    @click.stop="handleTripAction('cancel', trip)"
+                    class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center"
+                  >
+                    <IconX class="h-4 w-4 mr-2" />
+                    Cancel Trip
+                  </button>
+                  <button 
+                    v-if="trip.isScheduled && trip.status !== 'cancelled' && trip.status !== 'completed'"
+                    @click.stop="handleTripAction('reschedule', trip)"
+                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                  >
+                    <IconCalendar class="h-4 w-4 mr-2" />
+                    Reschedule
+                  </button>
+                  <button 
+                    @click.stop="handleTripAction('invoice', trip)"
+                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                  >
+                    <IconFileText class="h-4 w-4 mr-2" />
+                    Generate Invoice
+                  </button>
+                </div>
+              </div>
             </div>
             
-            <div class="flex items-center mb-2">
-              <IconUser class="h-5 w-5 text-gray-400 mr-2" />
-              <span class="text-sm font-medium">{{ trip?.primaryUserId?.firstName }} {{ trip?.primaryUserId?.lastName }}</span>
+            <div class="flex items-center mb-3">
+              <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                <img src="@/assets/img/avatar-male.svg" alt="User avatar" />
+              </div>
+              <div class="ml-3">
+                <div class="text-sm font-medium text-gray-900">
+                  {{ trip?.primaryUserId?.firstName }} {{ trip?.primaryUserId?.lastName }}
+                </div>
+                <div class="text-xs text-gray-500">
+                  {{ trip?.primaryUserId?.email }}
+                </div>
+              </div>
             </div>
             
-            <div class="flex items-center mb-2">
+            <div class="flex items-center mb-3">
               <IconUserCheck class="h-5 w-5 text-gray-400 mr-2" />
-              <span class="text-sm">{{ trip?.driverId?.firstName }} {{ trip?.driverId?.lastName }}</span>
+              <div>
+                <div class="text-sm">{{ trip?.driverId?.firstName }} {{ trip?.driverId?.lastName }}</div>
+                <div class="text-xs text-gray-500">{{ trip?.driverId?.email }}</div>
+              </div>
             </div>
             
             <div class="flex items-center mb-2">
-              <IconMapPin class="h-5 w-5 text-gray-400 mr-2" />
+              <IconMapPin class="h-5 w-5 text-gray-400 mr-2 flex-shrink-0" />
               <span class="text-sm truncate">{{ getOriginAddress(trip) }}</span>
             </div>
             
-            <div class="flex items-center mb-2">
-              <IconFlag class="h-5 w-5 text-gray-400 mr-2" />
+            <div class="flex items-center mb-4">
+              <IconFlag class="h-5 w-5 text-gray-400 mr-2 flex-shrink-0" />
               <span class="text-sm truncate">{{ getDestinationAddress(trip) }}</span>
             </div>
             
-            <div class="flex items-center justify-between mt-3">
+            <div class="flex items-center justify-between pt-3 border-t border-gray-200">
               <div class="flex items-center">
                 <IconClock class="h-5 w-5 text-gray-400 mr-2" />
                 <span class="text-xs text-gray-500">{{ formatDate(trip.createdAt) }}</span>
@@ -184,20 +373,9 @@
         </div>
       </div>
 
-      <!-- Desktop View -->
-      <div class="hidden md:block overflow-x-auto">
-        <div v-if="loading" class="p-8 text-center">
-          <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
-          <p class="mt-2 text-gray-600">Loading trips...</p>
-        </div>
-        
-        <div v-else-if="filteredTrips.length === 0" class="p-8 text-center">
-          <IconInbox class="mx-auto h-12 w-12 text-gray-400" />
-          <h3 class="mt-2 text-sm font-medium text-gray-900">No trips found</h3>
-          <p class="mt-1 text-sm text-gray-500">Try adjusting your search or filter criteria.</p>
-        </div>
-        
-        <table v-else class="min-w-full divide-y divide-gray-200">
+      <!-- Desktop List View -->
+      <div v-else class="hidden md:block overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
               <th v-for="header in tableHeaders" :key="header.key" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -238,14 +416,14 @@
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
                   <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                    <IconUser class="h-6 w-6 text-gray-500" />
+                    <img src="@/assets/img/avatar-male.svg" alt="User avatar" />
                   </div>
                   <div class="ml-4">
                     <div class="text-sm font-medium text-gray-900">
-                      {{ trip.primaryUserId.firstName }} {{ trip.primaryUserId.lastName }}
+                      {{ trip?.primaryUserId?.firstName }} {{ trip?.primaryUserId?.lastName }}
                     </div>
                     <div class="text-sm text-gray-500">
-                      {{ trip.primaryUserId.email }}
+                      {{ trip?.primaryUserId?.email }}
                     </div>
                   </div>
                 </div>
@@ -256,16 +434,16 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize"
-                  :class="getStatusClass(trip.status)">
-                  {{ trip.status }}
+                  :class="getStatusClass(trip?.status)">
+                  {{ trip?.status }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900 capitalize">{{ trip.type }}</div>
+                <div class="text-sm text-gray-900 capitalize">{{ trip?.type }}</div>
                 <div class="text-sm text-gray-500">
-                  <span v-if="trip.isScheduled" class="inline-flex items-center text-xs">
+                  <span v-if="trip?.isScheduled" class="inline-flex items-center text-xs">
                     <IconCalendar class="h-3 w-3 mr-1" />
-                    {{ formatDate(trip.scheduledFor || trip.createdAt) }}
+                    {{ formatDate(trip?.scheduledFor || trip?.createdAt) }}
                   </span>
                   <span v-else class="text-xs">Immediate</span>
                 </div>
@@ -274,10 +452,60 @@
                 <div class="text-sm text-gray-900">{{ formatCurrency(getTotalFare(trip)) }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ formatDate(trip.createdAt) }}
+                {{ formatDate(trip?.createdAt) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium" @click.stop>
-                <ModulesTripsActions :trip="trip" @action="handleTripAction" />
+                <div class="relative inline-block text-left">
+                  <button 
+                    @click.stop="toggleDropdown(trip._id)"
+                    class="p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                  >
+                    <IconMoreVertical class="h-5 w-5 text-gray-500" />
+                  </button>
+                  
+                  <div 
+                    v-if="activeDropdown === trip._id"
+                    class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 py-1"
+                  >
+                    <button 
+                      @click.stop="handleTripAction('view', trip)"
+                      class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                    >
+                      <IconEye class="h-4 w-4 mr-2" />
+                      View Details
+                    </button>
+                    <button 
+                      @click.stop="handleTripAction('edit', trip)"
+                      class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                    >
+                      <IconEdit class="h-4 w-4 mr-2" />
+                      Edit Trip
+                    </button>
+                    <button 
+                      v-if="trip.status !== 'cancelled' && trip.status !== 'completed'"
+                      @click.stop="handleTripAction('cancel', trip)"
+                      class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center"
+                    >
+                      <IconX class="h-4 w-4 mr-2" />
+                      Cancel Trip
+                    </button>
+                    <button 
+                      v-if="trip.isScheduled && trip.status !== 'cancelled' && trip.status !== 'completed'"
+                      @click.stop="handleTripAction('reschedule', trip)"
+                      class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                    >
+                      <IconCalendar class="h-4 w-4 mr-2" />
+                      Reschedule
+                    </button>
+                    <button 
+                      @click.stop="handleTripAction('invoice', trip)"
+                      class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                    >
+                      <IconFileText class="h-4 w-4 mr-2" />
+                      Generate Invoice
+                    </button>
+                  </div>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -296,10 +524,30 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useGetTrips } from "@/composables/modules/trips/useGetTrips"
 const { loading, trips } =  useGetTrips()
 import { useRouter } from 'vue-router'
+import { 
+  Search as IconSearch, 
+  MoreVertical as IconMoreVertical,
+  Eye as IconEye,
+  Edit as IconEdit,
+  X as IconX,
+  Calendar as IconCalendar,
+  FileText as IconFileText,
+  User as IconUser,
+  UserCheck as IconUserCheck,
+  MapPin as IconMapPin,
+  Flag as IconFlag,
+  Clock as IconClock,
+  ChevronUp as IconChevronUp,
+  ChevronDown as IconChevronDown,
+  ChevronsUpDown as IconChevronsUpDown,
+  Inbox as IconInbox,
+  Grid as IconGrid,
+  List as IconList
+} from 'lucide-vue-next'
 
 // Types
 interface User {
@@ -350,8 +598,6 @@ interface Trip {
 const router = useRouter()
 
 // State
-// const loading = ref(true)
-// const trips = ref<Trip[]>([])
 const searchQuery = ref('')
 const filters = ref({
   type: '',
@@ -363,6 +609,8 @@ const filters = ref({
 const sortColumn = ref('createdAt')
 const sortDirection = ref<'asc' | 'desc'>('desc')
 const showExportModal = ref(false)
+const viewMode = ref<'list' | 'grid'>('list') // Default to list view
+const activeDropdown = ref<string | null>(null) // Track active dropdown
 
 // Table headers
 const tableHeaders = [
@@ -450,279 +698,12 @@ const scheduledTrips = computed(() => {
   return trips.value.filter(trip => trip.isScheduled).length
 })
 
-// Methods
-// const fetchTrips = async () => {
-//   loading.value = true
-//   try {
-//     // In a real app, this would be an API call
-//     // For now, we'll use the sample data
-//     trips.value = [
-//       {
-//         "_id": "6821e383e94709ed7eeebeb7",
-//         "primaryUserId": {
-//           "_id": "66ed3ca5a3291a0db25f5a1f",
-//           "firstName": "Alfred",
-//           "lastName": "Onuada",
-//           "email": "aonuada5@gmail.com"
-//         },
-//         "driverId": {
-//           "_id": "66ed3deaa0eaa9a24d61085a",
-//           "firstName": "Lisa",
-//           "lastName": "Wong",
-//           "email": "Lisa.Wong@email.com"
-//         },
-//         "type": "local",
-//         "isScheduled": false,
-//         "scheduledFor": null,
-//         "status": "cancelled",
-//         "passengers": [
-//           {
-//             "origin": {
-//               "type": "Feature",
-//               "geometry": {
-//                 "type": "Point",
-//                 "coordinates": [
-//                   7.0138649,
-//                   4.8358303
-//                 ]
-//               },
-//               "properties": {
-//                 "address": "RIVERS STATE ICT DEPARTMENT, Port Harcourt - Aba Expressway, Port Harcourt, Nigeria"
-//               }
-//             },
-//             "destination": {
-//               "type": "Feature",
-//               "geometry": {
-//                 "type": "Point",
-//                 "coordinates": [
-//                   7.0026117,
-//                   4.7901615
-//                 ]
-//               },
-//               "properties": {
-//                 "address": "Nigeria Immigration Service Passport Office Mile 1, Port Harcourt, Nigeria"
-//               }
-//             },
-//             "_id": "6827a9aef819e09e52138228",
-//             "passengerId": {
-//               "_id": "66ed3ca5a3291a0db25f5a1f",
-//               "firstName": "Alfred",
-//               "lastName": "Onuada",
-//               "email": "aonuada5@gmail.com"
-//             },
-//             "fare": 80256,
-//             "tax": 0,
-//             "discount": 0,
-//             "totalFare": 80256,
-//             "passengerStatus": "cancelled",
-//             "cancellationReason": "This guy is a joker"
-//           }
-//         ],
-//         "createdAt": "2025-05-12T12:03:15.836Z",
-//         "updatedAt": "2025-05-12T12:06:31.418Z",
-//         "isPrivate": true
-//       },
-//       // Add more sample trips for demonstration
-//       {
-//         "_id": "6821e383e94709ed7eeebeb8",
-//         "primaryUserId": {
-//           "_id": "66ed3ca5a3291a0db25f5a1f",
-//           "firstName": "John",
-//           "lastName": "Doe",
-//           "email": "john.doe@example.com"
-//         },
-//         "driverId": {
-//           "_id": "66ed3deaa0eaa9a24d61085b",
-//           "firstName": "Michael",
-//           "lastName": "Johnson",
-//           "email": "michael.johnson@example.com"
-//         },
-//         "type": "airport",
-//         "isScheduled": true,
-//         "scheduledFor": "2025-05-15T08:30:00.000Z",
-//         "status": "pending",
-//         "passengers": [
-//           {
-//             "origin": {
-//               "type": "Feature",
-//               "geometry": {
-//                 "type": "Point",
-//                 "coordinates": [
-//                   7.0138649,
-//                   4.8358303
-//                 ]
-//               },
-//               "properties": {
-//                 "address": "Downtown Hotel, Main Street, Port Harcourt, Nigeria"
-//               }
-//             },
-//             "destination": {
-//               "type": "Feature",
-//               "geometry": {
-//                 "type": "Point",
-//                 "coordinates": [
-//                   7.0026117,
-//                   4.7901615
-//                 ]
-//               },
-//               "properties": {
-//                 "address": "Port Harcourt International Airport, Nigeria"
-//               }
-//             },
-//             "_id": "6827a9aef819e09e52138229",
-//             "passengerId": {
-//               "_id": "66ed3ca5a3291a0db25f5a1f",
-//               "firstName": "John",
-//               "lastName": "Doe",
-//               "email": "john.doe@example.com"
-//             },
-//             "fare": 95000,
-//             "tax": 5000,
-//             "discount": 0,
-//             "totalFare": 100000,
-//             "passengerStatus": "pending"
-//           }
-//         ],
-//         "createdAt": "2025-05-13T09:15:22.836Z",
-//         "updatedAt": "2025-05-13T09:15:22.836Z",
-//         "isPrivate": false
-//       },
-//       {
-//         "_id": "6821e383e94709ed7eeebeb9",
-//         "primaryUserId": {
-//           "_id": "66ed3ca5a3291a0db25f5a1f",
-//           "firstName": "Sarah",
-//           "lastName": "Williams",
-//           "email": "sarah.williams@example.com"
-//         },
-//         "driverId": {
-//           "_id": "66ed3deaa0eaa9a24d61085c",
-//           "firstName": "David",
-//           "lastName": "Brown",
-//           "email": "david.brown@example.com"
-//         },
-//         "type": "intercity",
-//         "isScheduled": false,
-//         "scheduledFor": null,
-//         "status": "completed",
-//         "passengers": [
-//           {
-//             "origin": {
-//               "type": "Feature",
-//               "geometry": {
-//                 "type": "Point",
-//                 "coordinates": [
-//                   7.0138649,
-//                   4.8358303
-//                 ]
-//               },
-//               "properties": {
-//                 "address": "Port Harcourt City Center, Nigeria"
-//               }
-//             },
-//             "destination": {
-//               "type": "Feature",
-//               "geometry": {
-//                 "type": "Point",
-//                 "coordinates": [
-//                   7.0026117,
-//                   4.7901615
-//                 ]
-//               },
-//               "properties": {
-//                 "address": "Aba City Center, Nigeria"
-//               }
-//             },
-//             "_id": "6827a9aef819e09e52138230",
-//             "passengerId": {
-//               "_id": "66ed3ca5a3291a0db25f5a1f",
-//               "firstName": "Sarah",
-//               "lastName": "Williams",
-//               "email": "sarah.williams@example.com"
-//             },
-//             "fare": 150000,
-//             "tax": 7500,
-//             "discount": 10000,
-//             "totalFare": 147500,
-//             "passengerStatus": "completed"
-//           }
-//         ],
-//         "createdAt": "2025-05-10T14:22:45.836Z",
-//         "updatedAt": "2025-05-10T16:05:12.418Z",
-//         "isPrivate": false
-//       },
-//       {
-//         "_id": "LANA1234",
-//         "primaryUserId": {
-//           "_id": "66ed3ca5a3291a0db25f5a1f",
-//           "firstName": "Opeyei",
-//           "lastName": "Asiwju",
-//           "email": "opeyei.asiwju@example.com"
-//         },
-//         "driverId": {
-//           "_id": "66ed3deaa0eaa9a24d61085d",
-//           "firstName": "Opeyei",
-//           "lastName": "Asiwju",
-//           "email": "opeyei.asiwju@example.com"
-//         },
-//         "type": "local",
-//         "isScheduled": false,
-//         "scheduledFor": null,
-//         "status": "active",
-//         "passengers": [
-//           {
-//             "origin": {
-//               "type": "Feature",
-//               "geometry": {
-//                 "type": "Point",
-//                 "coordinates": [
-//                   3.3792,
-//                   6.5244
-//                 ]
-//               },
-//               "properties": {
-//                 "address": "Lekki Phase 1, Lekki, Nigeria"
-//               }
-//             },
-//             "destination": {
-//               "type": "Feature",
-//               "geometry": {
-//                 "type": "Point",
-//                 "coordinates": [
-//                   3.3886,
-//                   6.4281
-//                 ]
-//               },
-//               "properties": {
-//                 "address": "Raji Rasaki Estate Road, Lagos, Nigeria"
-//               }
-//             },
-//             "_id": "6827a9aef819e09e52138231",
-//             "passengerId": {
-//               "_id": "66ed3ca5a3291a0db25f5a1f",
-//               "firstName": "Opeyei",
-//               "lastName": "Asiwju",
-//               "email": "opeyei.asiwju@example.com"
-//             },
-//             "fare": 120000,
-//             "tax": 6000,
-//             "discount": 0,
-//             "totalFare": 126000,
-//             "passengerStatus": "active"
-//           }
-//         ],
-//         "createdAt": "2025-05-16T18:01:00.000Z",
-//         "updatedAt": "2025-05-16T18:01:00.000Z",
-//         "isPrivate": false
-//       }
-//     ]
-//   } catch (error) {
-//     console.error('Error fetching trips:', error)
-//   } finally {
-//     loading.value = false
-//   }
-// }
+// Mobile detection (simplified - in a real app, use a proper composable)
+const $isMobile = computed(() => {
+  return window.innerWidth < 768
+})
 
+// Methods
 const getCountByStatus = (status: string) => {
   return trips.value.filter(trip => trip.status === status).length
 }
@@ -811,8 +792,30 @@ const resetFilters = () => {
   searchQuery.value = ''
 }
 
+// Toggle dropdown and ensure only one is open at a time
+const toggleDropdown = (tripId: string) => {
+  // Stop event propagation to prevent immediate closing
+  event?.stopPropagation()
+  
+  if (activeDropdown.value === tripId) {
+    activeDropdown.value = null
+  } else {
+    activeDropdown.value = tripId
+  }
+}
+
+// Close dropdown when clicking outside
+const handleClickOutside = (event: MouseEvent) => {
+  if (activeDropdown.value) {
+    activeDropdown.value = null
+  }
+}
+
 const handleTripAction = (action: string, trip: Trip) => {
   console.log(`Action ${action} for trip ${trip._id}`)
+  
+  // Close the dropdown after action
+  activeDropdown.value = null
   
   // In a real app, these would make API calls
   switch (action) {
@@ -924,9 +927,13 @@ const exportToPDF = (selectedColumns: string[]) => {
 }
 
 // Lifecycle hooks
-// onMounted(() => {
-//   fetchTrips()
-// })
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
 
 import { definePageMeta } from '#imports'
 
@@ -934,3 +941,20 @@ definePageMeta({
   layout: 'dashboard'
 })
 </script>
+
+<style>
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-in-out;
+}
+</style>

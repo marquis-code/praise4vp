@@ -28,17 +28,17 @@
           <div class="flex flex-col md:flex-row md:items-center md:justify-between">
             <div class="flex items-center">
               <h1 class="text-xl font-semibold text-gray-900">
-                {{ trip._id }} 
+                {{ trip?._id }} 
                 <span class="mx-2 text-gray-400">•</span> 
-                {{ formatTime(trip.createdAt) }} 
+                {{ formatTime(trip?.createdAt) }} 
                 <span class="mx-2 text-gray-400">•</span> 
-                {{ trip.driverId.firstName }} {{ trip.driverId.lastName }} 
+                {{ trip?.driverId?.firstName }} {{ trip?.driverId?.lastName }} 
                 <span class="mx-2 text-gray-400">•</span> 
-                {{ formatDate(trip.createdAt) }}
+                {{ formatDate(trip?.createdAt) }}
               </h1>
               <span 
                 class="ml-4 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize"
-                :class="getStatusClass(trip.status)"
+                :class="getStatusClass(trip?.status)"
               >
                 {{ trip.status }}
               </span>
@@ -127,7 +127,7 @@
         <!-- Map -->
         <div class="h-[calc(100vh-180px)] w-full bg-gray-200 relative">
           <div class="absolute inset-0">
-            <ModulesTripsGoogleMap 
+            <ModulesTripsGoogleMaps
               :origin="getOriginCoordinates(trip)"
               :destination="getDestinationCoordinates(trip)"
               :markers="getMapMarkers(trip)"
@@ -188,52 +188,52 @@
               <div class="grid grid-cols-2 gap-4 pt-2 border-t border-gray-200">
                 <div>
                   <p class="text-xs text-gray-500">Started At</p>
-                  <p class="text-sm font-medium text-gray-900">{{ formatDateTime(trip.createdAt) }}</p>
+                  <p class="text-sm font-medium text-gray-900">{{ formatDateTime(trip?.createdAt) }}</p>
                 </div>
                 
                 <div>
                   <p class="text-xs text-gray-500">Distance</p>
-                  <p class="text-sm font-medium text-gray-900">{{ trip.distance || 'N/A' }}</p>
+                  <p class="text-sm font-medium text-gray-900">{{ trip?.distance || 'N/A' }}</p>
                 </div>
                 
                 <div>
                   <p class="text-xs text-gray-500">Duration</p>
-                  <p class="text-sm font-medium text-gray-900">{{ trip.duration || 'N/A' }}</p>
+                  <p class="text-sm font-medium text-gray-900">{{ trip?.duration || 'N/A' }}</p>
                 </div>
                 
                 <div>
                   <p class="text-xs text-gray-500">Status</p>
-                  <p class="text-sm font-medium text-gray-900 capitalize">{{ trip.status }}</p>
+                  <p class="text-sm font-medium text-gray-900 capitalize">{{ trip?.status }}</p>
                 </div>
                 
                 <div>
                   <p class="text-xs text-gray-500">Route Code</p>
-                  <p class="text-sm font-medium text-gray-900">{{ trip._id }}</p>
+                  <p class="text-sm font-medium text-gray-900">{{ trip?._id }}</p>
                 </div>
                 
                 <div>
                   <p class="text-xs text-gray-500">Driver</p>
-                  <p class="text-sm font-medium text-gray-900">{{ trip.driverId.firstName }} {{ trip.driverId.lastName }}</p>
+                  <p class="text-sm font-medium text-gray-900">{{ trip?.driverId?.firstName }} {{ trip?.driverId?.lastName }}</p>
                 </div>
                 
                 <div>
                   <p class="text-xs text-gray-500">Driver's Phone</p>
-                  <p class="text-sm font-medium text-gray-900">{{ trip.driverPhone || 'N/A' }}</p>
+                  <p class="text-sm font-medium text-gray-900">{{ trip?.driverPhone || 'N/A' }}</p>
                 </div>
                 
                 <div>
                   <p class="text-xs text-gray-500">Vehicle</p>
-                  <p class="text-sm font-medium text-gray-900">{{ trip.vehicle || 'N/A' }}</p>
+                  <p class="text-sm font-medium text-gray-900">{{ trip?.vehicle || 'N/A' }}</p>
                 </div>
                 
                 <div>
                   <p class="text-xs text-gray-500">Primary User</p>
-                  <p class="text-sm font-medium text-gray-900">{{ trip.primaryUserId.firstName }} {{ trip.primaryUserId.lastName }}</p>
+                  <p class="text-sm font-medium text-gray-900">{{ trip?.primaryUserId?.firstName }} {{ trip?.primaryUserId?.lastName }}</p>
                 </div>
                 
                 <div>
                   <p class="text-xs text-gray-500">Trip Type</p>
-                  <p class="text-sm font-medium text-gray-900 capitalize">{{ trip.type }}</p>
+                  <p class="text-sm font-medium text-gray-900 capitalize">{{ trip?.type }}</p>
                 </div>
               </div>
               
@@ -325,8 +325,8 @@
             <button 
               @click="nextLocation" 
               class="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 focus:outline-none"
-              :disabled="currentLocationIndex >= passengerLocations.length - 1"
-              :class="{ 'opacity-50 cursor-not-allowed': currentLocationIndex >= passengerLocations.length - 1 }"
+              :disabled="currentLocationIndex >= passengerLocations?.length - 1"
+              :class="{ 'opacity-50 cursor-not-allowed': currentLocationIndex >= passengerLocations?.length - 1 }"
             >
               <IconChevronRight class="h-6 w-6 text-gray-600" />
             </button>
@@ -338,8 +338,8 @@
                   <IconMapPin class="h-6 w-6 text-green-600" />
                 </div>
                 <div class="ml-3">
-                  <h3 class="text-lg font-medium text-gray-900">{{ currentLocation.address }}</h3>
-                  <p class="text-sm text-gray-500">{{ currentLocation.passengers.length }} passenger(s)</p>
+                  <h3 class="text-lg font-medium text-gray-900">{{ currentLocation?.address }}</h3>
+                  <p class="text-sm text-gray-500">{{ currentLocation?.passengers?.length }} passenger(s)</p>
                 </div>
                 
                 <div class="ml-auto">
@@ -378,10 +378,10 @@
                       
                       <div class="ml-3">
                         <div class="text-sm font-medium text-gray-900">
-                          {{ passenger.passengerId.firstName }} {{ passenger.passengerId.lastName }}
+                          {{ passenger?.passengerId?.firstName }} {{ passenger?.passengerId?.lastName }}
                         </div>
                         <div class="text-sm text-gray-500">
-                          {{ passenger.passengerId.email }}
+                          {{ passenger?.passengerId?.email }}
                         </div>
                       </div>
                     </div>
@@ -389,12 +389,12 @@
                     <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div class="flex items-start">
                         <IconMapPin class="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                        <span class="ml-2 text-sm text-gray-700">{{ passenger.origin.properties.address }}</span>
+                        <span class="ml-2 text-sm text-gray-700">{{ passenger?.origin?.properties?.address }}</span>
                       </div>
                       
                       <div class="flex items-start">
                         <IconFlag class="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" />
-                        <span class="ml-2 text-sm text-gray-700">{{ passenger.destination.properties.address }}</span>
+                        <span class="ml-2 text-sm text-gray-700">{{ passenger?.destination?.properties?.address }}</span>
                       </div>
                     </div>
                     

@@ -43,13 +43,13 @@
     />
     
     <!-- Search and Actions -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
-      <div class="relative mb-4 md:mb-0 md:w-64">
+    <div class="flex flex-col md:flex-row md:items-center space-x-0 md:space-x-4 justify-between mb-6">
+      <div class="relative mb-4 md:mb-0 md:w-full">
         <input
           v-model="searchQuery"
           type="text"
           placeholder="Search passengers..."
-          class="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+          class="pl-10 pr-4 py-3 w-full border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
         />
         <span class="absolute left-3 top-2.5 text-gray-400">
           <Search class="w-5 h-5" />
@@ -83,12 +83,12 @@
           Export
         </button>
         
-        <button 
+        <!-- <button 
           class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-150 flex items-center"
         >
           <Plus class="h-4 w-4 mr-2" />
           Add Passenger
-        </button>
+        </button> -->
       </div>
     </div>
     
@@ -223,7 +223,7 @@
     </div>
     
     <!-- List View -->
-    <div v-else class="bg-white rounded-lg shadow overflow-hidden animate-fadeIn">
+    <div v-else class="bg-white rounded-lg shadow overflow-x-auto animate-fadeIn">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
@@ -596,7 +596,7 @@ definePageMeta({
 const { loading: fetchingPassengers, passengers: passengersList } = useGetPassengers();
 
 // View mode
-const viewMode = ref<'grid' | 'list'>('grid');
+const viewMode = ref<'grid' | 'list'>('list');
 
 // Pagination
 const currentPage = ref(1);

@@ -4,7 +4,8 @@
         @click="isOpen = !isOpen"
         class="inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary transition-colors duration-150"
       >
-        <IconMoreVertical class="h-5 w-5" />
+        <!-- <IconMoreVertical class="h-5 w-5" /> -->
+        <MoreVertical class="h-5 w-5 text-gray-500" />
       </button>
       
       <div 
@@ -62,6 +63,9 @@
   
   <script setup lang="ts">
   import { ref, onMounted, onUnmounted } from 'vue'
+  import { 
+  MoreVertical
+} from 'lucide-vue-next';
   
   interface User {
     _id: string

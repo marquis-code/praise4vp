@@ -44,13 +44,13 @@
     />
     
     <!-- Search and Actions -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
-      <div class="relative mb-4 md:mb-0 md:w-64">
+    <div class="flex flex-col md:flex-row md:items-center lg:space-x-6 justify-between mb-6">
+      <div class="relative mb-4 md:mb-0 md:w-full">
         <input
           v-model="searchQuery"
           type="text"
           placeholder="Search drivers..."
-          class="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+          class="pl-10 pr-4 py-3 w-full border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
         />
         <span class="absolute left-3 top-2.5 text-gray-400">
           <Search class="w-5 h-5" />
@@ -108,11 +108,50 @@
     
     <!-- Grid View -->
     <div v-else-if="viewMode === 'grid'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fadeIn">
-      <ModulesDriversCard 
-        v-for="driver in paginatedDrivers" 
-        :key="driver._id" 
-        :driver="driver"
-      />
+      <div v-for="driver in paginatedDrivers" :key="driver._id" class="bg-white rounded-lg shadow overflow-hidden relative">
+        <ModulesDriversCard 
+          :driver="driver"
+        />
+        <!-- Actions Dropdown for Grid View -->
+        <div class="absolute top-3 right-3">
+          <div class="relative inline-block text-left">
+            <button 
+              @click="toggleDropdown(driver._id)"
+              class="p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+            >
+              <MoreVertical class="h-5 w-5 text-gray-500" />
+            </button>
+            
+            <div 
+              v-if="activeDropdown === driver._id"
+              class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 py-1"
+            >
+              <button 
+                @click="viewDriverDetails(driver)"
+                class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+              >
+                <Eye class="h-4 w-4 mr-2" />
+                View Details
+              </button>
+              <button 
+                @click="editDriver(driver)"
+                class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+              >
+                <Edit class="h-4 w-4 mr-2" />
+                Edit Driver
+              </button>
+              <button 
+                @click="showBanConfirmation(driver)"
+                :class="{'text-red-600': !driver?.isDisabled, 'text-green-600': driver?.isDisabled}"
+                class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center"
+              >
+                <Ban class="h-4 w-4 mr-2" />
+                {{driver?.isDisabled ? 'Activate' : 'Ban'}} Driver
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     
     <!-- List View -->
@@ -181,11 +220,17 @@
               <div class="text-xs text-gray-500">{{ driver.email }}</div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <span 
+              <!-- <span 
                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
                 :class="driver.IDIsVerified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'"
               >
                 {{ driver.IDIsVerified ? 'Verified' : 'Pending' }}
+              </span> -->
+              <span 
+                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                :class="!driver.isDisabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+              >
+                {{ driver.isDisabled ? 'Deactivated' : 'Active' }}
               </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -220,10 +265,11 @@
                   </button>
                   <button 
                     @click="showBanConfirmation(driver)"
-                    class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center"
+                    :class="{'text-red-600': !driver?.isDisabled, 'text-green-600': driver?.isDisabled}"
+                    class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center"
                   >
                     <Ban class="h-4 w-4 mr-2" />
-                    Ban Driver
+                    <!-- Ban Driver -->{{driver?.isDisabled ? 'Activate' : 'Ban'}} Driver
                   </button>
                 </div>
               </div>
@@ -273,22 +319,23 @@
                 <AlertTriangle class="h-6 w-6 text-red-600" />
               </div>
             </div>
-            <h3 class="text-lg font-medium text-center text-gray-900 mb-2">Ban Driver</h3>
+            <h3 class="text-lg font-medium text-center text-gray-900 mb-2">{{selectedDriver?.isDisabled ? 'Activate' : 'Ban'}} Driver</h3>
             <p class="text-sm text-gray-500 text-center mb-6">
               Are you sure you want to ban 
               <span class="font-medium text-gray-900">{{ selectedDriver?.firstName }} {{ selectedDriver?.lastName }}</span>? 
               This action cannot be undone.
             </p>
-            <div class="flex justify-end space-x-3">
+            <div class="flex justify-end w-full space-x-3">
               <button 
                 @click="closeModal"
-                class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-150"
+                class="px-4 py-2 border w-full border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-150"
               >
                 Cancel
               </button>
               <button 
+                v-if="!selectedDriver.isDisabled"
                 @click="banDriver"
-                class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-150"
+                class="px-4 py-2 border w-full border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-150"
                 :class="{ 'opacity-50 cursor-not-allowed': isBanning }"
                 :disabled="isBanning"
               >
@@ -297,6 +344,19 @@
                   Processing...
                 </span>
                 <span v-else>Ban Driver</span>
+              </button>
+              <button 
+                v-else
+                @click="banDriver"
+                class="px-4 py-2 border w-full border-transparent rounded-md shadow-sm text-sm font-medium text-white  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-150"
+                :class="{ 'opacity-50 cursor-not-allowed': isBanning, 'bg-red-600 hover:bg-red-700' : !selectedDriver.isDisabled, 'bg-green-600 hover:bg-green-700' : selectedDriver.isDisabled  }"
+                :disabled="isBanning"
+              >
+                <span v-if="isBanning" class="flex items-center">
+                  <span class="animate-spin h-4 w-4 mr-2 border-2 border-white border-t-transparent rounded-full"></span>
+                  Processing...
+                </span>
+                <span v-else>Activate Driver</span>
               </button>
             </div>
           </div>
@@ -510,8 +570,8 @@ const { loading: enabling,
 const { loading: disabling,
   disableAccount } = useDisableDriverAccount()
 
-// View mode
-const viewMode = ref<'grid' | 'list'>('grid');
+// View mode - Changed default to 'list' instead of 'grid'
+const viewMode = ref<'grid' | 'list'>('list');
 
 // Pagination
 const currentPage = ref(1);
