@@ -520,13 +520,157 @@
       @close="showExportModal = false"
       @export="handleExport"
     />
+
+    <!-- Cancel Trip Confirmation Modal -->
+    <Teleport to="body">
+      <div 
+        v-if="showCancelModal" 
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fadeIn"
+        @click.self="showCancelModal = false"
+      >
+        <div 
+          class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 overflow-hidden animate-slideIn"
+        >
+          <div class="p-6">
+            <div class="flex items-center justify-center mb-4">
+              <div class="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center">
+                <IconAlertTriangle class="h-6 w-6 text-red-600" />
+              </div>
+            </div>
+            <h3 class="text-lg font-medium text-center text-gray-900 mb-2">Cancel Trip</h3>
+            <p class="text-sm text-gray-500 text-center mb-6">
+              Are you sure you want to cancel this trip? This action cannot be undone.
+            </p>
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Cancellation Reason</label>
+              <textarea 
+                v-model="cancellationReason" 
+                rows="3" 
+                class="w-full rounded-md border-gray-300 border p-2.5 text-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50"
+                placeholder="Please provide a reason for cancellation..."
+              ></textarea>
+            </div>
+            <div class="flex justify-end space-x-3">
+              <button 
+                @click="showCancelModal = false"
+                class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-150"
+              >
+                Cancel
+              </button>
+              <button 
+                @click="confirmCancelTrip"
+                class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-150 flex items-center"
+                :disabled="isCancelling"
+              >
+                <span v-if="isCancelling" class="flex items-center">
+                  <span class="animate-spin h-4 w-4 mr-2 border-2 border-white border-t-transparent rounded-full"></span>
+                  Processing...
+                </span>
+                <span v-else>Proceed to Cancel</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Teleport>
+
+    <!-- Reschedule Trip Modal -->
+    <Teleport to="body">
+      <div 
+        v-if="showRescheduleModal" 
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fadeIn"
+        @click.self="showRescheduleModal = false"
+      >
+        <div 
+          class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 overflow-hidden animate-slideIn"
+        >
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-medium text-gray-900">Reschedule Trip</h3>
+              <button 
+                @click="showRescheduleModal = false"
+                class="p-1 rounded-full hover:bg-gray-100 focus:outline-none"
+              >
+                <IconX class="h-5 w-5 text-gray-500" />
+              </button>
+            </div>
+            
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Current Schedule</label>
+              <div class="text-sm text-gray-500 p-2 bg-gray-50 rounded-md">
+                {{ selectedTrip?.scheduledFor ? formatDate(selectedTrip.scheduledFor) : 'Not scheduled' }}
+              </div>
+            </div>
+            
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-1">New Date & Time</label>
+              <input 
+                v-model="newScheduleDate" 
+                type="date" 
+                class="w-full rounded-md border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 mb-2"
+              />
+              <input 
+                v-model="newScheduleTime" 
+                type="time" 
+                class="w-full rounded-md border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50"
+              />
+            </div>
+            
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Reason for Rescheduling</label>
+              <textarea 
+                v-model="rescheduleReason" 
+                rows="2" 
+                class="w-full rounded-md border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50"
+                placeholder="Please provide a reason for rescheduling..."
+              ></textarea>
+            </div>
+            
+            <div class="flex justify-end space-x-3">
+              <button 
+                @click="showRescheduleModal = false"
+                class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-150"
+              >
+                Cancel
+              </button>
+              <button 
+                @click="confirmRescheduleTrip"
+                class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-150 flex items-center"
+                :disabled="isRescheduling || !newScheduleDate || !newScheduleTime"
+              >
+                <span v-if="isRescheduling" class="flex items-center">
+                  <span class="animate-spin h-4 w-4 mr-2 border-2 border-white border-t-transparent rounded-full"></span>
+                  Processing...
+                </span>
+                <span v-else>Reschedule Trip</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Teleport>
+
+    <!-- Success Toast -->
+    <Teleport to="body">
+      <div 
+        v-if="showToast" 
+        class="fixed bottom-4 right-4 bg-green-600 text-white px-4 py-3 rounded-lg shadow-lg flex items-center z-50 animate-fadeIn"
+      >
+        <IconCheckCircle class="h-5 w-5 mr-2" />
+        <span>{{ toastMessage }}</span>
+      </div>
+    </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useGetTrips } from "@/composables/modules/trips/useGetTrips"
+import { useCancelTrip } from "@/composables/modules/trips/useCancelTrip"
+import { useRescheduleTrip } from "@/composables/modules/trips/useRescheduleTrip"
 const { loading, trips } =  useGetTrips()
+const { loading: cancelling, cancelTrip } = useCancelTrip()
+const { loading: rescheduling, rescheduleTrip } = useRescheduleTrip()
 import { useRouter } from 'vue-router'
 import { 
   Search as IconSearch, 
@@ -546,7 +690,9 @@ import {
   ChevronsUpDown as IconChevronsUpDown,
   Inbox as IconInbox,
   Grid as IconGrid,
-  List as IconList
+  List as IconList,
+  AlertTriangle as IconAlertTriangle,
+  CheckCircle as IconCheckCircle
 } from 'lucide-vue-next'
 
 // Types
@@ -611,6 +757,23 @@ const sortDirection = ref<'asc' | 'desc'>('desc')
 const showExportModal = ref(false)
 const viewMode = ref<'list' | 'grid'>('list') // Default to list view
 const activeDropdown = ref<string | null>(null) // Track active dropdown
+
+// Cancel Trip Modal State
+const showCancelModal = ref(false)
+const selectedTrip = ref<Trip | null>(null)
+const cancellationReason = ref('')
+const isCancelling = computed(() => cancelling.value)
+
+// Reschedule Trip Modal State
+const showRescheduleModal = ref(false)
+const newScheduleDate = ref('')
+const newScheduleTime = ref('')
+const rescheduleReason = ref('')
+const isRescheduling = computed(() => rescheduling.value)
+
+// Toast State
+const showToast = ref(false)
+const toastMessage = ref('')
 
 // Table headers
 const tableHeaders = [
@@ -817,7 +980,7 @@ const handleTripAction = (action: string, trip: Trip) => {
   // Close the dropdown after action
   activeDropdown.value = null
   
-  // In a real app, these would make API calls
+  // Handle different actions
   switch (action) {
     case 'view':
       navigateToTripDetails(trip._id)
@@ -826,10 +989,10 @@ const handleTripAction = (action: string, trip: Trip) => {
       // Open edit modal
       break
     case 'cancel':
-      // Cancel trip
+      openCancelModal(trip)
       break
     case 'reschedule':
-      // Open reschedule modal
+      openRescheduleModal(trip)
       break
     case 'invoice':
       // Generate and download invoice
@@ -839,6 +1002,110 @@ const handleTripAction = (action: string, trip: Trip) => {
 
 const navigateToTripDetails = (tripId: string) => {
   router.push(`/dashboard/trips/${tripId}`)
+}
+
+// Cancel Trip Functions
+const openCancelModal = (trip: Trip) => {
+  selectedTrip.value = trip
+  cancellationReason.value = ''
+  showCancelModal.value = true
+}
+
+const confirmCancelTrip = async () => {
+  if (!selectedTrip.value) return
+  
+  try {
+    // Call the cancelTrip method from the composable
+    await cancelTrip(selectedTrip.value._id, cancellationReason.value)
+    
+    // Show success toast
+    toastMessage.value = 'Trip cancelled successfully'
+    showToast.value = true
+    
+    // Close modal
+    showCancelModal.value = false
+    
+    // Auto-hide toast after 3 seconds
+    setTimeout(() => {
+      showToast.value = false
+    }, 3000)
+    
+  } catch (error) {
+    console.error('Error cancelling trip:', error)
+    
+    // Show error toast
+    toastMessage.value = 'Failed to cancel trip. Please try again.'
+    showToast.value = true
+    
+    // Auto-hide toast after 3 seconds
+    setTimeout(() => {
+      showToast.value = false
+    }, 3000)
+  }
+}
+
+// Reschedule Trip Functions
+const openRescheduleModal = (trip: Trip) => {
+  selectedTrip.value = trip
+  
+  // Set default date and time if trip is already scheduled
+  if (trip.scheduledFor) {
+    const scheduledDate = new Date(trip.scheduledFor)
+    newScheduleDate.value = scheduledDate.toISOString().split('T')[0]
+    
+    const hours = scheduledDate.getHours().toString().padStart(2, '0')
+    const minutes = scheduledDate.getMinutes().toString().padStart(2, '0')
+    newScheduleTime.value = `${hours}:${minutes}`
+  } else {
+    // Set default to tomorrow
+    const tomorrow = new Date()
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    newScheduleDate.value = tomorrow.toISOString().split('T')[0]
+    newScheduleTime.value = '09:00'
+  }
+  
+  rescheduleReason.value = ''
+  showRescheduleModal.value = true
+}
+
+const confirmRescheduleTrip = async () => {
+  if (!selectedTrip.value || !newScheduleDate.value || !newScheduleTime.value) return
+  
+  try {
+    // Combine date and time into a single datetime
+    const newScheduleDateTime = new Date(`${newScheduleDate.value}T${newScheduleTime.value}:00`)
+    
+    // Call the rescheduleTrip method from the composable
+    await rescheduleTrip(
+      selectedTrip.value._id, 
+      newScheduleDateTime.toISOString(), 
+      rescheduleReason.value
+    )
+    
+    // Show success toast
+    toastMessage.value = 'Trip rescheduled successfully'
+    showToast.value = true
+    
+    // Close modal
+    showRescheduleModal.value = false
+    
+    // Auto-hide toast after 3 seconds
+    setTimeout(() => {
+      showToast.value = false
+    }, 3000)
+    
+  } catch (error) {
+    console.error('Error rescheduling trip:', error)
+    
+    // Show error toast
+    toastMessage.value = 'Failed to reschedule trip. Please try again.'
+    showToast.value = true
+    
+    // Auto-hide toast after 3 seconds
+    setTimeout(() => {
+      showToast.value = false
+    }, 3000)
+  }
 }
 
 const exportData = () => {
@@ -954,7 +1221,22 @@ definePageMeta({
   }
 }
 
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .animate-fadeIn {
   animation: fadeIn 0.3s ease-in-out;
+}
+
+.animate-slideIn {
+  animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 </style>
