@@ -1,8 +1,8 @@
 import { GATEWAY_ENDPOINT } from '../axios.config'
 
 export const drivers_api = {
-     $_get_drivers: () => {
-        const url = '/drivers'
+     $_get_drivers: (page = 1, limit = 10) => {
+        const url = `/drivers?page=${page}&limit=${limit}`
         return GATEWAY_ENDPOINT.get(url)
     },
     $_get_driver_by_id: (id: string) => {

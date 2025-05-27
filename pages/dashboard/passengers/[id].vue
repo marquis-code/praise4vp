@@ -485,31 +485,15 @@
           </div>
           
           <!-- Pagination -->
-          <div v-if="filteredTrips.length > 0" class="mt-8 flex items-center justify-between">
-            <div class="text-sm text-gray-700">
-              Showing <span class="font-medium">{{ tripStartIndex + 1 }}</span> to <span class="font-medium">{{ tripEndIndex }}</span> of <span class="font-medium">{{ filteredTrips.length }}</span> trips
-            </div>
-            <div class="flex space-x-2">
-              <button 
-                @click="prevTripPage"
-                class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-                :disabled="tripCurrentPage === 1"
-                :class="{ 'opacity-50 cursor-not-allowed': tripCurrentPage === 1 }"
-              >
-                <ChevronLeft class="mr-2 h-4 w-4" />
-                Previous
-              </button>
-              <button 
-                @click="nextTripPage"
-                class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-                :disabled="tripCurrentPage >= tripTotalPages"
-                :class="{ 'opacity-50 cursor-not-allowed': tripCurrentPage >= tripTotalPages }"
-              >
-                Next
-                <ChevronRight class="ml-2 h-4 w-4" />
-              </button>
-            </div>
-          </div>
+          <div  v-if="filteredTrips.length > 0" class="mt-6">
+          <CorePagination 
+            :current-page="pagination.page"
+            :total-pages="pagination.totalPages"
+            :total="pagination.total"
+            :limit="pagination.limit"
+            @page-change="handlePageChange"
+          />
+        </div>
         </div>
       </ModulesPassengersTabsComponent>
     </div>
@@ -721,7 +705,7 @@ const passengerId = computed(() => route.params.id as string);
 
 // Fetch passenger data
 const { loading, passenger } = useGetPassengerById();
-const { passengerTripHistory, loading: fetchingHistory } = useGetPassengerTripHistory();
+const { passengerTripHistory, loading: fetchingHistory,  pagination, changePage } = useGetPassengerTripHistory();
 
 // Tabs
 const tabs = [
@@ -956,6 +940,11 @@ const getTripStatusClass = (status: string) => {
       return 'bg-gray-100 text-gray-800';
   }
 };
+
+// Pagination handler
+const handlePageChange = async (page: number) => {
+  await changePage(page)
+}
 
 const formatTripStatus = (status: string) => {
   switch (status) {

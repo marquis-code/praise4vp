@@ -269,6 +269,188 @@
             </div>
           </div>
         </div>
+
+        <div v-else-if="activeTab === 'documents'" class="animate-fadeIn">
+          <div class="space-y-6">
+            <!-- Personal Documents -->
+            <div class="bg-white shadow rounded-lg overflow-hidden">
+              <div class="px-6 py-4 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-lg font-medium text-gray-900 flex items-center">
+                    <FileText class="h-5 w-5 mr-2 text-blue-600" />
+                    Personal Documents
+                  </h3>
+                  <span class="text-sm text-gray-500">{{ getPersonalDocumentsCount() }} documents</span>
+                </div>
+              </div>
+              <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <!-- Profile Photo -->
+                  <DocumentCard
+                    title="Profile Photo"
+                    :document-url="driver.photoURL"
+                    :is-verified="true"
+                    :verification-status="'verified'"
+                    document-type="image"
+                    @preview="openImagePreview"
+                  />
+                  
+                  <!-- ID Document -->
+                  <DocumentCard
+                    title="ID Document"
+                    :document-url="getIdDocumentUrl()"
+                    :is-verified="driver.IDIsVerified"
+                    :verification-status="driver.IDVerificationStatus"
+                    document-type="image"
+                    @preview="openImagePreview"
+                  />
+                  
+                  <!-- Additional Personal Documents -->
+                  <DocumentCard
+                    title="Proof of Address"
+                    :document-url="getProofOfAddressUrl()"
+                    :is-verified="false"
+                    :verification-status="'pending'"
+                    document-type="pdf"
+                    @preview="openImagePreview"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Vehicle Documents -->
+            <div class="bg-white shadow rounded-lg overflow-hidden">
+              <div class="px-6 py-4 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-lg font-medium text-gray-900 flex items-center">
+                    <Car class="h-5 w-5 mr-2 text-green-600" />
+                    Vehicle Documents
+                  </h3>
+                  <span class="text-sm text-gray-500">{{ getVehicleDocumentsCount() }} documents</span>
+                </div>
+              </div>
+              <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <!-- Driver's License -->
+                  <DocumentCard
+                    title="Driver's License"
+                    :document-url="driver.driverData?.licenseURL"
+                    :is-verified="driver.driverData?.licenseIsVerified"
+                    :verification-status="driver.driverData?.licenseVerificationStatus"
+                    document-type="pdf"
+                    @preview="openImagePreview"
+                  />
+                  
+                  <!-- Vehicle Registration -->
+                  <DocumentCard
+                    title="Vehicle Registration"
+                    :document-url="getVehicleRegistrationUrl()"
+                    :is-verified="false"
+                    :verification-status="'pending'"
+                    document-type="pdf"
+                    @preview="openImagePreview"
+                  />
+                  
+                  <!-- Insurance Certificate -->
+                  <DocumentCard
+                    title="Insurance Certificate"
+                    :document-url="getInsuranceUrl()"
+                    :is-verified="driver.driverData?.proofOfInsuranceVerified"
+                    :verification-status="'created'"
+                    document-type="pdf"
+                    @preview="openImagePreview"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Vehicle Photos -->
+            <div class="bg-white shadow rounded-lg overflow-hidden">
+              <div class="px-6 py-4 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-lg font-medium text-gray-900 flex items-center">
+                    <Camera class="h-5 w-5 mr-2 text-purple-600" />
+                    Vehicle Photos
+                  </h3>
+                  <span class="text-sm text-gray-500">{{ getVehiclePhotosCount() }} photos</span>
+                </div>
+              </div>
+              <div class="p-6">
+                <div v-if="driver.driverData?.carPhotos && driver.driverData.carPhotos.length > 0" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  <div 
+                    v-for="(photo, index) in driver.driverData.carPhotos" 
+                    :key="index"
+                    class="relative group cursor-pointer"
+                    @click="openImagePreview(photo, `Vehicle Photo ${index + 1}`)"
+                  >
+                    <div class="aspect-square rounded-lg overflow-hidden bg-gray-100 border-2 border-gray-200 hover:border-primary transition-colors duration-200">
+                      <img 
+                        :src="photo" 
+                        :alt="`Vehicle photo ${index + 1}`"
+                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                        @error="handleImageError"
+                      />
+                    </div>
+                    <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 rounded-lg flex items-center justify-center">
+                      <ZoomIn class="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                    </div>
+                  </div>
+                </div>
+                <div v-else class="text-center py-12">
+                  <Camera class="mx-auto h-12 w-12 text-gray-400" />
+                  <h3 class="mt-2 text-sm font-medium text-gray-900">No vehicle photos</h3>
+                  <p class="mt-1 text-sm text-gray-500">Vehicle photos will appear here once uploaded.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Verification Documents -->
+            <div class="bg-white shadow rounded-lg overflow-hidden">
+              <div class="px-6 py-4 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-lg font-medium text-gray-900 flex items-center">
+                    <Shield class="h-5 w-5 mr-2 text-orange-600" />
+                    Verification Documents
+                  </h3>
+                  <span class="text-sm text-gray-500">{{ getVerificationDocumentsCount() }} documents</span>
+                </div>
+              </div>
+              <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <!-- Background Check -->
+                  <DocumentCard
+                    title="Background Check"
+                    :document-url="getBackgroundCheckUrl()"
+                    :is-verified="false"
+                    :verification-status="'pending'"
+                    document-type="pdf"
+                    @preview="openImagePreview"
+                  />
+                  
+                  <!-- Medical Certificate -->
+                  <DocumentCard
+                    title="Medical Certificate"
+                    :document-url="getMedicalCertificateUrl()"
+                    :is-verified="false"
+                    :verification-status="'created'"
+                    document-type="pdf"
+                    @preview="openImagePreview"
+                  />
+                  
+                  <!-- Training Certificate -->
+                  <DocumentCard
+                    title="Training Certificate"
+                    :document-url="getTrainingCertificateUrl()"
+                    :is-verified="false"
+                    :verification-status="'created'"
+                    document-type="pdf"
+                    @preview="openImagePreview"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         
         <!-- Trip History Tab -->
         <div v-else-if="activeTab === 'trips'" class="animate-fadeIn">
@@ -410,7 +592,7 @@
           <!-- Trips Grid View -->
           <div v-else-if="viewMode === 'grid'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div 
-              v-for="trip in paginatedTrips" 
+              v-for="trip in filteredTrips" 
               :key="trip._id" 
               class="bg-white rounded-lg shadow overflow-hidden hover:shadow-md transition-shadow duration-200"
             >
@@ -505,7 +687,7 @@
           <!-- Trips List View -->
           <div v-else-if="viewMode === 'list'" class="space-y-4">
             <div 
-              v-for="trip in paginatedTrips" 
+              v-for="trip in filteredTrips" 
               :key="trip._id" 
               class="bg-white rounded-lg shadow overflow-hidden hover:shadow-md transition-shadow duration-200"
             >
@@ -606,31 +788,15 @@
           </div>
           
           <!-- Pagination -->
-          <div v-if="filteredTrips.length > 0" class="mt-8 flex items-center justify-between">
-            <div class="text-sm text-gray-700">
-              Showing <span class="font-medium">{{ tripStartIndex + 1 }}</span> to <span class="font-medium">{{ tripEndIndex }}</span> of <span class="font-medium">{{ filteredTrips.length }}</span> trips
-            </div>
-            <div class="flex space-x-2">
-              <button 
-                @click="prevTripPage"
-                class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-                :disabled="tripCurrentPage === 1"
-                :class="{ 'opacity-50 cursor-not-allowed': tripCurrentPage === 1 }"
-              >
-                <ChevronLeft class="mr-2 h-4 w-4" />
-                Previous
-              </button>
-              <button 
-                @click="nextTripPage"
-                class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-                :disabled="tripCurrentPage >= tripTotalPages"
-                :class="{ 'opacity-50 cursor-not-allowed': tripCurrentPage >= tripTotalPages }"
-              >
-                Next
-                <ChevronRight class="ml-2 h-4 w-4" />
-              </button>
-            </div>
-          </div>
+          <div  v-if="filteredTrips.length > 0" class="mt-6">
+          <CorePagination 
+            :current-page="pagination.page"
+            :total-pages="pagination.totalPages"
+            :total="pagination.total"
+            :limit="pagination.limit"
+            @page-change="handlePageChange"
+          />
+        </div>
         </div>
       </TabsComponent>
     </div>
@@ -808,6 +974,50 @@
         </div>
       </div>
     </Teleport>
+
+    <Teleport to="body">
+      <div 
+        v-if="showImagePreview" 
+        class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4"
+        @click="closeImagePreview"
+      >
+        <div class="relative max-w-4xl max-h-full">
+          <!-- Close button -->
+          <button 
+            @click="closeImagePreview"
+            class="absolute top-4 right-4 z-10 p-2 bg-black bg-opacity-50 rounded-full text-white hover:bg-opacity-70 transition-all duration-200"
+          >
+            <X class="h-6 w-6" />
+          </button>
+          
+          <!-- Image title -->
+          <div class="absolute top-4 left-4 z-10 bg-black bg-opacity-50 rounded-lg px-3 py-2">
+            <h3 class="text-white font-medium">{{ previewImageTitle }}</h3>
+          </div>
+          
+          <!-- Image -->
+          <img 
+            :src="previewImageUrl" 
+            :alt="previewImageTitle"
+            class="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+            @click.stop
+          />
+          
+          <!-- Download button -->
+          <div class="absolute bottom-4 right-4 z-10">
+            <a 
+              :href="previewImageUrl" 
+              :download="previewImageTitle"
+              class="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors duration-200"
+              @click.stop
+            >
+              <Download class="h-4 w-4 mr-2" />
+              Download
+            </a>
+          </div>
+        </div>
+      </div>
+    </Teleport>
     
     <!-- Success Toast -->
     <Teleport to="body">
@@ -836,23 +1046,31 @@ import { useGetDriverById } from "@/composables/modules/drivers/useGetDriversByI
 import { useGetDriverTripHistory } from "@/composables/modules/trips/useGetDriverTripsHistory";
 import { Driver, Trip } from '@/types/drivers';
 import TabsComponent from '@/components/modules/drivers/TabsComponent.vue';
+import DocumentCard from '@/components/modules/drivers/DocumentCard.vue';
 
 // Router and route
 const router = useRouter();
 
 // Fetch driver data
 const { loading, driver } = useGetDriverById();
-const { driverTripHistory, loading: fetchingHistory } = useGetDriverTripHistory();
+const { driverTripHistory, loading: fetchingHistory, pagination, changePage } = useGetDriverTripHistory();
 
 // Tabs
+// Tabs - Updated to include documents tab
 const tabs = [
   { name: 'Driver Details', value: 'details' },
+  { name: 'Documents', value: 'documents' },
   { name: 'Trip History', value: 'trips' }
 ];
 const activeTab = ref('details');
 
+// Image preview state
+const showImagePreview = ref(false);
+const previewImageUrl = ref('');
+const previewImageTitle = ref('');
+
 // View mode toggle (grid or list)
-const viewMode = ref<'grid' | 'list'>('grid');
+const viewMode = ref<'grid' | 'list'>('list');
 
 // Trip history pagination
 const tripCurrentPage = ref(1);
@@ -915,6 +1133,96 @@ const paymentFields = [
   { key: 'totalFare', label: 'Total Fare' }
 ];
 
+// / Document helper functions
+const getPersonalDocumentsCount = () => {
+  let count = 0;
+  if (driver.value?.photoURL) count++;
+  if (getIdDocumentUrl()) count++;
+  if (getProofOfAddressUrl()) count++;
+  return count;
+};
+
+const getVehicleDocumentsCount = () => {
+  let count = 0;
+  if (driver.value?.driverData?.licenseURL) count++;
+  if (getVehicleRegistrationUrl()) count++;
+  if (getInsuranceUrl()) count++;
+  return count;
+};
+
+const getVehiclePhotosCount = () => {
+  return driver.value?.driverData?.carPhotos?.length || 0;
+};
+
+const getVerificationDocumentsCount = () => {
+  let count = 0;
+  if (getBackgroundCheckUrl()) count++;
+  if (getMedicalCertificateUrl()) count++;
+  if (getTrainingCertificateUrl()) count++;
+  return count;
+};
+
+// Document URL getters (these would be actual URLs in a real implementation)
+const getIdDocumentUrl = () => {
+  // In a real implementation, this would come from the driver data
+  return null; // Return null to show empty state
+};
+
+const getProofOfAddressUrl = () => {
+  return null;
+};
+
+const getVehicleRegistrationUrl = () => {
+  return null;
+};
+
+const getInsuranceUrl = () => {
+  return null;
+};
+
+const getBackgroundCheckUrl = () => {
+  return null;
+};
+
+const getMedicalCertificateUrl = () => {
+  return null;
+};
+
+const getTrainingCertificateUrl = () => {
+  return null;
+};
+
+// Image preview functions
+const openImagePreview = (imageUrl: string, title: string) => {
+  if (!imageUrl) return;
+  
+  previewImageUrl.value = imageUrl;
+  previewImageTitle.value = title;
+  showImagePreview.value = true;
+  
+  // Prevent body scroll when modal is open
+  document.body.style.overflow = 'hidden';
+};
+
+const closeImagePreview = () => {
+  showImagePreview.value = false;
+  previewImageUrl.value = '';
+  previewImageTitle.value = '';
+  
+  // Restore body scroll
+  document.body.style.overflow = 'auto';
+};
+
+const handleImageError = (event: Event) => {
+  const img = event.target as HTMLImageElement;
+  img.src = '/placeholder.svg?height=200&width=200';
+};
+
+// Pagination handler
+const handlePageChange = async (page: number) => {
+  await changePage(page)
+}
+
 // All available fields
 const allFields = computed(() => [
   ...tripFields,
@@ -970,11 +1278,11 @@ const filteredTrips = computed(() => {
   return result;
 });
 
-const paginatedTrips = computed(() => {
-  const start = (tripCurrentPage.value - 1) * tripItemsPerPage;
-  const end = start + tripItemsPerPage;
-  return filteredTrips.value.slice(start, end);
-});
+// const filteredTrips = computed(() => {
+//   const start = (tripCurrentPage.value - 1) * tripItemsPerPage;
+//   const end = start + tripItemsPerPage;
+//   return filteredTrips.value.slice(start, end);
+// });
 
 const tripTotalPages = computed(() => {
   return Math.ceil(filteredTrips.value.length / tripItemsPerPage);
@@ -1383,6 +1691,12 @@ watch(activeTab, (newTab) => {
     // This would be handled by the composable
   }
 });
+
+// Cleanup on unmount
+onUnmounted(() => {
+  document.body.style.overflow = 'auto';
+});
+
 
 definePageMeta({
   layout: 'dashboard'

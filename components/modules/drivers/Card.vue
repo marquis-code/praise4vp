@@ -18,6 +18,7 @@
             />
           </div>
           <div class="ml-4">
+            <div class="text-xs text-gray-500 font-mono mb-3">ID: {{ driver._id || 'Nil' }}</div>
             <h3 class="text-lg font-medium text-gray-900">{{ driver?.firstName }} {{ driver?.lastName }}</h3>
             <div class="flex items-center mt-1">
               <div class="flex items-center">

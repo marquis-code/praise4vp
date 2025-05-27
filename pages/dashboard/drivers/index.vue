@@ -160,6 +160,9 @@
         <thead class="bg-gray-50">
           <tr>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              ID
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Driver
             </th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -181,6 +184,11 @@
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
           <tr v-for="driver in paginatedDrivers" :key="driver._id">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div>
+                {{ driver._id }}
+              </div>
+            </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="flex items-center">
                 <div class="h-10 w-10 rounded-full bg-gray-200 overflow-hidden">
@@ -279,31 +287,15 @@
       </table>
     </div>
     
-    <!-- Pagination -->
-    <div class="mt-8 flex items-center justify-between">
-      <div class="text-sm text-gray-700">
-        Showing <span class="font-medium">{{ startIndex + 1 }}</span> to <span class="font-medium">{{ endIndex }}</span> of <span class="font-medium">{{ filteredDrivers.length }}</span> drivers
-      </div>
-      <div class="flex space-x-2">
-        <button 
-          @click="prevPage"
-          class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-          :disabled="currentPage === 1"
-          :class="{ 'opacity-50 cursor-not-allowed': currentPage === 1 }"
-        >
-          <ChevronLeft class="mr-2 h-4 w-4" />
-          Previous
-        </button>
-        <button 
-          @click="nextPage"
-          class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-          :disabled="currentPage >= totalPages"
-          :class="{ 'opacity-50 cursor-not-allowed': currentPage >= totalPages }"
-        >
-          Next
-          <ChevronRight class="ml-2 h-4 w-4" />
-        </button>
-      </div>
+       <!-- Pagination -->
+    <div class="mt-6">
+      <CorePagination 
+        :current-page="pagination.page"
+        :total-pages="pagination.totalPages"
+        :total="pagination.total"
+        :limit="pagination.limit"
+        @page-change="handlePageChange"
+      />
     </div>
     
     <!-- Ban Confirmation Modal -->
@@ -564,7 +556,7 @@ import { useDisableDriverAccount } from "@/composables/modules/drivers/useDeacti
 import { Driver } from '@/types/drivers';
 import { definePageMeta } from '#imports'
 
-const { loading: fetchingDrivers, drivers: driversList } = useGetDrivers();
+const { loading: fetchingDrivers, drivers: driversList, pagination, changePage } = useGetDrivers();
 const { loading: enabling,
   enableAccount } = useEnableDriverAccount()
 const { loading: disabling,
@@ -686,6 +678,11 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside);
 });
+
+// Pagination handler
+const handlePageChange = async (page: number) => {
+  await changePage(page)
+}
 
 // Computed properties
 const filteredDrivers = computed(() => {

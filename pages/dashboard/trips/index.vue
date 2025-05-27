@@ -71,7 +71,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
       <ModulesTripsStatsCard 
         title="Total Trips" 
-        :value="trips.length" 
+        :value="pagination.total" 
         icon="car" 
         color="primary"
       />
@@ -139,7 +139,7 @@
       </div>
       
       <!-- Empty State -->
-      <div v-else-if="filteredTrips.length === 0" class="p-8 text-center">
+      <div v-else-if="trips.length === 0" class="p-8 text-center">
         <IconInbox class="mx-auto h-12 w-12 text-gray-400" />
         <h3 class="mt-2 text-sm font-medium text-gray-900">No trips found</h3>
         <p class="mt-1 text-sm text-gray-500">Try adjusting your search or filter criteria.</p>
@@ -148,24 +148,27 @@
       <!-- Mobile View -->
       <div v-else-if="$isMobile" class="divide-y divide-gray-200">
         <div 
-          v-for="trip in filteredTrips" 
+          v-for="trip in trips" 
           :key="trip._id"
           class="p-4 animate-fadeIn transition-all duration-300 hover:bg-gray-50 relative"
         >
           <div class="flex justify-between items-start mb-2">
             <div>
-              <span 
-                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize"
-                :class="getStatusClass(trip.status)"
-              >
-                {{ trip.status }}
-              </span>
-              <span 
-                v-if="trip.isScheduled" 
-                class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
-              >
-                Scheduled
-              </span>
+              <span class="text-xs text-gray-500 font-mono">ID: {{ trip._id || 'Nil' }}</span>
+              <div class="mt-1">
+                <span 
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize"
+                  :class="getStatusClass(trip.status)"
+                >
+                  {{ trip.status || 'Nil' }}
+                </span>
+                <span 
+                  v-if="trip.isScheduled" 
+                  class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                >
+                  Scheduled
+                </span>
+              </div>
             </div>
             <div class="relative">
               <button 
@@ -222,12 +225,14 @@
           
           <div class="flex items-center mb-2">
             <IconUser class="h-5 w-5 text-gray-400 mr-2" />
-            <span class="text-sm font-medium">{{ trip?.primaryUserId?.firstName }} {{ trip?.primaryUserId?.lastName }}</span>
+            <span class="text-sm font-medium">
+              {{ getFullName(trip?.primaryUserId) || 'Nil' }}
+            </span>
           </div>
           
           <div class="flex items-center mb-2">
             <IconUserCheck class="h-5 w-5 text-gray-400 mr-2" />
-            <span class="text-sm">{{ trip?.driverId?.firstName }} {{ trip?.driverId?.lastName }}</span>
+            <span class="text-sm">{{ getFullName(trip?.driverId) || 'Nil' }}</span>
           </div>
           
           <div class="flex items-center mb-2">
@@ -255,18 +260,19 @@
       <!-- Desktop Grid View -->
       <div v-else-if="viewMode === 'grid'" class="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div 
-          v-for="trip in filteredTrips" 
+          v-for="trip in trips" 
           :key="trip._id"
           class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden animate-fadeIn relative"
         >
           <div class="p-4">
             <div class="flex justify-between items-start mb-4">
               <div>
+                <div class="text-xs text-gray-500 font-mono mb-1">ID: {{ trip._id || 'Nil' }}</div>
                 <span 
                   class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize"
                   :class="getStatusClass(trip.status)"
                 >
-                  {{ trip.status }}
+                  {{ trip.status || 'Nil' }}
                 </span>
                 <span 
                   v-if="trip.isScheduled" 
@@ -334,10 +340,10 @@
               </div>
               <div class="ml-3">
                 <div class="text-sm font-medium text-gray-900">
-                  {{ trip?.primaryUserId?.firstName }} {{ trip?.primaryUserId?.lastName }}
+                  {{ getFullName(trip?.primaryUserId) || 'Nil' }}
                 </div>
                 <div class="text-xs text-gray-500">
-                  {{ trip?.primaryUserId?.email }}
+                  {{ trip?.primaryUserId?.email || 'Nil' }}
                 </div>
               </div>
             </div>
@@ -345,8 +351,8 @@
             <div class="flex items-center mb-3">
               <IconUserCheck class="h-5 w-5 text-gray-400 mr-2" />
               <div>
-                <div class="text-sm">{{ trip?.driverId?.firstName }} {{ trip?.driverId?.lastName }}</div>
-                <div class="text-xs text-gray-500">{{ trip?.driverId?.email }}</div>
+                <div class="text-sm">{{ getFullName(trip?.driverId) || 'Nil' }}</div>
+                <div class="text-xs text-gray-500">{{ trip?.driverId?.email || 'Nil' }}</div>
               </div>
             </div>
             
@@ -408,11 +414,14 @@
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
             <tr 
-              v-for="trip in filteredTrips" 
+              v-for="trip in trips" 
               :key="trip._id"
               class="hover:bg-gray-50 transition-colors duration-150 animate-fadeIn cursor-pointer"
               @click="navigateToTripDetails(trip._id)"
             >
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-mono text-gray-900">{{ trip._id || 'Nil' }}</div>
+              </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
                   <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
@@ -420,26 +429,26 @@
                   </div>
                   <div class="ml-4">
                     <div class="text-sm font-medium text-gray-900">
-                      {{ trip?.primaryUserId?.firstName }} {{ trip?.primaryUserId?.lastName }}
+                      {{ getFullName(trip?.primaryUserId) || 'Nil' }}
                     </div>
                     <div class="text-sm text-gray-500">
-                      {{ trip?.primaryUserId?.email }}
+                      {{ trip?.primaryUserId?.email || 'Nil' }}
                     </div>
                   </div>
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">{{ trip?.driverId?.firstName }} {{ trip?.driverId?.lastName }}</div>
-                <div class="text-sm text-gray-500">{{ trip?.driverId?.email }}</div>
+                <div class="text-sm text-gray-900">{{ getFullName(trip?.driverId) || 'Nil' }}</div>
+                <div class="text-sm text-gray-500">{{ trip?.driverId?.email || 'Nil' }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize"
                   :class="getStatusClass(trip?.status)">
-                  {{ trip?.status }}
+                  {{ trip?.status || 'Nil' }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900 capitalize">{{ trip?.type }}</div>
+                <div class="text-sm text-gray-900 capitalize">{{ trip?.type || 'Nil' }}</div>
                 <div class="text-sm text-gray-500">
                   <span v-if="trip?.isScheduled" class="inline-flex items-center text-xs">
                     <IconCalendar class="h-3 w-3 mr-1" />
@@ -511,6 +520,17 @@
           </tbody>
         </table>
       </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="mt-6">
+      <CorePagination 
+        :current-page="pagination.page"
+        :total-pages="pagination.totalPages"
+        :total="pagination.total"
+        :limit="pagination.limit"
+        @page-change="handlePageChange"
+      />
     </div>
     
     <!-- Export Modal -->
@@ -664,13 +684,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useGetTrips } from "@/composables/modules/trips/useGetTrips"
 import { useCancelTrip } from "@/composables/modules/trips/useCancelTrip"
 import { useRescheduleTrip } from "@/composables/modules/trips/useRescheduleTrip"
-const { loading, trips } =  useGetTrips()
+
+const { loading, trips, pagination, changePage } = useGetTrips()
 const { loading: cancelling, cancelTrip } = useCancelTrip()
 const { loading: rescheduling, rescheduleTrip } = useRescheduleTrip()
+
 import { useRouter } from 'vue-router'
 import { 
   Search as IconSearch, 
@@ -692,11 +714,14 @@ import {
   Grid as IconGrid,
   List as IconList,
   AlertTriangle as IconAlertTriangle,
-  CheckCircle as IconCheckCircle
+  CheckCircle as IconCheckCircle,
+  ChevronLeft, 
+  ChevronRight, 
+  User
 } from 'lucide-vue-next'
 
 // Types
-interface User {
+interface I_User {
   _id: string
   firstName: string
   lastName: string
@@ -716,7 +741,7 @@ interface GeoPoint {
 
 interface Passenger {
   _id: string
-  passengerId: User
+  passengerId: I_User
   origin: GeoPoint
   destination: GeoPoint
   fare: number
@@ -729,8 +754,8 @@ interface Passenger {
 
 interface Trip {
   _id: string
-  primaryUserId: User
-  driverId: User
+  primaryUserId: I_User
+  driverId: I_User
   type: string
   isScheduled: boolean
   scheduledFor: string | null
@@ -755,8 +780,8 @@ const filters = ref({
 const sortColumn = ref('createdAt')
 const sortDirection = ref<'asc' | 'desc'>('desc')
 const showExportModal = ref(false)
-const viewMode = ref<'list' | 'grid'>('list') // Default to list view
-const activeDropdown = ref<string | null>(null) // Track active dropdown
+const viewMode = ref<'list' | 'grid'>('list')
+const activeDropdown = ref<string | null>(null)
 
 // Cancel Trip Modal State
 const showCancelModal = ref(false)
@@ -775,8 +800,9 @@ const isRescheduling = computed(() => rescheduling.value)
 const showToast = ref(false)
 const toastMessage = ref('')
 
-// Table headers
+// Table headers - Updated to include Trip ID
 const tableHeaders = [
+  { key: '_id', label: 'Trip ID', sortable: true },
   { key: 'primaryUserId', label: 'Passenger', sortable: false },
   { key: 'driverId', label: 'Driver', sortable: false },
   { key: 'status', label: 'Status', sortable: true },
@@ -786,87 +812,21 @@ const tableHeaders = [
 ]
 
 // Computed properties
-const filteredTrips = computed(() => {
-  let result = [...trips.value]
-  
-  // Apply search
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    result = result.filter(trip => 
-      trip?.primaryUserId?.firstName.toLowerCase().includes(query) ||
-      trip?.primaryUserId?.lastName.toLowerCase().includes(query) ||
-      trip?.primaryUserId?.email.toLowerCase().includes(query) ||
-      trip?.driverId?.firstName.toLowerCase().includes(query) ||
-      trip?.driverId?.lastName.toLowerCase().includes(query) ||
-      trip?.status?.toLowerCase().includes(query)
-    )
-  }
-  
-  // Apply filters
-  if (filters.value.type) {
-    result = result.filter(trip => trip.type === filters.value.type)
-  }
-  
-  if (filters.value.status) {
-    result = result.filter(trip => trip.status === filters.value.status)
-  }
-  
-  if (filters.value.scheduled) {
-    const isScheduled = filters.value.scheduled === 'scheduled'
-    result = result.filter(trip => trip.isScheduled === isScheduled)
-  }
-  
-  // Apply date range filter
-  if (filters.value.startDate && filters.value.endDate) {
-    const startDate = new Date(filters.value.startDate)
-    const endDate = new Date(filters.value.endDate)
-    endDate.setHours(23, 59, 59, 999) // Set to end of day
-    
-    result = result.filter(trip => {
-      const tripDate = new Date(trip.createdAt)
-      return tripDate >= startDate && tripDate <= endDate
-    })
-  }
-  
-  // Apply sorting
-  result.sort((a, b) => {
-    let valueA, valueB
-    
-    if (sortColumn.value === 'fare') {
-      valueA = getTotalFare(a)
-      valueB = getTotalFare(b)
-    } else if (sortColumn.value === 'createdAt' || sortColumn.value === 'updatedAt') {
-      valueA = new Date(a[sortColumn.value]).getTime()
-      valueB = new Date(b[sortColumn.value]).getTime()
-    } else if (sortColumn.value === 'primaryUserId') {
-      valueA = a.primaryUserId.firstName + ' ' + a.primaryUserId.lastName
-      valueB = b.primaryUserId.firstName + ' ' + b.primaryUserId.lastName
-    } else if (sortColumn.value === 'driverId') {
-      valueA = a.driverId.firstName + ' ' + a.driverId.lastName
-      valueB = b.driverId.firstName + ' ' + b.driverId.lastName
-    } else {
-      valueA = a[sortColumn.value]
-      valueB = b[sortColumn.value]
-    }
-    
-    if (valueA < valueB) return sortDirection.value === 'asc' ? -1 : 1
-    if (valueA > valueB) return sortDirection.value === 'asc' ? 1 : -1
-    return 0
-  })
-  
-  return result
-})
-
 const scheduledTrips = computed(() => {
   return trips.value.filter(trip => trip.isScheduled).length
 })
 
-// Mobile detection (simplified - in a real app, use a proper composable)
+// Mobile detection
 const $isMobile = computed(() => {
   return window.innerWidth < 768
 })
 
-// Methods
+// Helper methods
+const getFullName = (user: I_User | null | undefined) => {
+  if (!user || !user.firstName || !user.lastName) return null
+  return `${user.firstName} ${user.lastName}`
+}
+
 const getCountByStatus = (status: string) => {
   return trips.value.filter(trip => trip.status === status).length
 }
@@ -884,16 +844,16 @@ const getStatusClass = (status: string) => {
 
 const getOriginAddress = (trip: Trip) => {
   if (trip.passengers && trip.passengers.length > 0) {
-    return trip.passengers[0].origin.properties.address
+    return trip.passengers[0].origin.properties.address || 'Nil'
   }
-  return 'N/A'
+  return 'Nil'
 }
 
 const getDestinationAddress = (trip: Trip) => {
   if (trip.passengers && trip.passengers.length > 0) {
-    return trip.passengers[0].destination.properties.address
+    return trip.passengers[0].destination.properties.address || 'Nil'
   }
-  return 'N/A'
+  return 'Nil'
 }
 
 const getTotalFare = (trip: Trip) => {
@@ -912,7 +872,7 @@ const formatCurrency = (amount: number) => {
 }
 
 const formatDate = (dateString: string) => {
-  if (!dateString) return 'N/A'
+  if (!dateString) return 'Nil'
   
   const date = new Date(dateString)
   const now = new Date()
@@ -955,9 +915,13 @@ const resetFilters = () => {
   searchQuery.value = ''
 }
 
+// Pagination handler
+const handlePageChange = async (page: number) => {
+  await changePage(page)
+}
+
 // Toggle dropdown and ensure only one is open at a time
 const toggleDropdown = (tripId: string) => {
-  // Stop event propagation to prevent immediate closing
   event?.stopPropagation()
   
   if (activeDropdown.value === tripId) {
@@ -977,10 +941,8 @@ const handleClickOutside = (event: MouseEvent) => {
 const handleTripAction = (action: string, trip: Trip) => {
   console.log(`Action ${action} for trip ${trip._id}`)
   
-  // Close the dropdown after action
   activeDropdown.value = null
   
-  // Handle different actions
   switch (action) {
     case 'view':
       navigateToTripDetails(trip._id)
@@ -1015,17 +977,12 @@ const confirmCancelTrip = async () => {
   if (!selectedTrip.value) return
   
   try {
-    // Call the cancelTrip method from the composable
     await cancelTrip(selectedTrip.value._id, cancellationReason.value)
     
-    // Show success toast
     toastMessage.value = 'Trip cancelled successfully'
     showToast.value = true
-    
-    // Close modal
     showCancelModal.value = false
     
-    // Auto-hide toast after 3 seconds
     setTimeout(() => {
       showToast.value = false
     }, 3000)
@@ -1033,11 +990,9 @@ const confirmCancelTrip = async () => {
   } catch (error) {
     console.error('Error cancelling trip:', error)
     
-    // Show error toast
     toastMessage.value = 'Failed to cancel trip. Please try again.'
     showToast.value = true
     
-    // Auto-hide toast after 3 seconds
     setTimeout(() => {
       showToast.value = false
     }, 3000)
@@ -1048,7 +1003,6 @@ const confirmCancelTrip = async () => {
 const openRescheduleModal = (trip: Trip) => {
   selectedTrip.value = trip
   
-  // Set default date and time if trip is already scheduled
   if (trip.scheduledFor) {
     const scheduledDate = new Date(trip.scheduledFor)
     newScheduleDate.value = scheduledDate.toISOString().split('T')[0]
@@ -1057,7 +1011,6 @@ const openRescheduleModal = (trip: Trip) => {
     const minutes = scheduledDate.getMinutes().toString().padStart(2, '0')
     newScheduleTime.value = `${hours}:${minutes}`
   } else {
-    // Set default to tomorrow
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
     newScheduleDate.value = tomorrow.toISOString().split('T')[0]
@@ -1072,24 +1025,18 @@ const confirmRescheduleTrip = async () => {
   if (!selectedTrip.value || !newScheduleDate.value || !newScheduleTime.value) return
   
   try {
-    // Combine date and time into a single datetime
     const newScheduleDateTime = new Date(`${newScheduleDate.value}T${newScheduleTime.value}:00`)
     
-    // Call the rescheduleTrip method from the composable
     await rescheduleTrip(
       selectedTrip.value._id, 
       newScheduleDateTime.toISOString(), 
       rescheduleReason.value
     )
     
-    // Show success toast
     toastMessage.value = 'Trip rescheduled successfully'
     showToast.value = true
-    
-    // Close modal
     showRescheduleModal.value = false
     
-    // Auto-hide toast after 3 seconds
     setTimeout(() => {
       showToast.value = false
     }, 3000)
@@ -1097,11 +1044,9 @@ const confirmRescheduleTrip = async () => {
   } catch (error) {
     console.error('Error rescheduling trip:', error)
     
-    // Show error toast
     toastMessage.value = 'Failed to reschedule trip. Please try again.'
     showToast.value = true
     
-    // Auto-hide toast after 3 seconds
     setTimeout(() => {
       showToast.value = false
     }, 3000)
@@ -1125,26 +1070,29 @@ const handleExport = (format: string, options: any) => {
 }
 
 const exportToCSV = (selectedColumns: string[]) => {
-  // Get the data to export
-  const data = filteredTrips.value.map(trip => {
+  const data = trips.value.map(trip => {
     const row: Record<string, any> = {}
     
+    if (selectedColumns.includes('id')) {
+      row['Trip ID'] = trip._id || 'Nil'
+    }
+    
     if (selectedColumns.includes('passenger')) {
-      row['Passenger'] = `${trip?.primaryUserId?.firstName} ${trip?.primaryUserId?.lastName}`
-      row['Passenger Email'] = trip.primaryUserId.email
+      row['Passenger'] = getFullName(trip?.primaryUserId) || 'Nil'
+      row['Passenger Email'] = trip?.primaryUserId?.email || 'Nil'
     }
     
     if (selectedColumns.includes('driver')) {
-      row['Driver'] = `${trip?.driverId?.firstName} ${trip?.driverId?.lastName}`
-      row['Driver Email'] = trip.driverId.email
+      row['Driver'] = getFullName(trip?.driverId) || 'Nil'
+      row['Driver Email'] = trip.driverId?.email || 'Nil'
     }
     
     if (selectedColumns.includes('status')) {
-      row['Status'] = trip?.status
+      row['Status'] = trip?.status || 'Nil'
     }
     
     if (selectedColumns.includes('type')) {
-      row['Type'] = trip.type
+      row['Type'] = trip.type || 'Nil'
       row['Scheduled'] = trip?.isScheduled ? 'Yes' : 'No'
     }
     
@@ -1153,7 +1101,7 @@ const exportToCSV = (selectedColumns: string[]) => {
     }
     
     if (selectedColumns.includes('date')) {
-      row['Date'] = new Date(trip?.createdAt).toLocaleString()
+      row['Date'] = trip?.createdAt ? new Date(trip.createdAt).toLocaleString() : 'Nil'
     }
     
     if (selectedColumns.includes('origin')) {
@@ -1167,14 +1115,12 @@ const exportToCSV = (selectedColumns: string[]) => {
     return row
   })
   
-  // Convert to CSV
   const headers = Object.keys(data[0])
   const csvContent = [
     headers.join(','),
     ...data.map(row => headers.map(header => `"${row[header]}"`).join(','))
   ].join('\n')
   
-  // Create a download link
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
@@ -1187,8 +1133,6 @@ const exportToCSV = (selectedColumns: string[]) => {
 }
 
 const exportToPDF = (selectedColumns: string[]) => {
-  // In a real app, you would use a library like jsPDF or pdfmake
-  // For this example, we'll just log a message
   console.log('PDF export would be implemented with a PDF generation library')
   alert('PDF export functionality would be implemented with a PDF generation library')
 }

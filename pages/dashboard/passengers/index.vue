@@ -228,6 +228,9 @@
         <thead class="bg-gray-50">
           <tr>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              ID
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Passenger
             </th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -249,6 +252,9 @@
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
           <tr v-for="passenger in paginatedPassengers" :key="passenger._id">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm">{{ passenger._id }}</div>
+            </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="flex items-center">
                 <div class="h-10 w-10 rounded-full bg-gray-200 overflow-hidden">
@@ -336,31 +342,14 @@
       </table>
     </div>
     
-    <!-- Pagination -->
-    <div class="mt-8 flex items-center justify-between">
-      <div class="text-sm text-gray-700">
-        Showing <span class="font-medium">{{ startIndex + 1 }}</span> to <span class="font-medium">{{ endIndex }}</span> of <span class="font-medium">{{ filteredPassengers.length }}</span> passengers
-      </div>
-      <div class="flex space-x-2">
-        <button 
-          @click="prevPage"
-          class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-          :disabled="currentPage === 1"
-          :class="{ 'opacity-50 cursor-not-allowed': currentPage === 1 }"
-        >
-          <ChevronLeft class="mr-2 h-4 w-4" />
-          Previous
-        </button>
-        <button 
-          @click="nextPage"
-          class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-          :disabled="currentPage >= totalPages"
-          :class="{ 'opacity-50 cursor-not-allowed': currentPage >= totalPages }"
-        >
-          Next
-          <ChevronRight class="ml-2 h-4 w-4" />
-        </button>
-      </div>
+    <div class="mt-6">
+      <CorePagination 
+        :current-page="pagination.page"
+        :total-pages="pagination.totalPages"
+        :total="pagination.total"
+        :limit="pagination.limit"
+        @page-change="handlePageChange"
+      />
     </div>
     
     <!-- Disable Confirmation Modal -->
@@ -593,7 +582,7 @@ definePageMeta({
   layout: 'dashboard'
 });
 
-const { loading: fetchingPassengers, passengers: passengersList } = useGetPassengers();
+const { loading: fetchingPassengers, passengers: passengersList, pagination, changePage } = useGetPassengers();
 
 // View mode
 const viewMode = ref<'grid' | 'list'>('list');
@@ -721,6 +710,11 @@ const filteredPassengers = computed(() => {
   
   return result;
 });
+
+// Pagination handler
+const handlePageChange = async (page: number) => {
+  await changePage(page)
+}
 
 const paginatedPassengers = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
