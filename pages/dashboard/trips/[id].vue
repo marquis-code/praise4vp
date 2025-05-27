@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50 rounded-2xl p-2 animate-fadeIn">
+  <div class="min-h-screen rounded-2xl animate-fadeIn">
     <!-- Loading state -->
     <div v-if="loading" class="flex items-center justify-center min-h-screen">
       <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
@@ -24,7 +24,7 @@
     <div v-else>
       <!-- Trip header -->
       <div class="">
-        <div class="max-w-7xl mx-auto">
+        <div class="">
           <div class="flex flex-col md:flex-row md:items-center md:justify-between">
             <div class="flex items-center">
               <h1 class="text-xl font-semibold text-gray-900">
@@ -132,6 +132,7 @@
               :destination="getDestinationCoordinates(trip)"
               :markers="getMapMarkers(trip)"
               :apiKey="apiKey"
+              :trip="trip"
             />
           </div>
           

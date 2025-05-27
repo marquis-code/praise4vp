@@ -1,5 +1,6 @@
 <template>
   <div class="min-h-screen animate-fadeIn">
+    <!-- {{filteredTrips}} -->
     <ModulesTripsPageHeader 
       title="Trips" 
       description="Manage and monitor all ride trips"
@@ -139,7 +140,7 @@
       </div>
       
       <!-- Empty State -->
-      <div v-else-if="trips.length === 0" class="p-8 text-center">
+      <div v-else-if="filteredTrips.length === 0" class="p-8 text-center">
         <IconInbox class="mx-auto h-12 w-12 text-gray-400" />
         <h3 class="mt-2 text-sm font-medium text-gray-900">No trips found</h3>
         <p class="mt-1 text-sm text-gray-500">Try adjusting your search or filter criteria.</p>
@@ -148,7 +149,7 @@
       <!-- Mobile View -->
       <div v-else-if="$isMobile" class="divide-y divide-gray-200">
         <div 
-          v-for="trip in trips" 
+          v-for="trip in filteredTrips" 
           :key="trip._id"
           class="p-4 animate-fadeIn transition-all duration-300 hover:bg-gray-50 relative"
         >
@@ -260,7 +261,7 @@
       <!-- Desktop Grid View -->
       <div v-else-if="viewMode === 'grid'" class="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div 
-          v-for="trip in trips" 
+          v-for="trip in filteredTrips" 
           :key="trip._id"
           class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden animate-fadeIn relative"
         >
@@ -414,7 +415,7 @@
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
             <tr 
-              v-for="trip in trips" 
+              v-for="trip in filteredTrips" 
               :key="trip._id"
               class="hover:bg-gray-50 transition-colors duration-150 animate-fadeIn cursor-pointer"
               @click="navigateToTripDetails(trip._id)"
@@ -961,6 +962,133 @@ const handleTripAction = (action: string, trip: Trip) => {
       break
   }
 }
+
+const filteredTrips = computed(() => {
+  let filtered = [...trips.value]
+
+  // Filter by search query
+  if (searchQuery.value.trim()) {
+    const query = searchQuery.value.toLowerCase().trim()
+    filtered = filtered.filter(trip => {
+      // Search in trip ID
+      if (trip._id?.toLowerCase().includes(query)) return true
+      
+      // Search in passenger details
+      if (trip.primaryUserId) {
+        const passengerName = getFullName(trip.primaryUserId)?.toLowerCase()
+        const passengerEmail = trip.primaryUserId.email?.toLowerCase()
+        if (passengerName?.includes(query) || passengerEmail?.includes(query)) return true
+      }
+      
+      // Search in driver details
+      if (trip.driverId) {
+        const driverName = getFullName(trip.driverId)?.toLowerCase()
+        const driverEmail = trip.driverId.email?.toLowerCase()
+        if (driverName?.includes(query) || driverEmail?.includes(query)) return true
+      }
+      
+      // Search in addresses
+      const origin = getOriginAddress(trip)?.toLowerCase()
+      const destination = getDestinationAddress(trip)?.toLowerCase()
+      if (origin?.includes(query) || destination?.includes(query)) return true
+      
+      // Search in status and type
+      if (trip.status?.toLowerCase().includes(query) || trip.type?.toLowerCase().includes(query)) return true
+      
+      return false
+    })
+  }
+
+  // Filter by trip type
+  if (filters.value.type) {
+    filtered = filtered.filter(trip => trip.type === filters.value.type)
+  }
+
+  // Filter by status
+  if (filters.value.status) {
+    filtered = filtered.filter(trip => trip.status === filters.value.status)
+  }
+
+  // Filter by scheduling
+  if (filters.value.scheduled) {
+    if (filters.value.scheduled === 'scheduled') {
+      filtered = filtered.filter(trip => trip.isScheduled === true)
+    } else if (filters.value.scheduled === 'immediate') {
+      filtered = filtered.filter(trip => trip.isScheduled === false)
+    }
+  }
+
+  // Filter by date range
+  if (filters.value.startDate || filters.value.endDate) {
+    filtered = filtered.filter(trip => {
+      const tripDate = new Date(trip.createdAt)
+      
+      if (filters.value.startDate && filters.value.endDate) {
+        const startDate = new Date(filters.value.startDate)
+        const endDate = new Date(filters.value.endDate)
+        endDate.setHours(23, 59, 59, 999) // Include the entire end date
+        return tripDate >= startDate && tripDate <= endDate
+      } else if (filters.value.startDate) {
+        const startDate = new Date(filters.value.startDate)
+        return tripDate >= startDate
+      } else if (filters.value.endDate) {
+        const endDate = new Date(filters.value.endDate)
+        endDate.setHours(23, 59, 59, 999)
+        return tripDate <= endDate
+      }
+      
+      return true
+    })
+  }
+
+  // Apply sorting
+  if (sortColumn.value) {
+    filtered.sort((a, b) => {
+      let aValue: any
+      let bValue: any
+
+      switch (sortColumn.value) {
+        case '_id':
+          aValue = a._id || ''
+          bValue = b._id || ''
+          break
+        case 'status':
+          aValue = a.status || ''
+          bValue = b.status || ''
+          break
+        case 'type':
+          aValue = a.type || ''
+          bValue = b.type || ''
+          break
+        case 'fare':
+          aValue = getTotalFare(a)
+          bValue = getTotalFare(b)
+          break
+        case 'createdAt':
+          aValue = new Date(a.createdAt || 0)
+          bValue = new Date(b.createdAt || 0)
+          break
+        default:
+          return 0
+      }
+
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        aValue = aValue.toLowerCase()
+        bValue = bValue.toLowerCase()
+      }
+
+      if (aValue < bValue) {
+        return sortDirection.value === 'asc' ? -1 : 1
+      }
+      if (aValue > bValue) {
+        return sortDirection.value === 'asc' ? 1 : -1
+      }
+      return 0
+    })
+  }
+
+  return filtered
+})
 
 const navigateToTripDetails = (tripId: string) => {
   router.push(`/dashboard/trips/${tripId}`)
