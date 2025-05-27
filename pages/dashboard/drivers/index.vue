@@ -166,6 +166,9 @@
               Driver
             </th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Country
+                </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Car Details
             </th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -217,6 +220,10 @@
                 </div>
               </div>
             </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900">{{ getCountryName(driver.countryCode) || 'Nil' }}</div>
+                  <div class="text-xs text-gray-500">{{ driver.countryCode || 'Nil' }}</div>
+                </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="text-sm text-gray-900">{{ driver.driverData.carBrand }} {{ driver.driverData.carModel }}</div>
               <div class="text-xs text-gray-500">
@@ -579,7 +586,8 @@ const filters = ref({
   sortBy: 'rating',
   carYear: '',
   seats: '',
-  accountStatus: ''
+  accountStatus: '',
+  country: ''
 });
 
 // Dropdown state
@@ -788,6 +796,102 @@ const uniqueCarBrands = computed(() => {
     }
   });
   return Array.from(brands);
+});
+
+// Country code to name mapping
+const getCountryName = (countryCode: string): string => {
+  const countryMap: Record<string, string> = {
+    'NG': 'Nigeria',
+    'US': 'United States',
+    'GB': 'United Kingdom',
+    'CA': 'Canada',
+    'AU': 'Australia',
+    'DE': 'Germany',
+    'FR': 'France',
+    'IT': 'Italy',
+    'ES': 'Spain',
+    'BR': 'Brazil',
+    'IN': 'India',
+    'CN': 'China',
+    'JP': 'Japan',
+    'KR': 'South Korea',
+    'MX': 'Mexico',
+    'AR': 'Argentina',
+    'ZA': 'South Africa',
+    'EG': 'Egypt',
+    'KE': 'Kenya',
+    'GH': 'Ghana',
+    'MA': 'Morocco',
+    'TN': 'Tunisia',
+    'DZ': 'Algeria',
+    'ET': 'Ethiopia',
+    'UG': 'Uganda',
+    'TZ': 'Tanzania',
+    'RW': 'Rwanda',
+    'SN': 'Senegal',
+    'CI': 'Ivory Coast',
+    'BF': 'Burkina Faso',
+    'ML': 'Mali',
+    'NE': 'Niger',
+    'TD': 'Chad',
+    'CM': 'Cameroon',
+    'CF': 'Central African Republic',
+    'CG': 'Republic of the Congo',
+    'CD': 'Democratic Republic of the Congo',
+    'GA': 'Gabon',
+    'GQ': 'Equatorial Guinea',
+    'ST': 'São Tomé and Príncipe',
+    'AO': 'Angola',
+    'ZM': 'Zambia',
+    'ZW': 'Zimbabwe',
+    'BW': 'Botswana',
+    'NA': 'Namibia',
+    'SZ': 'Eswatini',
+    'LS': 'Lesotho',
+    'MW': 'Malawi',
+    'MZ': 'Mozambique',
+    'MG': 'Madagascar',
+    'MU': 'Mauritius',
+    'SC': 'Seychelles',
+    'KM': 'Comoros',
+    'DJ': 'Djibouti',
+    'SO': 'Somalia',
+    'ER': 'Eritrea',
+    'SS': 'South Sudan',
+    'SD': 'Sudan',
+    'LY': 'Libya',
+    'AE': 'United Arab Emirates',
+    'SA': 'Saudi Arabia',
+    'QA': 'Qatar',
+    'KW': 'Kuwait',
+    'BH': 'Bahrain',
+    'OM': 'Oman',
+    'YE': 'Yemen',
+    'IQ': 'Iraq',
+    'IR': 'Iran',
+    'TR': 'Turkey',
+    'SY': 'Syria',
+    'LB': 'Lebanon',
+    'JO': 'Jordan',
+    'IL': 'Israel',
+    'PS': 'Palestine',
+    'CY': 'Cyprus'
+  };
+  
+  return countryMap[countryCode] || countryCode;
+};
+
+const uniqueCountries = computed(() => {
+  const countries = new Set<string>();
+  driversList.value.forEach(driver => {
+    if (driver.countryCode) {
+      countries.add(driver.countryCode);
+    }
+  });
+  return Array.from(countries).map(code => ({
+    code,
+    name: getCountryName(code)
+  })).sort((a, b) => a.name.localeCompare(b.name));
 });
 
 const uniqueCarColors = computed(() => {
