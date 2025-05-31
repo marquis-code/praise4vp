@@ -39,6 +39,7 @@
     <ModulesDriversFilter 
       :car-brands="uniqueCarBrands"
       :car-colors="uniqueCarColors"
+      :countries="uniqueCountries"
       :verification-statuses="verificationStatuses"
       v-model:filters="filters"
     />
@@ -195,12 +196,6 @@
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="flex items-center">
                 <div class="h-10 w-10 rounded-full bg-gray-200 overflow-hidden">
-                  <!-- <img 
-                    v-if="driver.photoURL" 
-                    :src="driver.photoURL" 
-                    :alt="`${driver.firstName} ${driver.lastName}`"
-                    class="h-full w-full object-cover"
-                  /> -->
                   <img 
                     v-if="driver.photoURL" 
                     src="@/assets/img/avatar-male.svg" 
