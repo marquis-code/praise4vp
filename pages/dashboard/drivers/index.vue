@@ -41,6 +41,8 @@
       :car-colors="uniqueCarColors"
       :countries="uniqueCountries"
       :verification-statuses="verificationStatuses"
+      @update:filters="handleFiltersUpdate"
+      @country-selected="handleCountrySelected"
       v-model:filters="filters"
     />
     
@@ -558,7 +560,8 @@ import { useDisableDriverAccount } from "@/composables/modules/drivers/useDeacti
 import { Driver } from '@/types/drivers';
 import { definePageMeta } from '#imports'
 
-const { loading: fetchingDrivers, drivers: driversList, pagination, changePage } = useGetDrivers();
+const { loading: fetchingDrivers, drivers: driversList, pagination, changePage, filters: filtersObj,  filterByCountry, filterByStatus,
+  updateFilters, filters: filterObj } = useGetDrivers();
 const { loading: enabling,
   enableAccount } = useEnableDriverAccount()
 const { loading: disabling,
@@ -1294,6 +1297,22 @@ const getColorClass = (color: string) => {
   };
   
   return colorMap[color] || 'bg-gray-400';
+};
+
+const handleCountrySelected = (countryCode: string) => {
+  filtersObj.value.countryCode = countryCode
+  filterByCountry(countryCode)
+  console.log('Selected country code:', countryCode);
+  // Use the country code for your API calls or other logic
+};
+
+const handleFiltersUpdate = (filters: any) => {
+  if(filters.accountStatus){
+    filtersObj.value.status = filters.accountStatus
+    filterByStatus(filters.accountStatus)
+  }
+  // accountStatus
+  console.log('All filters updated:', filters);
 };
 
 definePageMeta({

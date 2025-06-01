@@ -4,7 +4,7 @@
       <div class="flex-1 w-full">
         <div class="flex flex-col lg:flex-row gap-6 h-[calc(100vh-8rem)]">
           <!-- Left Sidebar - Ticket List (Fixed) -->
-          <div class="w-full lg:w-1/3 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden flex flex-col">
+          <div class="w-full lg:w-1/2 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden flex flex-col">
             <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-[rgb(29,68,73)] to-[rgb(45,85,90)] flex-shrink-0">
               <div class="flex items-center justify-between mb-6">
                 <h2 class="text-lg font-semibold text-white">Support Requests</h2>
@@ -78,6 +78,17 @@
                   ]"
                 >
                   Closed ({{ closedTicketsCount }})
+                </button>
+                <button 
+                  @click="activeTab = 'pending'"
+                  :class="[
+                    'flex-1 py-2 px-3 text-xs font-medium rounded-md transition-all duration-200',
+                    activeTab === 'pending' 
+                      ? 'bg-white text-[rgb(29,68,73)] shadow-sm' 
+                      : 'text-white/80 hover:text-white hover:bg-white/10'
+                  ]"
+                >
+                  Pending ({{ pendingTicketsCount }})
                 </button>
               </div>
             </div>
@@ -204,6 +215,7 @@
                       <option value="open">Open</option>
                       <option value="closed">Closed</option>
                       <option value="resolved">Resolved</option>
+                      <option value="pending">Pending</option>
                     </select>
                     
                     <div v-if="updating" class="animate-spin rounded-full h-5 w-5 border-b-2 border-[rgb(29,68,73)]"></div>
@@ -514,6 +526,10 @@
   const closedTicketsCount = computed(() => 
     ticketsList.value?.filter(t => t.status === 'closed').length || 0
   )
+
+  const pendingTicketsCount = computed(() => 
+    ticketsList.value?.filter(t => t.status === 'pending').length || 0
+  )
   
   // Methods
   const selectTicket = async (ticket) => {
@@ -704,6 +720,7 @@
   const formatStatus = (status) => {
     const statusMap = {
       'open': 'Open',
+      'pending': 'Pending',
       'closed': 'Closed',
       'resolved': 'Resolved'
     }
@@ -713,6 +730,7 @@
   const getStatusColor = (status) => {
     const colorMap = {
       'open': 'bg-green-400',
+      'pending': 'bg-yellow-400',
       'closed': 'bg-gray-400',
       'resolved': 'bg-blue-400'
     }
@@ -722,6 +740,7 @@
   const getStatusBadgeColor = (status) => {
     const colorMap = {
       'open': 'bg-green-100 text-green-800',
+      'pending': 'bg-yellow-100 text-yellow-800',
       'closed': 'bg-gray-100 text-gray-800',
       'resolved': 'bg-blue-100 text-blue-800'
     }

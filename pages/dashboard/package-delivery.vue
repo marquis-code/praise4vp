@@ -287,6 +287,16 @@
           </template>
         </ReuseableDataTable>
       </div>
+
+      <div class="mt-6">
+      <CorePagination 
+        :current-page="pagination.page"
+        :total-pages="pagination.totalPages"
+        :total="pagination.total"
+        :limit="pagination.limit"
+        @page-change="handlePageChange"
+      />
+    </div>
       
       <!-- View Courier Modal -->
       <ReuseableModal
@@ -739,6 +749,8 @@
   
   <script setup lang="ts">
   import { ref, computed, onMounted } from 'vue'
+  import { useGetDeliveries } from "@/composables/modules/deliveries/useFetchDeliveries"
+  const {deliveries, loading: fetchingDeliveries, changePage, pagination } = useGetDeliveries()
 //   import ReuseableDataTable from '~/components/ReuseableDataTable.vue'
 //   import Modal from '~/components/Modal.vue'
 //   import ReuseableFormInput from '~/components/ReuseableFormInput.vue'
@@ -1250,6 +1262,11 @@
     }
     showAddCourierModal.value = true
   }
+
+  // Pagination handler
+const handlePageChange = async (page: number) => {
+  await changePage(page)
+}
   
   const saveCourier = () => {
     if (isEditing.value) {

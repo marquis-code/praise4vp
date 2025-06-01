@@ -55,7 +55,7 @@
           </NuxtLink>
 
           <NuxtLink 
-            to="/dashboard/drivers" 
+            to="/dashboard/customer-support" 
             class="group flex items-center px-2 py-2 text-base font-medium rounded-md"
             :class="{ 'bg-primary-light text-white': isActive('/dashboard/customer-support'), 'text-gray-300 hover:bg-primary-light hover:text-white': !isActive('/dashboard/customer-support') }"
           >
