@@ -562,7 +562,7 @@
   
   // Reactive state
 //   const deliveries = ref<Delivery[]>([])
-  const loading = ref(false)
+//   const loading = ref(false)
   const searchQuery = ref('')
   const viewMode = ref<'grid' | 'list'>('list')
   const showModal = ref(false)
@@ -747,10 +747,10 @@
   
   // Computed properties
   const stats = computed<Stats>(() => {
-    const total = props.deliveries.length
-    const pending = props.deliveries.filter(d => d.status === 'pending').length
-    const completed = props.deliveries.filter(d => d.status === 'delivered').length
-    const totalRevenue = props.deliveries.reduce((sum, d) => sum + d.totalFare, 0)
+    const total = props?.deliveries?.length
+    const pending = props?.deliveries?.filter(d => d.status === 'pending')?.length
+    const completed = props?.deliveries?.filter(d => d.status === 'delivered')?.length
+    const totalRevenue = props?.deliveries?.reduce((sum, d) => sum + d.totalFare, 0)
     
     return { total, pending, completed, totalRevenue }
   })
@@ -806,12 +806,12 @@
     return filtered
   })
   
-  const totalPages = computed(() => Math.ceil(filteredprops.deliveries.length / itemsPerPage.value))
+  const totalPages = computed(() => Math.ceil(filteredprops?.deliveries?.length / itemsPerPage.value))
   
   const paginatedDeliveries = computed(() => {
     const start = (currentPage.value - 1) * itemsPerPage.value
     const end = start + itemsPerPage.value
-    return filteredprops.deliveries.slice(start, end)
+    return filteredprops?.deliveries?.slice(start, end)
   })
   
   // Methods
@@ -876,7 +876,7 @@
       'Updated Date'
     ]
   
-    const csvData = filteredprops.deliveries.map(delivery => [
+    const csvData = filteredprops?.deliveries?.map(delivery => [
       delivery._id,
       `${delivery.userId.firstName} ${delivery.userId.lastName}`,
       delivery.userId.email,
