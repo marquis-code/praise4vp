@@ -1,5 +1,6 @@
 <template>
   <div class="min-h-screen animate-fadeIn">
+    <!-- {{transactions}} -->
     <!-- Loading state -->
     <div v-if="loading" class="flex items-center justify-center min-h-screen">
       <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
@@ -90,6 +91,9 @@
           </div>
         </div>
       </div>
+
+      <!-- <h1>Helllo world</h1> -->
+      <!-- <ModulesTransactionsList :loading="fetchingTransactions" :transactions="transactions" /> -->
       
       <!-- Tabs -->
       <ModulesPassengersTabsComponent 
@@ -279,6 +283,15 @@
             </div>
           </div>
         </div>
+
+                <!-- transaction-history -->
+       <div v-else-if="activeTab === 'transactions'" class="animate-fadeIn">
+        <ModulesTransactionsList :loading="fetchingTransactions" :transactions="transactions" />
+       </div>
+
+       <div v-else-if="activeTab === 'deliveries'" class="animate-fadeIn">
+        <ModulesDeliveriesList :loading="fetchingDeliveries" :deliveries="deliveries" />
+       </div>
         
         <!-- Trip History Tab -->
         <div v-else-if="activeTab === 'trips'" class="animate-fadeIn">
@@ -696,7 +709,14 @@ import {
 import avatarImage from "@/assets/icons/avatar.svg";
 import { useGetPassengerById } from "@/composables/modules/passengers/useGetPassengersById";
 import { useGetPassengerTripHistory } from "@/composables/modules/trips/useGetPassengerTripHistory";
+import { useGetUserDeliveries } from "@/composables/modules/deliveries/useFetchUserDeliveries"
 import { Passenger, Trip } from '@/types/passenger';
+import { useGetUserTransactions } from "@/composables/modules/transactions/useGetUserTransactions"
+const { transactions, loading: fetchingTransactions } = useGetUserTransactions()
+  // import { definePageMeta } from '#app'
+  
+  // Use the composable
+  const { deliveries, loading: fetchingDeliveries } = useGetUserDeliveries()
 
 // Router and route
 const router = useRouter();
@@ -710,7 +730,9 @@ const { passengerTripHistory, loading: fetchingHistory,  pagination, changePage 
 // Tabs
 const tabs = [
   { name: 'Passenger Details', value: 'details' },
-  { name: 'Trip History', value: 'trips' }
+  { name: 'Trip History', value: 'trips' },
+  { name: 'Transaction History', value: 'transactions' },
+  { name: 'Delivery History', value: 'deliveries' }
 ];
 const activeTab = ref('details');
 
