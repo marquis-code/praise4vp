@@ -561,7 +561,7 @@
   }
   
   // Reactive state
-  const deliveries = ref<Delivery[]>([])
+//   const deliveries = ref<Delivery[]>([])
   const loading = ref(false)
   const searchQuery = ref('')
   const viewMode = ref<'grid' | 'list'>('list')
@@ -577,186 +577,186 @@
     sortBy: 'createdAt-desc'
   })
   
-  // Mock data - replace with actual API call
-  const mockDeliveries: Delivery[] = [
-    {
-      "_id": "6751a31492ec5487594d61ea",
-      "userId": {
-        "_id": "66ed3ca5a3291a0db25f5a1f",
-        "firstName": "Alfred",
-        "lastName": "Onuada",
-        "email": "aonuada5@gmail.com"
-      },
-      "driverId": {
-        "_id": "66ed3ca5a3291a0db25f5a1f",
-        "firstName": "Alfred",
-        "lastName": "Onuada",
-        "email": "aonuada5@gmail.com"
-      },
-      "type": "local",
-      "pickupLocation": {
-        "type": "Feature",
-        "geometry": {
-          "type": "Point",
-          "coordinates": [7.1332013, 4.7863956]
-        },
-        "properties": {
-          "address": "Shedrack Avenue, Rumurolu, Nigeria"
-        }
-      },
-      "destination": {
-        "type": "Feature",
-        "geometry": {
-          "type": "Point",
-          "coordinates": [7.0026704, 4.8287589]
-        },
-        "properties": {
-          "address": "Hotel Presidential, Port Harcourt - Aba Expressway, Port Harcourt, Nigeria"
-        }
-      },
-      "pickupTime": "2024-12-16T22:06:14.292Z",
-      "recipientDetails": {
-        "name": "Gabriel Victor",
-        "phone": "+2347066139465"
-      },
-      "itemDescription": "lorem ipsum",
-      "itemPhotoURL": "delivery/image/6edb970b-2212-45a0-999f-8a26f0770f0e.png",
-      "vehicleType": "medium truck",
-      "fare": 7000,
-      "tax": 0,
-      "discount": 0,
-      "totalFare": 1200,
-      "status": "pending",
-      "route": {
-        "type": "",
-        "features": null
-      },
-      "createdAt": "2024-12-05T12:56:53.172Z",
-      "updatedAt": "2024-12-06T23:28:22.619Z"
-    },
-    {
-      "_id": "6751a31492ec5487594d61eb",
-      "userId": {
-        "_id": "66ed3ca5a3291a0db25f5a2f",
-        "firstName": "John",
-        "lastName": "Doe",
-        "email": "john.doe@example.com"
-      },
-      "driverId": {
-        "_id": "66ed3ca5a3291a0db25f5a3f",
-        "firstName": "Jane",
-        "lastName": "Smith",
-        "email": "jane.smith@example.com"
-      },
-      "type": "interstate",
-      "pickupLocation": {
-        "type": "Feature",
-        "geometry": {
-          "type": "Point",
-          "coordinates": [3.3792057, 6.5243793]
-        },
-        "properties": {
-          "address": "Victoria Island, Lagos, Nigeria"
-        }
-      },
-      "destination": {
-        "type": "Feature",
-        "geometry": {
-          "type": "Point",
-          "coordinates": [7.4951, 9.0765]
-        },
-        "properties": {
-          "address": "Wuse II, Abuja, Nigeria"
-        }
-      },
-      "pickupTime": "2024-12-15T10:30:00.000Z",
-      "recipientDetails": {
-        "name": "Mary Johnson",
-        "phone": "+2348012345678"
-      },
-      "itemDescription": "Electronics package",
-      "itemPhotoURL": "",
-      "vehicleType": "van",
-      "fare": 15000,
-      "tax": 750,
-      "discount": 500,
-      "totalFare": 15250,
-      "status": "delivered",
-      "route": {
-        "type": "",
-        "features": null
-      },
-      "createdAt": "2024-12-03T08:20:10.000Z",
-      "updatedAt": "2024-12-04T16:45:30.000Z"
-    },
-    {
-      "_id": "6751a31492ec5487594d61ec",
-      "userId": {
-        "_id": "66ed3ca5a3291a0db25f5a4f",
-        "firstName": "Sarah",
-        "lastName": "Williams",
-        "email": "sarah.williams@example.com"
-      },
-      "driverId": {
-        "_id": "66ed3ca5a3291a0db25f5a5f",
-        "firstName": "Mike",
-        "lastName": "Johnson",
-        "email": "mike.johnson@example.com"
-      },
-      "type": "local",
-      "pickupLocation": {
-        "type": "Feature",
-        "geometry": {
-          "type": "Point",
-          "coordinates": [5.6037, 5.6037]
-        },
-        "properties": {
-          "address": "Onitsha Main Market, Anambra, Nigeria"
-        }
-      },
-      "destination": {
-        "type": "Feature",
-        "geometry": {
-          "type": "Point",
-          "coordinates": [6.2088, 6.9326]
-        },
-        "properties": {
-          "address": "Enugu State University, Enugu, Nigeria"
-        }
-      },
-      "pickupTime": "2024-12-14T14:15:00.000Z",
-      "recipientDetails": {
-        "name": "David Brown",
-        "phone": "+2349087654321"
-      },
-      "itemDescription": "Documents and books",
-      "vehicleType": "bike",
-      "fare": 3500,
-      "tax": 175,
-      "discount": 0,
-      "totalFare": 3675,
-      "status": "in-transit",
-      "route": {
-        "type": "",
-        "features": null
-      },
-      "createdAt": "2024-12-02T11:30:00.000Z",
-      "updatedAt": "2024-12-05T09:20:15.000Z"
-    }
-  ]
+//   // Mock data - replace with actual API call
+//   const mockDeliveries: Delivery[] = [
+//     {
+//       "_id": "6751a31492ec5487594d61ea",
+//       "userId": {
+//         "_id": "66ed3ca5a3291a0db25f5a1f",
+//         "firstName": "Alfred",
+//         "lastName": "Onuada",
+//         "email": "aonuada5@gmail.com"
+//       },
+//       "driverId": {
+//         "_id": "66ed3ca5a3291a0db25f5a1f",
+//         "firstName": "Alfred",
+//         "lastName": "Onuada",
+//         "email": "aonuada5@gmail.com"
+//       },
+//       "type": "local",
+//       "pickupLocation": {
+//         "type": "Feature",
+//         "geometry": {
+//           "type": "Point",
+//           "coordinates": [7.1332013, 4.7863956]
+//         },
+//         "properties": {
+//           "address": "Shedrack Avenue, Rumurolu, Nigeria"
+//         }
+//       },
+//       "destination": {
+//         "type": "Feature",
+//         "geometry": {
+//           "type": "Point",
+//           "coordinates": [7.0026704, 4.8287589]
+//         },
+//         "properties": {
+//           "address": "Hotel Presidential, Port Harcourt - Aba Expressway, Port Harcourt, Nigeria"
+//         }
+//       },
+//       "pickupTime": "2024-12-16T22:06:14.292Z",
+//       "recipientDetails": {
+//         "name": "Gabriel Victor",
+//         "phone": "+2347066139465"
+//       },
+//       "itemDescription": "lorem ipsum",
+//       "itemPhotoURL": "delivery/image/6edb970b-2212-45a0-999f-8a26f0770f0e.png",
+//       "vehicleType": "medium truck",
+//       "fare": 7000,
+//       "tax": 0,
+//       "discount": 0,
+//       "totalFare": 1200,
+//       "status": "pending",
+//       "route": {
+//         "type": "",
+//         "features": null
+//       },
+//       "createdAt": "2024-12-05T12:56:53.172Z",
+//       "updatedAt": "2024-12-06T23:28:22.619Z"
+//     },
+//     {
+//       "_id": "6751a31492ec5487594d61eb",
+//       "userId": {
+//         "_id": "66ed3ca5a3291a0db25f5a2f",
+//         "firstName": "John",
+//         "lastName": "Doe",
+//         "email": "john.doe@example.com"
+//       },
+//       "driverId": {
+//         "_id": "66ed3ca5a3291a0db25f5a3f",
+//         "firstName": "Jane",
+//         "lastName": "Smith",
+//         "email": "jane.smith@example.com"
+//       },
+//       "type": "interstate",
+//       "pickupLocation": {
+//         "type": "Feature",
+//         "geometry": {
+//           "type": "Point",
+//           "coordinates": [3.3792057, 6.5243793]
+//         },
+//         "properties": {
+//           "address": "Victoria Island, Lagos, Nigeria"
+//         }
+//       },
+//       "destination": {
+//         "type": "Feature",
+//         "geometry": {
+//           "type": "Point",
+//           "coordinates": [7.4951, 9.0765]
+//         },
+//         "properties": {
+//           "address": "Wuse II, Abuja, Nigeria"
+//         }
+//       },
+//       "pickupTime": "2024-12-15T10:30:00.000Z",
+//       "recipientDetails": {
+//         "name": "Mary Johnson",
+//         "phone": "+2348012345678"
+//       },
+//       "itemDescription": "Electronics package",
+//       "itemPhotoURL": "",
+//       "vehicleType": "van",
+//       "fare": 15000,
+//       "tax": 750,
+//       "discount": 500,
+//       "totalFare": 15250,
+//       "status": "delivered",
+//       "route": {
+//         "type": "",
+//         "features": null
+//       },
+//       "createdAt": "2024-12-03T08:20:10.000Z",
+//       "updatedAt": "2024-12-04T16:45:30.000Z"
+//     },
+//     {
+//       "_id": "6751a31492ec5487594d61ec",
+//       "userId": {
+//         "_id": "66ed3ca5a3291a0db25f5a4f",
+//         "firstName": "Sarah",
+//         "lastName": "Williams",
+//         "email": "sarah.williams@example.com"
+//       },
+//       "driverId": {
+//         "_id": "66ed3ca5a3291a0db25f5a5f",
+//         "firstName": "Mike",
+//         "lastName": "Johnson",
+//         "email": "mike.johnson@example.com"
+//       },
+//       "type": "local",
+//       "pickupLocation": {
+//         "type": "Feature",
+//         "geometry": {
+//           "type": "Point",
+//           "coordinates": [5.6037, 5.6037]
+//         },
+//         "properties": {
+//           "address": "Onitsha Main Market, Anambra, Nigeria"
+//         }
+//       },
+//       "destination": {
+//         "type": "Feature",
+//         "geometry": {
+//           "type": "Point",
+//           "coordinates": [6.2088, 6.9326]
+//         },
+//         "properties": {
+//           "address": "Enugu State University, Enugu, Nigeria"
+//         }
+//       },
+//       "pickupTime": "2024-12-14T14:15:00.000Z",
+//       "recipientDetails": {
+//         "name": "David Brown",
+//         "phone": "+2349087654321"
+//       },
+//       "itemDescription": "Documents and books",
+//       "vehicleType": "bike",
+//       "fare": 3500,
+//       "tax": 175,
+//       "discount": 0,
+//       "totalFare": 3675,
+//       "status": "in-transit",
+//       "route": {
+//         "type": "",
+//         "features": null
+//       },
+//       "createdAt": "2024-12-02T11:30:00.000Z",
+//       "updatedAt": "2024-12-05T09:20:15.000Z"
+//     }
+//   ]
   
   // Computed properties
   const stats = computed<Stats>(() => {
-    const total = deliveries.value.length
-    const pending = deliveries.value.filter(d => d.status === 'pending').length
-    const completed = deliveries.value.filter(d => d.status === 'delivered').length
-    const totalRevenue = deliveries.value.reduce((sum, d) => sum + d.totalFare, 0)
+    const total = props.deliveries.length
+    const pending = props.deliveries.filter(d => d.status === 'pending').length
+    const completed = props.deliveries.filter(d => d.status === 'delivered').length
+    const totalRevenue = props.deliveries.reduce((sum, d) => sum + d.totalFare, 0)
     
     return { total, pending, completed, totalRevenue }
   })
   
   const filteredDeliveries = computed(() => {
-    let filtered = [...deliveries.value]
+    let filtered = [...props.deliveries]
   
     // Apply search filter
     if (searchQuery.value) {
@@ -806,31 +806,31 @@
     return filtered
   })
   
-  const totalPages = computed(() => Math.ceil(filteredDeliveries.value.length / itemsPerPage.value))
+  const totalPages = computed(() => Math.ceil(filteredprops.deliveries.length / itemsPerPage.value))
   
   const paginatedDeliveries = computed(() => {
     const start = (currentPage.value - 1) * itemsPerPage.value
     const end = start + itemsPerPage.value
-    return filteredDeliveries.value.slice(start, end)
+    return filteredprops.deliveries.slice(start, end)
   })
   
   // Methods
-  const loadDeliveries = async () => {
-    loading.value = true
-    try {
-      // Replace with actual API call
-      // const response = await $fetch('/api/deliveries')
-      // deliveries.value = response.data
+//   const loadDeliveries = async () => {
+//     loading.value = true
+//     try {
+//       // Replace with actual API call
+//       // const response = await $fetch('/api/deliveries')
+//       // props.deliveries = response.data
       
-      // Using mock data for now
-      await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API delay
-      deliveries.value = mockDeliveries
-    } catch (error) {
-      console.error('Error loading deliveries:', error)
-    } finally {
-      loading.value = false
-    }
-  }
+//       // Using mock data for now
+//       await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API delay
+//       props.deliveries = mockDeliveries
+//     } catch (error) {
+//       console.error('Error loading deliveries:', error)
+//     } finally {
+//       loading.value = false
+//     }
+//   }
   
   const openModal = (delivery: Delivery) => {
     selectedDelivery.value = delivery
@@ -876,7 +876,7 @@
       'Updated Date'
     ]
   
-    const csvData = filteredDeliveries.value.map(delivery => [
+    const csvData = filteredprops.deliveries.map(delivery => [
       delivery._id,
       `${delivery.userId.firstName} ${delivery.userId.lastName}`,
       delivery.userId.email,
@@ -957,9 +957,9 @@
   }, { deep: true })
   
   // Load data on component mount
-  onMounted(() => {
-    loadDeliveries()
-  })
+//   onMounted(() => {
+//     loadDeliveries()
+//   })
 
   // Meta and SEO
   useSeoMeta({
