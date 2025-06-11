@@ -4,7 +4,7 @@
       title="Passengers" 
       description="Manage and monitor all ride-hailing service passengers"
     />
-    
+    <!-- {{totalBalance}} -->
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 animate-fadeIn">
       <ModulesPassengersStatsCard 
@@ -28,8 +28,16 @@
         :change="12"
       />
       <ModulesPassengersStatsCard 
-        title="Total Balance" 
+        title="Total Balance in Naira" 
         :value="totalBalance" 
+        icon="wallet" 
+        color="yellow"
+        :change="5"
+      />
+
+      <ModulesPassengersStatsCard 
+        title="Total Balance in CAD" 
+        :value="totalCADBalance" 
         icon="wallet" 
         color="yellow"
         :change="5"
@@ -754,7 +762,7 @@ const emailVerifiedCount = computed(() => {
 });
 
 const totalBalance = computed(() => {
-  const total = passengersList.value.reduce((sum, passenger) => sum + passenger.walletBalance, 0);
+  const total = passengersList.value.reduce((sum, passenger) => sum + passenger?.driverData?.walletBalance?.priceInUserCurrency, 0);
   return new Intl.NumberFormat('en-NG', {
     style: 'currency',
     currency: 'NGN',
@@ -762,6 +770,20 @@ const totalBalance = computed(() => {
     maximumFractionDigits: 0
   }).format(total);
 });
+
+const totalCADBalance = computed(() => {
+  const total = passengersList.value.reduce((sum, passenger) => 
+    sum + (passenger?.driverData?.walletBalance?.priceInCAD || 0), 0
+  );
+
+  return new Intl.NumberFormat('en-CA', {
+    style: 'currency',
+    currency: 'CAD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(total);
+});
+
 
 // Reset pagination when filters change
 watch([filters, searchQuery], () => {

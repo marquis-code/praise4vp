@@ -25,7 +25,7 @@ interface GetTripHistoryParams {
 export const trips_api = {
     $_fetch_trips: (params: GetTripsParams = {}) => {
         const { 
-            page = 1, 
+            page = 54, 
             limit = 10, 
             status, 
             type, 

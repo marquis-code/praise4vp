@@ -31,6 +31,7 @@
     "aos": "^3.0.0-beta.6",
     "axios": "^1.7.9",
     "click-outside-vue3": "^4.0.1",
+    "google-maps": "^4.3.3",
     "lucide-vue-next": "^0.487.0",
     "socket.io-client": "^4.8.1",
     "vue-google-maps-community-fork": "^0.3.1",

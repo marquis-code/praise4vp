@@ -182,11 +182,21 @@
                 <div class="grid grid-cols-1 gap-4">
                   <div>
                     <p class="text-sm text-gray-500">Wallet Balance</p>
-                    <p class="text-xl font-bold text-gray-900">{{ formatCurrency(driver.walletBalance) }}</p>
+                    <p class="text-xl font-bold text-gray-900">{{ formatCurrency(driver?.driverData?.walletBalance?.priceInUserCurrency) }}</p>
                   </div>
                   <div>
                     <p class="text-sm text-gray-500">Driver Wallet Balance</p>
-                    <p class="text-xl font-bold text-gray-900">{{ formatCurrency(driver.driverData.walletBalance) }}</p>
+                    <p class="text-xl font-bold text-gray-900">{{ formatCurrency(driver?.driverData?.walletBalance?.priceInUserCurrency) }}</p>
+                  </div>
+
+                  <div>
+                    <p class="text-sm text-gray-500">Driver Wallet Balance In CAD</p>
+                    <p class="text-xl font-bold text-gray-900">{{ formatCurrency(driver?.driverData?.walletBalance?.priceInCAD)}}</p>
+                  </div>
+
+                  <div>
+                    <p class="text-sm text-gray-500">Driver Wallet Balance Rate</p>
+                    <p class="text-xl font-bold text-gray-900">{{ driver?.driverData?.walletBalance?.rate}}</p>
                   </div>
                   <div>
                     <p class="text-sm text-gray-500">Rating</p>
@@ -544,7 +554,8 @@
                 { title: 'Total Trips', value: driverTripHistory.length, icon: 'car', color: 'primary' },
                 { title: 'Completed Trips', value: completedTripsCount, icon: 'check-circle', color: 'green' },
                 { title: 'Cancelled Trips', value: cancelledTripsCount, icon: 'x-circle', color: 'red' },
-                { title: 'Total Earnings', value: tripTotalEarnings, icon: 'wallet', color: 'blue' }
+                { title: 'Total Earnings in Naira', value: tripTotalEarnings, icon: 'wallet', color: 'blue' },
+                { title: 'Total Earnings in CAD', value: tripTotalEarningsInCAD, icon: 'wallet', color: 'blue' }
               ]"
               :key="index"
               class="bg-white rounded-lg shadow p-5"
@@ -655,7 +666,7 @@
                       </p>
                     </div>
                   </div>
-                  
+                  <!-- getTotalTripFareInCAD -->
                   <!-- Fare -->
                   <div class="flex items-start">
                     <div class="flex-shrink-0 mt-1">
@@ -670,6 +681,20 @@
                       </p>
                     </div>
                   </div>
+
+                  <!-- <div class="flex items-start">
+                    <div class="flex-shrink-0 mt-1">
+                      <div class="h-5 w-5 rounded-full bg-yellow-100 flex items-center justify-center">
+                        <DollarSign class="h-3 w-3 text-yellow-600" />
+                      </div>
+                    </div>
+                    <div class="ml-3">
+                      <p class="text-xs text-gray-500">Total Fare in CAD</p>
+                      <p class="text-sm font-medium text-gray-900">
+                        {{ formatCurrency(getTotalTripFareInCAD(trip)) }}
+                      </p>
+                    </div>
+                  </div> -->
                 </div>
               </div>
               
@@ -1317,6 +1342,16 @@ const tripTotalEarnings = computed(() => {
   return formatCurrency(total);
 });
 
+const tripTotalEarningsInCAD = computed(() => {
+  if (!driverTripHistory.value) return formatCurrency(0);
+  
+  const total = driverTripHistory.value.reduce((sum, trip) => {
+    return sum + getTotalTripFareInCAD(trip);
+  }, 0);
+  
+  return formatCurrency(total);
+});
+
 // Helper functions
 const formatDate = (dateString: string) => {
   if (!dateString) return 'N/A';
@@ -1415,7 +1450,14 @@ const getFirstPassengerDestinationAddress = (trip: Trip) => {
 
 const getTotalTripFare = (trip: Trip) => {
   if (trip.passengers && trip.passengers.length > 0) {
-    return trip.passengers.reduce((sum, passenger) => sum + passenger.totalFare, 0);
+    return trip.passengers.reduce((sum, passenger) => sum + passenger?.totalFare?.priceInUserCurrency, 0);
+  }
+  return 0;
+};
+
+const getTotalTripFareInCAD = (trip: Trip) => {
+  if (trip.passengers && trip.passengers.length > 0) {
+    return trip.passengers.reduce((sum, passenger) => sum + passenger?.totalFare?.priceInCAD, 0);
   }
   return 0;
 };

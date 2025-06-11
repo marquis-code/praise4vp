@@ -1,6 +1,6 @@
 <template>
     <div class="min-h-screen">
-      <!-- Stats Cards -->
+      {{deliveries}}
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div class="bg-white rounded-lg shadow-sm p-6 border">
           <div class="flex items-center justify-between">
@@ -124,7 +124,7 @@
         </div>
       </div>
   
-      <!-- Search and Actions -->
+
       <div class="bg-white rounded-lg shadow-sm p-4 md:p-6 mb-6 border">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div class="relative flex-1 max-w-md">
@@ -182,15 +182,13 @@
         </div>
       </div>
   
-      <!-- Deliveries List/Grid -->
       <div class="bg-white rounded-lg shadow-sm border">
-        <!-- Loading State -->
         <div v-if="loading" class="p-8 text-center">
           <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
           <p class="text-gray-600 mt-2">Loading deliveries...</p>
         </div>
   
-        <!-- Empty State -->
+
         <div v-else-if="filteredDeliveries.length === 0" class="p-8 text-center">
           <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
@@ -199,7 +197,6 @@
           <p class="mt-1 text-sm text-gray-500">Try adjusting your search or filter criteria.</p>
         </div>
   
-        <!-- Grid View -->
         <div v-else-if="viewMode === 'grid'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
           <div
             v-for="delivery in paginatedDeliveries"
@@ -256,7 +253,6 @@
           </div>
         </div>
   
-        <!-- List View -->
         <div v-else class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
@@ -317,7 +313,6 @@
           </table>
         </div>
   
-        <!-- Pagination -->
         <div v-if="filteredDeliveries.length > 0" class="px-6 py-3 border-t border-gray-200 bg-gray-50">
           <div class="flex items-center justify-between">
             <div class="text-sm text-gray-700">
@@ -346,7 +341,6 @@
         </div>
       </div>
   
-      <!-- Modal -->
       <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" @click="closeModal">
         <div class="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto" @click.stop>
           <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
@@ -560,9 +554,7 @@
     totalRevenue: number
   }
   
-  // Reactive state
-//   const deliveries = ref<Delivery[]>([])
-//   const loading = ref(false)
+
   const searchQuery = ref('')
   const viewMode = ref<'grid' | 'list'>('list')
   const showModal = ref(false)
@@ -577,212 +569,55 @@
     sortBy: 'createdAt-desc'
   })
   
-//   // Mock data - replace with actual API call
-//   const mockDeliveries: Delivery[] = [
-//     {
-//       "_id": "6751a31492ec5487594d61ea",
-//       "userId": {
-//         "_id": "66ed3ca5a3291a0db25f5a1f",
-//         "firstName": "Alfred",
-//         "lastName": "Onuada",
-//         "email": "aonuada5@gmail.com"
-//       },
-//       "driverId": {
-//         "_id": "66ed3ca5a3291a0db25f5a1f",
-//         "firstName": "Alfred",
-//         "lastName": "Onuada",
-//         "email": "aonuada5@gmail.com"
-//       },
-//       "type": "local",
-//       "pickupLocation": {
-//         "type": "Feature",
-//         "geometry": {
-//           "type": "Point",
-//           "coordinates": [7.1332013, 4.7863956]
-//         },
-//         "properties": {
-//           "address": "Shedrack Avenue, Rumurolu, Nigeria"
-//         }
-//       },
-//       "destination": {
-//         "type": "Feature",
-//         "geometry": {
-//           "type": "Point",
-//           "coordinates": [7.0026704, 4.8287589]
-//         },
-//         "properties": {
-//           "address": "Hotel Presidential, Port Harcourt - Aba Expressway, Port Harcourt, Nigeria"
-//         }
-//       },
-//       "pickupTime": "2024-12-16T22:06:14.292Z",
-//       "recipientDetails": {
-//         "name": "Gabriel Victor",
-//         "phone": "+2347066139465"
-//       },
-//       "itemDescription": "lorem ipsum",
-//       "itemPhotoURL": "delivery/image/6edb970b-2212-45a0-999f-8a26f0770f0e.png",
-//       "vehicleType": "medium truck",
-//       "fare": 7000,
-//       "tax": 0,
-//       "discount": 0,
-//       "totalFare": 1200,
-//       "status": "pending",
-//       "route": {
-//         "type": "",
-//         "features": null
-//       },
-//       "createdAt": "2024-12-05T12:56:53.172Z",
-//       "updatedAt": "2024-12-06T23:28:22.619Z"
-//     },
-//     {
-//       "_id": "6751a31492ec5487594d61eb",
-//       "userId": {
-//         "_id": "66ed3ca5a3291a0db25f5a2f",
-//         "firstName": "John",
-//         "lastName": "Doe",
-//         "email": "john.doe@example.com"
-//       },
-//       "driverId": {
-//         "_id": "66ed3ca5a3291a0db25f5a3f",
-//         "firstName": "Jane",
-//         "lastName": "Smith",
-//         "email": "jane.smith@example.com"
-//       },
-//       "type": "interstate",
-//       "pickupLocation": {
-//         "type": "Feature",
-//         "geometry": {
-//           "type": "Point",
-//           "coordinates": [3.3792057, 6.5243793]
-//         },
-//         "properties": {
-//           "address": "Victoria Island, Lagos, Nigeria"
-//         }
-//       },
-//       "destination": {
-//         "type": "Feature",
-//         "geometry": {
-//           "type": "Point",
-//           "coordinates": [7.4951, 9.0765]
-//         },
-//         "properties": {
-//           "address": "Wuse II, Abuja, Nigeria"
-//         }
-//       },
-//       "pickupTime": "2024-12-15T10:30:00.000Z",
-//       "recipientDetails": {
-//         "name": "Mary Johnson",
-//         "phone": "+2348012345678"
-//       },
-//       "itemDescription": "Electronics package",
-//       "itemPhotoURL": "",
-//       "vehicleType": "van",
-//       "fare": 15000,
-//       "tax": 750,
-//       "discount": 500,
-//       "totalFare": 15250,
-//       "status": "delivered",
-//       "route": {
-//         "type": "",
-//         "features": null
-//       },
-//       "createdAt": "2024-12-03T08:20:10.000Z",
-//       "updatedAt": "2024-12-04T16:45:30.000Z"
-//     },
-//     {
-//       "_id": "6751a31492ec5487594d61ec",
-//       "userId": {
-//         "_id": "66ed3ca5a3291a0db25f5a4f",
-//         "firstName": "Sarah",
-//         "lastName": "Williams",
-//         "email": "sarah.williams@example.com"
-//       },
-//       "driverId": {
-//         "_id": "66ed3ca5a3291a0db25f5a5f",
-//         "firstName": "Mike",
-//         "lastName": "Johnson",
-//         "email": "mike.johnson@example.com"
-//       },
-//       "type": "local",
-//       "pickupLocation": {
-//         "type": "Feature",
-//         "geometry": {
-//           "type": "Point",
-//           "coordinates": [5.6037, 5.6037]
-//         },
-//         "properties": {
-//           "address": "Onitsha Main Market, Anambra, Nigeria"
-//         }
-//       },
-//       "destination": {
-//         "type": "Feature",
-//         "geometry": {
-//           "type": "Point",
-//           "coordinates": [6.2088, 6.9326]
-//         },
-//         "properties": {
-//           "address": "Enugu State University, Enugu, Nigeria"
-//         }
-//       },
-//       "pickupTime": "2024-12-14T14:15:00.000Z",
-//       "recipientDetails": {
-//         "name": "David Brown",
-//         "phone": "+2349087654321"
-//       },
-//       "itemDescription": "Documents and books",
-//       "vehicleType": "bike",
-//       "fare": 3500,
-//       "tax": 175,
-//       "discount": 0,
-//       "totalFare": 3675,
-//       "status": "in-transit",
-//       "route": {
-//         "type": "",
-//         "features": null
-//       },
-//       "createdAt": "2024-12-02T11:30:00.000Z",
-//       "updatedAt": "2024-12-05T09:20:15.000Z"
-//     }
-//   ]
   
   // Computed properties
-  const stats = computed<Stats>(() => {
-    const total = props?.deliveries?.length
-    const pending = props?.deliveries?.filter(d => d.status === 'pending')?.length
-    const completed = props?.deliveries?.filter(d => d.status === 'delivered')?.length
-    const totalRevenue = props?.deliveries?.reduce((sum, d) => sum + d.totalFare, 0)
+  // const stats = computed<Stats>(() => {
+  //   const total = props?.deliveries?.length
+  //   const pending = props?.deliveries?.filter(d => d.status === 'pending')?.length
+  //   const completed = props?.deliveries?.filter(d => d.status === 'delivered')?.length
+  //   const totalRevenue = props?.deliveries?.reduce((sum, d) => sum + d.totalFare, 0)
     
-    return { total, pending, completed, totalRevenue }
-  })
+  //   return { total, pending, completed, totalRevenue }
+  // })
+
+  const stats = computed(() => {
+  const deliveries = props?.deliveries || []
+  const total = deliveries.length
+  const pending = deliveries.filter(d => d.status === 'pending').length
+  const completed = deliveries.filter(d => d.status === 'delivered').length
+  const totalRevenue = deliveries.reduce((sum, d) => sum + (d.totalFare || 0), 0)
+       
+  return { total, pending, completed, totalRevenue }
+})
   
   const filteredDeliveries = computed(() => {
-    let filtered = [...props.deliveries]
+    let filtered = [...props?.deliveries]
   
     // Apply search filter
     if (searchQuery.value) {
-      const query = searchQuery.value.toLowerCase()
-      filtered = filtered.filter(delivery => 
-        delivery.recipientDetails.name.toLowerCase().includes(query) ||
-        delivery.pickupLocation.properties.address.toLowerCase().includes(query) ||
-        delivery.destination.properties.address.toLowerCase().includes(query) ||
-        delivery.itemDescription.toLowerCase().includes(query) ||
-        delivery.userId.firstName.toLowerCase().includes(query) ||
-        delivery.userId.lastName.toLowerCase().includes(query) ||
-        delivery.userId.email.toLowerCase().includes(query)
+      const query = searchQuery?.value?.toLowerCase()
+      filtered = filtered?.filter(delivery => 
+        delivery?.recipientDetails?.name?.toLowerCase()?.includes(query) ||
+        delivery?.pickupLocation?.properties?.address?.toLowerCase()?.includes(query) ||
+        delivery?.destination?.properties?.address?.toLowerCase()?.includes(query) ||
+        delivery?.itemDescription?.toLowerCase()?.includes(query) ||
+        delivery?.userId?.firstName?.toLowerCase()?.includes(query) ||
+        delivery?.userId?.lastName?.toLowerCase()?.includes(query) ||
+        delivery?.userId?.email?.toLowerCase()?.includes(query)
       )
     }
   
     // Apply filters
     if (filters.value.type) {
-      filtered = filtered.filter(delivery => delivery.type === filters.value.type)
+      filtered = filtered.filter(delivery => delivery?.type === filters?.value?.type)
     }
   
     if (filters.value.status) {
-      filtered = filtered.filter(delivery => delivery.status === filters.value.status)
+      filtered = filtered.filter(delivery => delivery?.status === filters?.value?.status)
     }
   
     if (filters.value.vehicleType) {
-      filtered = filtered.filter(delivery => delivery.vehicleType === filters.value.vehicleType)
+      filtered = filtered.filter(delivery => delivery?.vehicleType === filters?.value?.vehicleType)
     }
   
     // Apply sorting
@@ -806,31 +641,14 @@
     return filtered
   })
   
-  const totalPages = computed(() => Math.ceil(filteredprops?.deliveries?.length / itemsPerPage.value))
+  const totalPages = computed(() => Math.ceil(filteredprops?.deliveries?.length / itemsPerPage?.value))
   
   const paginatedDeliveries = computed(() => {
-    const start = (currentPage.value - 1) * itemsPerPage.value
-    const end = start + itemsPerPage.value
+    const start = (currentPage?.value - 1) * itemsPerPage?.value
+    const end = start + itemsPerPage?.value
     return filteredprops?.deliveries?.slice(start, end)
   })
   
-  // Methods
-//   const loadDeliveries = async () => {
-//     loading.value = true
-//     try {
-//       // Replace with actual API call
-//       // const response = await $fetch('/api/deliveries')
-//       // props.deliveries = response.data
-      
-//       // Using mock data for now
-//       await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API delay
-//       props.deliveries = mockDeliveries
-//     } catch (error) {
-//       console.error('Error loading deliveries:', error)
-//     } finally {
-//       loading.value = false
-//     }
-//   }
   
   const openModal = (delivery: Delivery) => {
     selectedDelivery.value = delivery

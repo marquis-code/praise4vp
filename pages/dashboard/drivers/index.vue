@@ -246,7 +246,7 @@
               </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              {{ formatCurrency(driver.driverData.walletBalance) }}
+              {{ formatCurrency(driver?.driverData?.walletBalance?.priceInUserCurrency) }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
               <div class="relative inline-block text-left">
@@ -760,7 +760,7 @@ const filteredDrivers = computed(() => {
       result.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
       break;
     case 'balance':
-      result.sort((a, b) => b.driverData.walletBalance - a.driverData.walletBalance);
+      result.sort((a, b) => b?.driverData?.walletBalance?.priceInUserCurrency - a?.driverData?.walletBalance?.priceInUserCurrency);
       break;
   }
   
@@ -913,7 +913,7 @@ const verifiedDriversCount = computed(() => {
 });
 
 const totalEarnings = computed(() => {
-  const total = driversList.value.reduce((sum, driver) => sum + driver.driverData.walletBalance, 0);
+  const total = driversList.value.reduce((sum, driver) => sum + driver?.driverData?.walletBalance?.priceInUserCurrency, 0);
   return new Intl.NumberFormat('en-NG', {
     style: 'currency',
     currency: 'NGN',
@@ -1000,50 +1000,6 @@ const banDriver = async () => {
     });
 
 
-    // if(!selectedDriver?.value?.isDisabled) {
-    //   await disableAccount(selectedDriver.value._id).then(() => {
-    //         // Show success toast
-    // toastMessage.value = `${selectedDriver.value.firstName} ${selectedDriver.value.lastName} has been banned successfully.`;
-    // showToast.value = true;
-    
-    // // Close modal
-    // closeModal();
-    //   })
-    // } else {
-    //   await enableAccount(selectedDriver.value._id).then(() => {
-    //         // Show success toast
-    // toastMessage.value = `${selectedDriver.value.firstName} ${selectedDriver.value.lastName} has been banned successfully.`;
-    // showToast.value = true;
-    
-    // // Close modal
-    // closeModal();
-    //   })
-    // }
-
-    
-    // Make actual API call here
-    // const response = await fetch(`/api/drivers/${selectedDriver.value._id}/ban`, {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json'
-    //   }
-    // });
-    
-    // if (!response.ok) {
-    //   throw new Error('Failed to ban driver');
-    // }
-    
-    
-    // // Auto-hide toast after 3 seconds
-    // setTimeout(() => {
-    //   showToast.value = false;
-    // }, 3000);
-    
-    // // Update local state (in a real app, you'd refetch the data)
-    // const index = driversList.value.findIndex(d => d._id === selectedDriver.value?._id);
-    // if (index !== -1) {
-    //   driversList.value[index].isDisabled = true;
-    // }
     
   } catch (error) {
     console.error('Error banning driver:', error);

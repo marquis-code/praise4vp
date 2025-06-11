@@ -973,7 +973,7 @@ const handlePageChange = async (page: number) => {
   
   // Methods
   const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat('en-NG').format(amount / 100)
+    return new Intl.NumberFormat('en-NG').format(amount)
   }
   
   const formatDate = (dateString: string): string => {

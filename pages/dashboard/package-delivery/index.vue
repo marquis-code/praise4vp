@@ -56,6 +56,18 @@
           </div>
         </div>
       </div>
+
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center">
+          <div class="p-2 bg-purple-100 rounded-lg">
+            <DollarSign class="h-6 w-6 text-purple-600" />
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-500">Total Revenue in CAD</p>
+            <p class="text-2xl font-semibold text-gray-900">{{ totalRevenueInCAD }}</p>
+          </div>
+        </div>
+      </div>
     </div>
     
     <!-- Enhanced Filters -->
@@ -500,7 +512,9 @@
             <div class="flex justify-between items-center">
               <div>
                 <p class="text-xs text-gray-500">Fare</p>
-                <p class="text-sm font-semibold text-gray-900">{{ formatCurrency(delivery.totalFare) }}</p>
+                <p class="text-sm font-semibold text-gray-900">
+                  {{ formatCurrency(delivery?.fare?.priceInUserCurrency) }}
+                </p>
               </div>
               <div>
                 <p class="text-xs text-gray-500">Vehicle</p>
@@ -646,7 +660,8 @@
             </td>
             
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              {{ formatCurrency(delivery.totalFare) }}
+              <!-- {{ formatCurrency() }} -->
+              {{ formatCurrency(delivery?.fare?.priceInUserCurrency) }}
             </td>
             
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -926,20 +941,24 @@
                     <div class="space-y-2">
                       <div class="flex justify-between">
                         <span class="text-sm text-gray-500">Base Fare</span>
-                        <span class="text-sm text-gray-900">{{ formatCurrency(selectedDelivery.fare) }}</span>
+                        <span class="text-sm text-gray-900">{{ formatCurrency(selectedDelivery.fare.priceInUserCurrency) }}</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span class="text-sm text-gray-500">Base Fare in CAD</span>
+                        <span class="text-sm text-gray-900">{{ formatCurrency(selectedDelivery.fare.priceInUserCurrency) }}</span>
                       </div>
                       <div class="flex justify-between">
                         <span class="text-sm text-gray-500">Tax</span>
-                        <span class="text-sm text-gray-900">{{ formatCurrency(selectedDelivery.tax) }}</span>
+                        <span class="text-sm text-gray-900">{{ formatCurrency(selectedDelivery.tax.priceInUserCurrency) }}</span>
                       </div>
                       <div class="flex justify-between">
                         <span class="text-sm text-gray-500">Discount</span>
-                        <span class="text-sm text-gray-900">-{{ formatCurrency(selectedDelivery.discount) }}</span>
+                        <span class="text-sm text-gray-900">-{{ formatCurrency(selectedDelivery.discount.priceInUserCurrency) }}</span>
                       </div>
                       <div class="border-t pt-2">
                         <div class="flex justify-between">
                           <span class="text-sm font-medium text-gray-900">Total</span>
-                          <span class="text-sm font-semibold text-gray-900">{{ formatCurrency(selectedDelivery.totalFare) }}</span>
+                          <span class="text-sm font-semibold text-gray-900">{{ formatCurrency(selectedDelivery.totalFare.priceInUserCurrency) }}</span>
                         </div>
                       </div>
                     </div>
@@ -1720,9 +1739,24 @@ const inTransitDeliveries = computed(() => {
 })
 
 const totalRevenue = computed(() => {
-  const total = deliveries.value.reduce((sum, delivery) => sum + delivery.totalFare, 0)
+  const total = deliveries.value.reduce((sum, delivery) => sum + delivery?.fare?.priceInUserCurrency, 0)
   return formatCurrency(total)
 })
+
+const totalRevenueInCAD = computed(() => {
+  const totalinCAD = deliveries.value.reduce((sum, delivery) => sum + delivery?.fare?.priceInCAD, 0)
+    return formatCADCurrency(totalinCAD)
+})
+
+// const totalRevenueInCAD = computed(() => {
+//   const totalAmount = deliveries.value.reduce((sum, delivery) => sum + delivery?.fare?.priceInCAD, 0)
+//   return totalRevenueInCAD.value(total)
+// })
+
+// const totalRevenueInCAD = computed(() => {
+//   const total = deliveries.value.reduce((sum, delivery) => sum + delivery?.fare?.priceInCAD, 0)
+//   return totalRevenueInCAD(total)
+// })
 
 // Reset pagination when filters change
 watch([filters, searchQuery, sortBy, sortOrder], () => {
@@ -2106,6 +2140,17 @@ const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('en-NG', {
     style: 'currency',
     currency: 'NGN',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(amount)
+}
+
+
+
+const formatCADCurrency = (amount: number) => {
+  return new Intl.NumberFormat('en-CA', {
+    style: 'currency',
+    currency: 'CAD',
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
   }).format(amount)

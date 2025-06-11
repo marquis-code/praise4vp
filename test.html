@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Route Monitor</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        #container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        #header {
+            background: #2c3e50;
+            color: white;
+            padding: 10px 20px;
+        }
+        #map {
+            flex: 1;
+            width: 100%;
+        }
+        #status {
+            background: #f8f9fa;
+            padding: 10px 20px;
+            border-top: 1px solid #ddd;
+        }
+        .connected {
+            color: green;
+        }
+        .disconnected {
+            color: red;
+        }
+        .connecting {
+            color: orange;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="header">
+            <h1>Trip Route Monitor</h1>
+            <div>
+                <label for="tripId">Trip ID:</label>
+                <input type="text" id="tripId" value="677d5e48a9b776efd4a8bfb5" size="40">
+                <button id="connectBtn">Connect</button>
+                <button id="disconnectBtn" disabled>Disconnect</button>
+                <button id="testBtn" disabled>Test Route Update</button>
+            </div>
+        </div>
+        <div id="map"></div>
+        <div id="status">
+            <p>Status: <span id="connectionStatus" class="disconnected">Disconnected</span></p>
+            <p>Last update: <span id="lastUpdate">Never</span></p>
+            <p>Messages: <span id="messageCount">0</span></p>
+        </div>
+    </div>
+
+    <!-- Socket.IO Client -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+    
+    <script>
+        // Global variables
+        let map;
+        let socket;
+        let routeLayer;
+        let pickupMarker;
+        let dropoffMarker;
+        let currentPositionMarker;
+        let messageCount = 0;
+
+        // Initialize map
+        function initMap() {
+            // Default coordinates (Nigeria)
+            const defaultCoords = [4.7863956, 7.1332013];
+            
+            map = L.map('map').setView(defaultCoords, 13);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            
+            // Initialize empty route layer
+            routeLayer = L.layerGroup().addTo(map);
+            
+            // Initialize markers with null values
+            pickupMarker = null;
+            dropoffMarker = null;
+            currentPositionMarker = null;
+        }
+
+        // Update map with new route data
+        function updateMap(route) {
+            // Clear previous route
+            routeLayer.clearLayers();
+            
+            // Process each feature in the route
+            route.features.forEach(feature => {
+                if (feature.geometry.type === 'LineString') {
+                    // Draw the route line
+                    const line = L.polyline(
+                        feature.geometry.coordinates.map(coord => [coord[1], coord[0]]),
+                        { color: '#3498db', weight: 5 }
+                    ).addTo(routeLayer);
+                    
+                    // Add the line to the route layer
+                    routeLayer.addLayer(line);
+                    
+                    // Fit the map to the route bounds
+                    map.fitBounds(line.getBounds(), { padding: [50, 50] });
+                } 
+                else if (feature.geometry.type === 'Point') {
+                    // Handle point features (pickup, dropoff, current position)
+                    const coords = [feature.geometry.coordinates[1], feature.geometry.coordinates[0]];
+                    const properties = feature.properties;
+                    
+                    if (properties.event === 'arrived-and-pickup') {
+                        // Update or create pickup marker
+                        if (pickupMarker) {
+                            pickupMarker.setLatLng(coords);
+                        } else {
+                            pickupMarker = L.marker(coords, {
+                                icon: L.divIcon({
+                                    className: 'pickup-marker',
+                                    html: '🟢',
+                                    iconSize: [24, 24]
+                                }),
+                                title: 'Pickup Location'
+                            }).addTo(map);
+                        }
+                    } 
+                    else if (properties.event === 'completed-and-dropoff') {
+                        // Update or create dropoff marker
+                        if (dropoffMarker) {
+                            dropoffMarker.setLatLng(coords);
+                        } else {
+                            dropoffMarker = L.marker(coords, {
+                                icon: L.divIcon({
+                                    className: 'dropoff-marker',
+                                    html: '🔴',
+                                    iconSize: [24, 24]
+                                }),
+                                title: 'Dropoff Location'
+                            }).addTo(map);
+                        }
+                    } 
+                    else {
+                        // Update or create current position marker
+                        if (currentPositionMarker) {
+                            currentPositionMarker.setLatLng(coords);
+                        } else {
+                            currentPositionMarker = L.marker(coords, {
+                                icon: L.divIcon({
+                                    className: 'position-marker',
+                                    html: '🔵',
+                                    iconSize: [24, 24]
+                                }),
+                                title: 'Current Position'
+                            }).addTo(map);
+                        }
+                    }
+                }
+            });
+            
+            // Update last update time
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+            messageCount++;
+            document.getElementById('messageCount').textContent = messageCount;
+        }
+
+        // Connect to WebSocket
+        function connect() {
+            const tripId = document.getElementById('tripId').value.trim();
+            if (!tripId) {
+                alert('Please enter a Trip ID');
+                return;
+            }
+            
+            // Close existing connection if any
+            if (socket) {
+                socket.disconnect();
+            }
+            
+            // Update UI
+            updateConnectionStatus('connecting', 'Connecting...');
+            document.getElementById('connectBtn').disabled = true;
+            document.getElementById('disconnectBtn').disabled = false;
+            document.getElementById('testBtn').disabled = false;
+            
+            // Connect to Socket.IO server
+            socket = io('https://comiles-admin.onrender.com', {
+                transports: ['websocket', 'polling'],
+                upgrade: true,
+                timeout: 10000
+            });
+            
+            // Connection events
+            socket.on('connect', () => {
+                console.log('Connected to Socket.IO server');
+                updateConnectionStatus('connected', 'Connected');
+                
+                // Subscribe to the trip
+                socket.emit('subscribe', { tripId: tripId });
+            });
+
+            socket.on('subscribed', (data) => {
+                console.log('Subscribed to trip:', data.tripId);
+                updateConnectionStatus('connected', `Connected - Subscribed to ${data.tripId}`);
+            });
+
+            socket.on('routeUpdate', (data) => {
+                console.log('Route update received:', data);
+                if (data.route) {
+                    updateMap(data.route);
+                }
+            });
+
+            socket.on('disconnect', (reason) => {
+                console.log('Disconnected:', reason);
+                updateConnectionStatus('disconnected', `Disconnected: ${reason}`);
+                document.getElementById('connectBtn').disabled = false;
+                document.getElementById('disconnectBtn').disabled = true;
+                document.getElementById('testBtn').disabled = true;
+            });
+
+            socket.on('connect_error', (error) => {
+                console.error('Connection error:', error);
+                updateConnectionStatus('disconnected', `Connection Error: ${error.message}`);
+                document.getElementById('connectBtn').disabled = false;
+                document.getElementById('disconnectBtn').disabled = true;
+                document.getElementById('testBtn').disabled = true;
+            });
+        }
+
+        // Disconnect from WebSocket
+        function disconnect() {
+            if (socket) {
+                socket.disconnect();
+            }
+        }
+
+        // Test route update (for development)
+        function testRouteUpdate() {
+            const testRoute = {
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "LineString",
+                            "coordinates": [
+                                [7.1332013, 4.7863956],
+                                [7.1342013, 4.7873956],
+                                [7.1352013, 4.7883956],
+                                [7.1362013, 4.7893956]
+                            ]
+                        },
+                        "properties": {
+                            "name": "Test Route"
+                        }
+                    },
+                    {
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [7.1332013, 4.7863956]
+                        },
+                        "properties": {
+                            "event": "arrived-and-pickup"
+                        }
+                    },
+                    {
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [7.1362013, 4.7893956]
+                        },
+                        "properties": {
+                            "event": "completed-and-dropoff"
+                        }
+                    }
+                ]
+            };
+            
+            updateMap(testRoute);
+        }
+
+        // Update connection status
+        function updateConnectionStatus(status, message) {
+            const statusElement = document.getElementById('connectionStatus');
+            statusElement.textContent = message;
+            statusElement.className = status;
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize the map
+            initMap();
+            
+            // Set up button event listeners
+            document.getElementById('connectBtn').addEventListener('click', connect);
+            document.getElementById('disconnectBtn').addEventListener('click', disconnect);
+            document.getElementById('testBtn').addEventListener('click', testRouteUpdate);
+            
+            // Connect automatically if tripId is pre-filled
+            // Uncomment the next line if you want auto-connect
+            // connect();
+        });
+    </script>
+</body>
+</html>
