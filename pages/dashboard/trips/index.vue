@@ -101,17 +101,17 @@
       <!-- Table Header -->
       <div class="flex flex-col md:flex-row md:items-center justify-between p-4 border-b border-gray-200">
         <div class="flex items-center">
-          <h2 class="text-lg font-medium text-gray-900 mb-2 md:mb-0 mr-4">Trip History</h2>
+          <h2 class="text-lg font-medium text-gray-900 mb-2 md:mb-0 mr-4">Trip Management</h2>
           <!-- View Toggle -->
           <div class="flex border border-gray-300 rounded-md overflow-hidden">
-            <button 
+            <button
               @click="viewMode = 'list'"
               class="px-3 py-2 text-sm font-medium transition-colors duration-150 flex items-center"
               :class="viewMode === 'list' ? 'bg-primary text-white' : 'bg-white text-gray-700 hover:bg-gray-50'"
             >
               <IconList class="h-4 w-4" />
             </button>
-            <button 
+            <button
               @click="viewMode = 'grid'"
               class="px-3 py-2 text-sm font-medium transition-colors duration-150 flex items-center"
               :class="viewMode === 'grid' ? 'bg-primary text-white' : 'bg-white text-gray-700 hover:bg-gray-50'"
@@ -122,10 +122,10 @@
         </div>
         <div class="relative">
           <input
-            v-model="searchQuery"
+            v-model="composableFilters.search"
             type="text"
-            placeholder="Search trips..."
-            class="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+            placeholder="Search trips, passengers, drivers..."
+            class="pl-10 pr-4 py-2 w-80 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
           />
           <span class="absolute left-3 top-2.5 text-gray-400">
             <IconSearch class="w-5 h-5" />
@@ -138,376 +138,187 @@
         <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
         <p class="mt-2 text-gray-600">Loading trips...</p>
       </div>
-      
+
       <!-- Empty State -->
-      <div v-else-if="filteredTrips.length === 0" class="p-8 text-center">
+      <div v-else-if="trips.length === 0" class="p-8 text-center">
         <IconInbox class="mx-auto h-12 w-12 text-gray-400" />
         <h3 class="mt-2 text-sm font-medium text-gray-900">No trips found</h3>
         <p class="mt-1 text-sm text-gray-500">Try adjusting your search or filter criteria.</p>
       </div>
 
-      <!-- Mobile View -->
-      <div v-else-if="$isMobile" class="divide-y divide-gray-200">
-        <div 
-          v-for="trip in filteredTrips" 
-          :key="trip._id"
-          class="p-4 animate-fadeIn transition-all duration-300 hover:bg-gray-50 relative"
-        >
-          <div class="flex justify-between items-start mb-2">
-            <div>
-              <span class="text-xs text-gray-500 font-mono">ID: {{ trip._id || 'Nil' }}</span>
-              <div class="mt-1">
-                <span 
-                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize"
-                  :class="getStatusClass(trip.status)"
-                >
-                  {{ trip.status || 'Nil' }}
-                </span>
-                <span 
-                  v-if="trip.isScheduled" 
-                  class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
-                >
-                  Scheduled
-                </span>
-              </div>
-            </div>
-            <div class="relative">
-              <button 
-                @click.stop="toggleDropdown(trip._id)"
-                class="p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-              >
-                <IconMoreVertical class="h-5 w-5 text-gray-500" />
-              </button>
-              
-              <div 
-                v-if="activeDropdown === trip._id"
-                class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 py-1"
-              >
-                <button 
-                  @click.stop="handleTripAction('view', trip)"
-                  class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
-                >
-                  <IconEye class="h-4 w-4 mr-2" />
-                  View Details
-                </button>
-                <button 
-                  @click.stop="handleTripAction('edit', trip)"
-                  class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
-                >
-                  <IconEdit class="h-4 w-4 mr-2" />
-                  Edit Trip
-                </button>
-                <button 
-                  v-if="trip.status !== 'cancelled' && trip.status !== 'completed'"
-                  @click.stop="handleTripAction('cancel', trip)"
-                  class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center"
-                >
-                  <IconX class="h-4 w-4 mr-2" />
-                  Cancel Trip
-                </button>
-                <button 
-                  v-if="trip.isScheduled && trip.status !== 'cancelled' && trip.status !== 'completed'"
-                  @click.stop="handleTripAction('reschedule', trip)"
-                  class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
-                >
-                  <IconCalendar class="h-4 w-4 mr-2" />
-                  Reschedule
-                </button>
-                <button 
-                  @click.stop="handleTripAction('invoice', trip)"
-                  class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
-                >
-                  <IconFileText class="h-4 w-4 mr-2" />
-                  Generate Invoice
-                </button>
-              </div>
-            </div>
-          </div>
-          
-          <div class="flex items-center mb-2">
-            <IconUser class="h-5 w-5 text-gray-400 mr-2" />
-            <span class="text-sm font-medium">
-              {{ getFullName(trip?.primaryUserId) || 'Nil' }}
-            </span>
-          </div>
-          
-          <div class="flex items-center mb-2">
-            <IconUserCheck class="h-5 w-5 text-gray-400 mr-2" />
-            <span class="text-sm">{{ getFullName(trip?.driverId) || 'Nil' }}</span>
-          </div>
-          
-          <div class="flex items-center mb-2">
-            <IconMapPin class="h-5 w-5 text-gray-400 mr-2" />
-            <span class="text-sm truncate">{{ getOriginAddress(trip) }}</span>
-          </div>
-          
-          <div class="flex items-center mb-2">
-            <IconFlag class="h-5 w-5 text-gray-400 mr-2" />
-            <span class="text-sm truncate">{{ getDestinationAddress(trip) }}</span>
-          </div>
-          
-          <div class="flex items-center justify-between mt-3">
-            <div class="flex items-center">
-              <IconClock class="h-5 w-5 text-gray-400 mr-2" />
-              <span class="text-xs text-gray-500">{{ formatDate(trip.createdAt) }}</span>
-            </div>
-            <div class="text-sm font-medium">
-              {{ formatCurrency(getTotalFare(trip)) }}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Desktop Grid View -->
-      <div v-else-if="viewMode === 'grid'" class="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div 
-          v-for="trip in filteredTrips" 
-          :key="trip._id"
-          class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden animate-fadeIn relative"
-        >
-          <div class="p-4">
-            <div class="flex justify-between items-start mb-4">
-              <div>
-                <div class="text-xs text-gray-500 font-mono mb-1">ID: {{ trip._id || 'Nil' }}</div>
-                <span 
-                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize"
-                  :class="getStatusClass(trip.status)"
-                >
-                  {{ trip.status || 'Nil' }}
-                </span>
-                <span 
-                  v-if="trip.isScheduled" 
-                  class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
-                >
-                  Scheduled
-                </span>
-              </div>
-              <div class="relative">
-                <button 
-                  @click.stop="toggleDropdown(trip._id)"
-                  class="p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-                >
-                  <IconMoreVertical class="h-5 w-5 text-gray-500" />
-                </button>
-                
-                <div 
-                  v-if="activeDropdown === trip._id"
-                  class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 py-1"
-                >
-                  <button 
-                    @click.stop="handleTripAction('view', trip)"
-                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
-                  >
-                    <IconEye class="h-4 w-4 mr-2" />
-                    View Details
-                  </button>
-                  <button 
-                    @click.stop="handleTripAction('edit', trip)"
-                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
-                  >
-                    <IconEdit class="h-4 w-4 mr-2" />
-                    Edit Trip
-                  </button>
-                  <button 
-                    v-if="trip.status !== 'cancelled' && trip.status !== 'completed'"
-                    @click.stop="handleTripAction('cancel', trip)"
-                    class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center"
-                  >
-                    <IconX class="h-4 w-4 mr-2" />
-                    Cancel Trip
-                  </button>
-                  <button 
-                    v-if="trip.isScheduled && trip.status !== 'cancelled' && trip.status !== 'completed'"
-                    @click.stop="handleTripAction('reschedule', trip)"
-                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
-                  >
-                    <IconCalendar class="h-4 w-4 mr-2" />
-                    Reschedule
-                  </button>
-                  <button 
-                    @click.stop="handleTripAction('invoice', trip)"
-                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
-                  >
-                    <IconFileText class="h-4 w-4 mr-2" />
-                    Generate Invoice
-                  </button>
-                </div>
-              </div>
-            </div>
-            
-            <div class="flex items-center mb-3">
-              <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                <img src="@/assets/img/avatar-male.svg" alt="User avatar" />
-              </div>
-              <div class="ml-3">
-                <div class="text-sm font-medium text-gray-900">
-                  {{ getFullName(trip?.primaryUserId) || 'Nil' }}
-                </div>
-                <div class="text-xs text-gray-500">
-                  {{ trip?.primaryUserId?.email || 'Nil' }}
-                </div>
-              </div>
-            </div>
-            
-            <div class="flex items-center mb-3">
-              <IconUserCheck class="h-5 w-5 text-gray-400 mr-2" />
-              <div>
-                <div class="text-sm">{{ getFullName(trip?.driverId) || 'Nil' }}</div>
-                <div class="text-xs text-gray-500">{{ trip?.driverId?.email || 'Nil' }}</div>
-              </div>
-            </div>
-            
-            <div class="flex items-center mb-2">
-              <IconMapPin class="h-5 w-5 text-gray-400 mr-2 flex-shrink-0" />
-              <span class="text-sm truncate">{{ getOriginAddress(trip) }}</span>
-            </div>
-            
-            <div class="flex items-center mb-4">
-              <IconFlag class="h-5 w-5 text-gray-400 mr-2 flex-shrink-0" />
-              <span class="text-sm truncate">{{ getDestinationAddress(trip) }}</span>
-            </div>
-            
-            <div class="flex items-center justify-between pt-3 border-t border-gray-200">
-              <div class="flex items-center">
-                <IconClock class="h-5 w-5 text-gray-400 mr-2" />
-                <span class="text-xs text-gray-500">{{ formatDate(trip.createdAt) }}</span>
-              </div>
-              <div class="text-sm font-medium">
-                {{ formatCurrency(getTotalFare(trip)) }}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- Desktop List View -->
-      <div v-else class="hidden md:block overflow-x-auto">
+      <div v-else-if="viewMode === 'list'" class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
-              <th v-for="header in tableHeaders" :key="header.key" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <div class="flex items-center">
-                  {{ header.label }}
-                  <button 
-                    v-if="header.sortable" 
-                    @click="sortBy(header.key)"
-                    class="ml-1 focus:outline-none"
-                  >
-                    <IconChevronUp 
-                      v-if="sortColumn === header.key && sortDirection === 'asc'"
-                      class="h-4 w-4 text-gray-500" 
-                    />
-                    <IconChevronDown 
-                      v-else-if="sortColumn === header.key && sortDirection === 'desc'"
-                      class="h-4 w-4 text-gray-500" 
-                    />
-                    <IconChevronsUpDown 
-                      v-else
-                      class="h-4 w-4 text-gray-300" 
-                    />
-                  </button>
-                </div>
-              </th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trip ID</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Passenger</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Driver</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Route</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fare</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr 
-              v-for="trip in filteredTrips" 
+            <tr
+              v-for="trip in trips"
               :key="trip._id"
-              class="hover:bg-gray-50 transition-colors duration-150 animate-fadeIn cursor-pointer"
-              @click="navigateToTripDetails(trip._id)"
+              class="hover:bg-gray-50 transition-colors duration-150 animate-fadeIn"
             >
+              <!-- Trip ID -->
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-mono text-gray-900">{{ trip._id || 'Nil' }}</div>
+                <div class="text-sm font-mono text-gray-900">{{ formatTripId(trip._id) }}</div>
+                <div class="text-xs text-gray-500">
+                  <span v-if="trip.isPrivate" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                    <IconLock class="h-3 w-3 mr-1" />
+                    Private
+                  </span>
+                </div>
               </td>
+
+              <!-- Passenger -->
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
                   <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                    <img src="@/assets/img/avatar-male.svg" alt="User avatar" />
+                    <IconUser class="h-5 w-5 text-gray-500" />
                   </div>
                   <div class="ml-4">
                     <div class="text-sm font-medium text-gray-900">
-                      {{ getFullName(trip?.primaryUserId) || 'Nil' }}
+                      {{ getFullName(trip.primaryUserId) }}
                     </div>
-                    <div class="text-sm text-gray-500">
-                      {{ trip?.primaryUserId?.email || 'Nil' }}
-                    </div>
+                    <div class="text-sm text-gray-500">{{ trip.primaryUserId?.email }}</div>
                   </div>
                 </div>
               </td>
+
+              <!-- Driver -->
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">{{ getFullName(trip?.driverId) || 'Nil' }}</div>
-                <div class="text-sm text-gray-500">{{ trip?.driverId?.email || 'Nil' }}</div>
+                <div class="flex items-center">
+                  <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                    <IconUserCheck class="h-5 w-5 text-gray-500" />
+                  </div>
+                  <div class="ml-4">
+                    <div class="text-sm font-medium text-gray-900">
+                      {{ getFullName(trip.driverId) }}
+                    </div>
+                    <div class="text-sm text-gray-500">{{ trip.driverId?.email }}</div>
+                  </div>
+                </div>
               </td>
+
+              <!-- Route -->
+              <td class="px-6 py-4">
+                <div class="max-w-xs">
+                  <div class="flex items-center text-sm text-gray-900 mb-1">
+                    <IconMapPin class="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
+                    <span class="truncate">{{ getOriginAddress(trip) }}</span>
+                  </div>
+                  <div class="flex items-center text-sm text-gray-500">
+                    <IconFlag class="h-4 w-4 text-red-500 mr-2 flex-shrink-0" />
+                    <span class="truncate">{{ getDestinationAddress(trip) }}</span>
+                  </div>
+                  <div class="text-xs text-gray-400 mt-1">
+                    {{ getDistanceInfo(trip) }}
+                  </div>
+                </div>
+              </td>
+
+              <!-- Status -->
               <td class="px-6 py-4 whitespace-nowrap">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize"
-                  :class="getStatusClass(trip?.status)">
-                  {{ trip?.status || 'Nil' }}
+                <span
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize"
+                  :class="getStatusClass(trip.status)"
+                >
+                  <span class="w-2 h-2 rounded-full mr-1" :class="getStatusDotClass(trip.status)"></span>
+                  {{ trip.status }}
                 </span>
+                <div v-if="trip.passengers.length > 0" class="text-xs text-gray-500 mt-1">
+                  Passenger: {{ trip.passengers[0].passengerStatus }}
+                </div>
               </td>
+
+              <!-- Type -->
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900 capitalize">{{ trip?.type || 'Nil' }}</div>
+                <div class="text-sm text-gray-900 capitalize">{{ trip.type }}</div>
                 <div class="text-sm text-gray-500">
-                  <span v-if="trip?.isScheduled" class="inline-flex items-center text-xs">
+                  <span v-if="trip.isScheduled" class="inline-flex items-center text-xs">
                     <IconCalendar class="h-3 w-3 mr-1" />
-                    {{ formatDate(trip?.scheduledFor || trip?.createdAt) }}
+                    {{ formatDate(trip.scheduledFor || trip.createdAt) }}
                   </span>
                   <span v-else class="text-xs">Immediate</span>
                 </div>
               </td>
+
+              <!-- Fare -->
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">{{ formatCurrency(getTotalFare(trip)) }}</div>
+                <div class="text-sm font-medium text-gray-900">
+                  {{ formatCurrency(getTotalFare(trip), getTotalFareCurrency(trip)) }}
+                </div>
+                <div class="text-xs text-gray-500">
+                  CAD ${{ getTotalFareCAD(trip).toFixed(2) }}
+                </div>
+                <div v-if="hasDiscount(trip)" class="text-xs text-green-600">
+                  Discount Applied
+                </div>
               </td>
+
+              <!-- Date -->
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ formatDate(trip?.createdAt) }}
+                <div>{{ formatDate(trip.createdAt) }}</div>
+                <div class="text-xs text-gray-400">
+                  Updated: {{ formatRelativeTime(trip.updatedAt) }}
+                </div>
               </td>
+
+              <!-- Actions -->
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium" @click.stop>
                 <div class="relative inline-block text-left">
-                  <button 
+                  <button
                     @click.stop="toggleDropdown(trip._id)"
                     class="p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                   >
                     <IconMoreVertical class="h-5 w-5 text-gray-500" />
                   </button>
-                  
-                  <div 
+
+                  <div
                     v-if="activeDropdown === trip._id"
                     class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 py-1"
                   >
-                    <button 
+                    <button
                       @click.stop="handleTripAction('view', trip)"
                       class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
                     >
                       <IconEye class="h-4 w-4 mr-2" />
                       View Details
                     </button>
-                    <button 
+                    <button
+                      v-if="canEditTrip(trip)"
                       @click.stop="handleTripAction('edit', trip)"
                       class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
                     >
                       <IconEdit class="h-4 w-4 mr-2" />
                       Edit Trip
                     </button>
-                    <button 
-                      v-if="trip.status !== 'cancelled' && trip.status !== 'completed'"
+                    <button
+                      v-if="canCancelTrip(trip)"
                       @click.stop="handleTripAction('cancel', trip)"
                       class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center"
                     >
                       <IconX class="h-4 w-4 mr-2" />
                       Cancel Trip
                     </button>
-                    <button 
-                      v-if="trip.isScheduled && trip.status !== 'cancelled' && trip.status !== 'completed'"
+                    <button
+                      v-if="canRescheduleTrip(trip)"
                       @click.stop="handleTripAction('reschedule', trip)"
                       class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
                     >
                       <IconCalendar class="h-4 w-4 mr-2" />
                       Reschedule
                     </button>
-                    <button 
+                    <button
                       @click.stop="handleTripAction('invoice', trip)"
                       class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
                     >
@@ -520,6 +331,100 @@
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <!-- Grid View -->
+      <div v-else class="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div
+          v-for="trip in trips"
+          :key="trip._id"
+          class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden animate-fadeIn relative hover:shadow-md transition-shadow duration-200"
+        >
+          <div class="p-4">
+            <!-- Header -->
+            <div class="flex justify-between items-start mb-4">
+              <div>
+                <div class="text-xs text-gray-500 font-mono mb-1">{{ formatTripId(trip._id) }}</div>
+                <span
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize"
+                  :class="getStatusClass(trip.status)"
+                >
+                  {{ trip.status }}
+                </span>
+                <span
+                  v-if="trip.isScheduled"
+                  class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                >
+                  Scheduled
+                </span>
+                <span
+                  v-if="trip.isPrivate"
+                  class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800"
+                >
+                  <IconLock class="h-3 w-3 mr-1" />
+                  Private
+                </span>
+              </div>
+              <div class="relative">
+                <button
+                  @click.stop="toggleDropdown(trip._id)"
+                  class="p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                >
+                  <IconMoreVertical class="h-5 w-5 text-gray-500" />
+                </button>
+              </div>
+            </div>
+
+            <!-- Passenger & Driver -->
+            <div class="space-y-3 mb-4">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                  <IconUser class="h-4 w-4 text-gray-500" />
+                </div>
+                <div class="ml-3">
+                  <div class="text-sm font-medium text-gray-900">{{ getFullName(trip.primaryUserId) }}</div>
+                  <div class="text-xs text-gray-500">{{ trip.primaryUserId?.email }}</div>
+                </div>
+              </div>
+
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                  <IconUserCheck class="h-4 w-4 text-gray-500" />
+                </div>
+                <div class="ml-3">
+                  <div class="text-sm font-medium text-gray-900">{{ getFullName(trip.driverId) }}</div>
+                  <div class="text-xs text-gray-500">{{ trip.driverId?.email }}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Route -->
+            <div class="space-y-2 mb-4">
+              <div class="flex items-center">
+                <IconMapPin class="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
+                <span class="text-sm truncate">{{ getOriginAddress(trip) }}</span>
+              </div>
+              <div class="flex items-center">
+                <IconFlag class="h-4 w-4 text-red-500 mr-2 flex-shrink-0" />
+                <span class="text-sm truncate">{{ getDestinationAddress(trip) }}</span>
+              </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="flex items-center justify-between pt-3 border-t border-gray-200">
+              <div class="flex items-center">
+                <IconClock class="h-4 w-4 text-gray-400 mr-1" />
+                <span class="text-xs text-gray-500">{{ formatRelativeTime(trip.createdAt) }}</span>
+              </div>
+              <div class="text-right">
+                <div class="text-sm font-medium">
+                  {{ formatCurrency(getTotalFare(trip), getTotalFareCurrency(trip)) }}
+                </div>
+                <div class="text-xs text-gray-500">CAD ${{ getTotalFareCAD(trip).toFixed(2) }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -689,12 +594,54 @@ import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useGetTrips } from "@/composables/modules/trips/useGetTrips"
 import { useCancelTrip } from "@/composables/modules/trips/useCancelTrip"
 import { useRescheduleTrip } from "@/composables/modules/trips/useRescheduleTrip"
+import { useRouter } from 'vue-router'
 
-const { loading, trips, pagination, changePage } = useGetTrips()
+const {
+  loading,
+  trips,
+  pagination,
+  filters: composableFilters,
+  changePage,
+  updateFilter,
+  clearFilters,
+} = useGetTrips()
 const { loading: cancelling, cancelTrip } = useCancelTrip()
 const { loading: rescheduling, rescheduleTrip } = useRescheduleTrip()
 
-import { useRouter } from 'vue-router'
+const activeDropdown = ref<string | null>(null)
+const scheduledFilter = ref("")
+const privacyFilter = ref("")
+
+const sortColumn = ref('createdAt')
+const sortDirection = ref<'asc' | 'desc'>('desc')
+const showExportModal = ref(false)
+const viewMode = ref<'list' | 'grid'>('list')
+
+// Computed properties
+const scheduledTripsCount = computed(() => trips.value.filter((trip) => trip.isScheduled).length)
+
+// Watchers for filter conversions
+watch(scheduledFilter, (newValue) => {
+  if (newValue === "scheduled") {
+    updateFilter("isScheduled", true)
+  } else if (newValue === "immediate") {
+    updateFilter("isScheduled", false)
+  } else {
+    updateFilter("isScheduled", undefined)
+  }
+})
+
+watch(privacyFilter, (newValue) => {
+  if (newValue === "private") {
+    updateFilter("isPrivate", true)
+  } else if (newValue === "public") {
+    updateFilter("isPrivate", false)
+  } else {
+    updateFilter("isPrivate", undefined)
+  }
+})
+
+
 import { 
   Search as IconSearch, 
   MoreVertical as IconMoreVertical,
@@ -778,11 +725,7 @@ const filters = ref({
   startDate: null as Date | null,
   endDate: null as Date | null
 })
-const sortColumn = ref('createdAt')
-const sortDirection = ref<'asc' | 'desc'>('desc')
-const showExportModal = ref(false)
-const viewMode = ref<'list' | 'grid'>('list')
-const activeDropdown = ref<string | null>(null)
+
 
 // Cancel Trip Modal State
 const showCancelModal = ref(false)
@@ -817,6 +760,24 @@ const scheduledTrips = computed(() => {
   return trips.value.filter(trip => trip.isScheduled).length
 })
 
+const formatTripId = (id: string): string => {
+  return id.slice(-8).toUpperCase()
+}
+
+// Trip action permissions
+const canEditTrip = (trip: Trip): boolean => {
+  return !["completed", "cancelled"].includes(trip.status)
+}
+
+const canCancelTrip = (trip: Trip): boolean => {
+  return !["completed", "cancelled"].includes(trip.status)
+}
+
+const canRescheduleTrip = (trip: Trip): boolean => {
+  return trip.isScheduled && !["completed", "cancelled"].includes(trip.status)
+}
+
+
 // Mobile detection
 const $isMobile = computed(() => {
   return window.innerWidth < 768
@@ -843,6 +804,20 @@ const getStatusClass = (status: string) => {
   return statusClasses[status] || 'bg-gray-100 text-gray-800'
 }
 
+const getDistanceInfo = (trip: Trip): string => {
+  const passenger = trip.passengers?.[0]
+  if (!passenger?.origin?.geometry?.coordinates || !passenger?.destination?.geometry?.coordinates) {
+    return "Distance: N/A"
+  }
+
+  // Calculate approximate distance (this is a simplified calculation)
+  const [lon1, lat1] = passenger.origin.geometry.coordinates
+  const [lon2, lat2] = passenger.destination.geometry.coordinates
+  const distance = Math.sqrt(Math.pow(lon2 - lon1, 2) + Math.pow(lat2 - lat1, 2)) * 111 // Rough km conversion
+  return `~${distance.toFixed(1)} km`
+}
+
+
 const getOriginAddress = (trip: Trip) => {
   if (trip.passengers && trip.passengers.length > 0) {
     return trip.passengers[0].origin.properties.address || 'Nil'
@@ -857,12 +832,6 @@ const getDestinationAddress = (trip: Trip) => {
   return 'Nil'
 }
 
-const getTotalFare = (trip: Trip) => {
-  if (trip.passengers && trip.passengers.length > 0) {
-    return trip.passengers.reduce((total, passenger) => total + passenger.totalFare, 0)
-  }
-  return 0
-}
 
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('en-NG', {
@@ -870,6 +839,36 @@ const formatCurrency = (amount: number) => {
     currency: 'NGN',
     minimumFractionDigits: 0
   }).format(amount)
+}
+
+const getTotalFare = (trip: Trip): number => {
+  return trip.passengers?.[0]?.totalFare?.priceInUserCurrency || 0
+}
+
+const getTotalFareCAD = (trip: Trip): number => {
+  return trip.passengers?.[0]?.totalFare?.priceInCAD || 0
+}
+
+const getTotalFareCurrency = (trip: Trip): string => {
+  return trip.passengers?.[0]?.totalFare?.currencySymbol || "NGN"
+}
+
+const hasDiscount = (trip: Trip): boolean => {
+  return (trip.passengers?.[0]?.discount?.priceInUserCurrency || 0) > 0
+}
+
+
+const formatRelativeTime = (dateString: string): string => {
+  if (!dateString) return "N/A"
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
+
+  if (diffInHours < 1) return "Just now"
+  if (diffInHours < 24) return `${diffInHours}h ago`
+  const diffInDays = Math.floor(diffInHours / 24)
+  if (diffInDays < 7) return `${diffInDays}d ago`
+  return formatDate(dateString)
 }
 
 const formatDate = (dateString: string) => {
@@ -894,6 +893,17 @@ const formatDate = (dateString: string) => {
       minute: '2-digit'
     })
   }
+}
+
+const getStatusDotClass = (status: string): string => {
+  const statusClasses: Record<string, string> = {
+    pending: "bg-yellow-400",
+    active: "bg-blue-400",
+    completed: "bg-green-400",
+    cancelled: "bg-red-400",
+    "in-progress": "bg-indigo-400",
+  }
+  return statusClasses[status] || "bg-gray-400"
 }
 
 const sortBy = (column: string) => {
@@ -1312,3 +1322,4 @@ definePageMeta({
   animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 </style>
+

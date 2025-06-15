@@ -44,7 +44,7 @@
  <div class="pt-6">
   <button 
             type="submit" 
-            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-primary-foreground bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors"
+            class="w-full flex disabled:cursor-not-allowed disabled:opacity-25 justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-primary-foreground bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors"
             :disabled="isLoading"
           >
             <span v-if="isLoading" class="flex items-center">

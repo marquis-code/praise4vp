@@ -4,7 +4,7 @@
       title="Passengers" 
       description="Manage and monitor all ride-hailing service passengers"
     />
-    <!-- {{totalBalance}} -->
+    
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 animate-fadeIn">
       <ModulesPassengersStatsCard 
@@ -14,39 +14,58 @@
         color="primary"
       />
       <ModulesPassengersStatsCard 
-        title="Verified Passengers" 
-        :value="verifiedPassengersCount" 
-        icon="users" 
+        title="ID Verified" 
+        :value="idVerifiedCount" 
+        icon="shield-check" 
         color="green"
         :change="8"
       />
       <ModulesPassengersStatsCard 
         title="Email Verified" 
         :value="emailVerifiedCount" 
-        icon="user" 
+        icon="mail-check" 
         color="blue"
         :change="12"
       />
       <ModulesPassengersStatsCard 
-        title="Total Balance in Naira" 
-        :value="totalBalance" 
+        title="Phone Verified" 
+        :value="phoneVerifiedCount" 
+        icon="phone-check" 
+        color="purple"
+        :change="5"
+      />
+    </div>
+
+    <!-- Additional Stats Row -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 animate-fadeIn">
+      <ModulesPassengersStatsCard 
+        title="Total Balance (NGN)" 
+        :value="totalNGNBalance" 
         icon="wallet" 
         color="yellow"
         :change="5"
       />
-
       <ModulesPassengersStatsCard 
-        title="Total Balance in CAD" 
+        title="Total Balance (CAD)" 
         :value="totalCADBalance" 
         icon="wallet" 
-        color="yellow"
-        :change="5"
+        color="orange"
+        :change="3"
+      />
+      <ModulesPassengersStatsCard 
+        title="Active Drivers" 
+        :value="activeDriversCount" 
+        icon="car" 
+        color="indigo"
+        :change="7"
       />
     </div>
     
     <!-- Filters -->
     <ModulesPassengersFilter 
       :auth-providers="uniqueAuthProviders"
+      :verification-statuses="uniqueVerificationStatuses"
+      :countries="uniqueCountries"
       v-model:filters="filters"
     />
     
@@ -56,7 +75,7 @@
         <input
           v-model="searchQuery"
           type="text"
-          placeholder="Search passengers..."
+          placeholder="Search by name, email, phone, or ID..."
           class="pl-10 pr-4 py-3 w-full border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
         />
         <span class="absolute left-3 top-2.5 text-gray-400">
@@ -90,13 +109,6 @@
           <Download class="h-4 w-4 mr-2" />
           Export
         </button>
-        
-        <!-- <button 
-          class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-150 flex items-center"
-        >
-          <Plus class="h-4 w-4 mr-2" />
-          Add Passenger
-        </button> -->
       </div>
     </div>
     
@@ -119,8 +131,33 @@
       <div 
         v-for="passenger in paginatedPassengers" 
         :key="passenger._id" 
-        class="bg-white rounded-lg shadow overflow-hidden relative"
+        class="bg-white rounded-lg shadow overflow-hidden relative hover:shadow-lg transition-shadow duration-200"
       >
+        <!-- Verification Badges -->
+        <div class="absolute top-2 right-2 flex flex-col space-y-1">
+          <div 
+            v-if="passenger.IDIsVerified" 
+            class="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full flex items-center"
+          >
+            <CheckCircle class="h-3 w-3 mr-1" />
+            ID Verified
+          </div>
+          <div 
+            v-if="passenger.emailIsVerified" 
+            class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full flex items-center"
+          >
+            <Mail class="h-3 w-3 mr-1" />
+            Email
+          </div>
+          <div 
+            v-if="passenger.phoneIsVerified" 
+            class="bg-purple-100 text-purple-800 text-xs font-medium px-2 py-1 rounded-full flex items-center"
+          >
+            <Phone class="h-3 w-3 mr-1" />
+            Phone
+          </div>
+        </div>
+
         <!-- Passenger Card Content -->
         <div class="p-6">
           <div class="flex items-center justify-between mb-4">
@@ -135,9 +172,16 @@
                 <User v-else class="h-full w-full p-2 text-gray-500" />
               </div>
               <div class="ml-4">
-                <h3 class="text-lg font-semibold text-gray-900">{{ passenger.firstName }} {{ passenger.lastName }}</h3>
-                <div class="flex items-center">
-                  <span class="text-sm text-gray-500">{{ formatDate(passenger.createdAt) }}</span>
+                <h3 class="text-lg font-semibold text-gray-900">
+                  {{ passenger.firstName }} {{ passenger.lastName }}
+                </h3>
+                <div class="flex items-center text-sm text-gray-500">
+                  <span>{{ formatDate(passenger.createdAt) }}</span>
+                  <span class="mx-2">•</span>
+                  <span class="flex items-center">
+                    <MapPin class="h-3 w-3 mr-1" />
+                    {{ passenger.countryCode }}
+                  </span>
                 </div>
               </div>
             </div>
@@ -172,9 +216,11 @@
                 <button 
                   @click="showDisableConfirmation(passenger)"
                   class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center"
+                  :class="{ 'opacity-50 cursor-not-allowed': passenger.isDisabled }"
+                  :disabled="passenger.isDisabled"
                 >
                   <Ban class="h-4 w-4 mr-2" />
-                  Disable Account
+                  {{ passenger.isDisabled ? 'Already Disabled' : 'Disable Account' }}
                 </button>
               </div>
             </div>
@@ -183,7 +229,7 @@
           <div class="grid grid-cols-2 gap-4 mb-4">
             <div>
               <p class="text-xs text-gray-500 mb-1">Email</p>
-              <p class="text-sm font-medium">{{ passenger.email }}</p>
+              <p class="text-sm font-medium truncate" :title="passenger.email">{{ passenger.email }}</p>
             </div>
             <div>
               <p class="text-xs text-gray-500 mb-1">Phone</p>
@@ -194,18 +240,48 @@
               <p class="text-sm font-medium capitalize">{{ passenger.authProvider }}</p>
             </div>
             <div>
-              <p class="text-xs text-gray-500 mb-1">Wallet Balance</p>
-              <p class="text-sm font-medium">{{ formatCurrency(passenger.walletBalance) }}</p>
+              <p class="text-xs text-gray-500 mb-1">Registration Step</p>
+              <p class="text-sm font-medium">{{ passenger.currentRegistrationStep }}/3</p>
+            </div>
+          </div>
+
+          <!-- Wallet Balance Section -->
+          <div class="mb-4 p-3 bg-gray-50 rounded-lg">
+            <p class="text-xs text-gray-500 mb-2">Wallet Balance</p>
+            <div class="space-y-1">
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-600">{{ getWalletCurrency(passenger) }}:</span>
+                <span class="text-sm font-semibold">{{ formatWalletBalance(passenger) }}</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-600">CAD:</span>
+                <span class="text-sm font-semibold">{{ formatCADBalance(passenger) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Driver Status -->
+          <div v-if="passenger.hasDriverAccount" class="mb-4 p-3 bg-blue-50 rounded-lg">
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-medium text-blue-800">Driver Account</span>
+              <Car class="h-4 w-4 text-blue-600" />
+            </div>
+            <div class="mt-2 text-xs text-blue-600">
+              <p>Car: {{ getDriverCarInfo(passenger) }}</p>
+              <p>Rating: {{ passenger.driverData?.rating || 0 }}/5</p>
             </div>
           </div>
           
-          <div class="flex items-center text-sm text-gray-500">
+          <div class="flex items-center justify-between text-sm">
             <span class="inline-flex items-center">
               <span 
-                class="w-2 h-2 rounded-full mr-1"
-                :class="passenger.isDisabled ? 'bg-red-500' : 'bg-green-500'"
+                class="w-2 h-2 rounded-full mr-2"
+                :class="getStatusColor(passenger)"
               ></span>
-              {{ passenger.isDisabled ? 'Disabled' : 'Active' }}
+              {{ getStatusText(passenger) }}
+            </span>
+            <span class="text-gray-500">
+              ID: {{ passenger._id.slice(-8) }}
             </span>
           </div>
         </div>
@@ -218,15 +294,6 @@
             View Details
           </button>
         </div>
-        
-        <!-- Verification Badge -->
-        <div 
-          v-if="passenger.IDIsVerified" 
-          class="absolute top-2 right-2 bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center"
-        >
-          <CheckCircle class="h-3 w-3 mr-1" />
-          Verified
-        </div>
       </div>
     </div>
     
@@ -236,22 +303,22 @@
         <thead class="bg-gray-50">
           <tr>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              ID
-            </th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Passenger
             </th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Contact
             </th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Status
+              Verification Status
             </th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Auth Provider
+              Wallet Balance
             </th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Wallet
+              Account Status
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Registration
             </th>
             <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
               Actions
@@ -259,10 +326,7 @@
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          <tr v-for="passenger in paginatedPassengers" :key="passenger._id">
-            <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm">{{ passenger._id }}</div>
-            </td>
+          <tr v-for="passenger in paginatedPassengers" :key="passenger._id" class="hover:bg-gray-50">
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="flex items-center">
                 <div class="h-10 w-10 rounded-full bg-gray-200 overflow-hidden">
@@ -278,8 +342,11 @@
                   <div class="text-sm font-medium text-gray-900">
                     {{ passenger.firstName }} {{ passenger.lastName }}
                   </div>
-                  <div class="text-xs text-gray-500">
-                    {{ formatDate(passenger.createdAt) }}
+                  <div class="text-xs text-gray-500 flex items-center">
+                    <span>{{ formatDate(passenger.createdAt) }}</span>
+                    <span class="mx-1">•</span>
+                    <MapPin class="h-3 w-3 mr-1" />
+                    <span>{{ passenger.countryCode }}</span>
                   </div>
                 </div>
               </div>
@@ -289,24 +356,50 @@
               <div class="text-xs text-gray-500">{{ passenger.phone || 'No phone' }}</div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <span 
-                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
-                :class="passenger.IDIsVerified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'"
-              >
-                {{ passenger.IDIsVerified ? 'Verified' : 'Unverified' }}
-              </span>
-              <span 
-                v-if="passenger.isDisabled"
-                class="ml-1 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800"
-              >
-                Disabled
-              </span>
+              <div class="flex flex-col space-y-1">
+                <span 
+                  class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full w-fit"
+                  :class="passenger.IDIsVerified ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                >
+                  ID: {{ passenger.IDIsVerified ? 'Verified' : 'Unverified' }}
+                </span>
+                <span 
+                  class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full w-fit"
+                  :class="passenger.emailIsVerified ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'"
+                >
+                  Email: {{ passenger.emailIsVerified ? 'Verified' : 'Unverified' }}
+                </span>
+                <span 
+                  class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full w-fit"
+                  :class="passenger.phoneIsVerified ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'"
+                >
+                  Phone: {{ passenger.phoneIsVerified ? 'Verified' : 'Unverified' }}
+                </span>
+              </div>
             </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">
-              {{ passenger.authProvider }}
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-900">{{ formatWalletBalance(passenger) }}</div>
+              <div class="text-xs text-gray-500">{{ formatCADBalance(passenger) }}</div>
             </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              {{ formatCurrency(passenger.walletBalance) }}
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex flex-col space-y-1">
+                <span 
+                  class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full w-fit"
+                  :class="passenger.isDisabled ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'"
+                >
+                  {{ passenger.isDisabled ? 'Disabled' : 'Active' }}
+                </span>
+                <span 
+                  v-if="passenger.hasDriverAccount"
+                  class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 w-fit"
+                >
+                  Driver
+                </span>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-900">Step {{ passenger.currentRegistrationStep }}/3</div>
+              <div class="text-xs text-gray-500 capitalize">{{ passenger.authProvider }}</div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
               <div class="relative inline-block text-left">
@@ -338,9 +431,11 @@
                   <button 
                     @click="showDisableConfirmation(passenger)"
                     class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center"
+                    :class="{ 'opacity-50 cursor-not-allowed': passenger.isDisabled }"
+                    :disabled="passenger.isDisabled"
                   >
                     <Ban class="h-4 w-4 mr-2" />
-                    Disable Account
+                    {{ passenger.isDisabled ? 'Already Disabled' : 'Disable Account' }}
                   </button>
                 </div>
               </div>
@@ -579,18 +674,70 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { 
-  Search, Download, Plus, UserX, ChevronLeft, ChevronRight, ChevronDown,
-  MoreVertical, Eye, Edit, Ban, User, CheckCircle, Grid, List, AlertTriangle, X
+  Search, Download, UserX, MoreVertical, Eye, Edit, Ban, User, CheckCircle, 
+  Grid, List, AlertTriangle, X, Mail, Phone, MapPin, Car
 } from 'lucide-vue-next';
 import { useGetPassengers } from "@/composables/modules/passengers/useGetPassengers";
-import { Passenger } from '@/types/passenger';
 import { definePageMeta } from '#imports'
+
+// Types
+interface Passenger {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  photoURL?: string;
+  dob?: string;
+  IDIsVerified: boolean;
+  IDVerificationStatus: string;
+  emailIsVerified: boolean;
+  phoneIsVerified: boolean;
+  hasTransactionPin: boolean;
+  hasDriverAccount: boolean;
+  driverData?: {
+    carBrand?: string;
+    carModel?: string;
+    carColor?: string;
+    plateNumber?: string;
+    rating?: number;
+    walletBalance?: {
+      priceInCAD: number;
+      priceInUserCurrency: number;
+      rate: number;
+      currencySymbol: string;
+      currencyName: string;
+    };
+  };
+  currentRegistrationStep: number;
+  authProvider: string;
+  rating: number;
+  timeZone: string;
+  countryCode: string;
+  createdAt: string;
+  updatedAt: string;
+  isDisabled: boolean;
+  notificationPreference?: {
+    SMS: boolean;
+    email: boolean;
+    push: boolean;
+  };
+}
 
 definePageMeta({
   layout: 'dashboard'
 });
 
-const { loading: fetchingPassengers, passengers: passengersList, pagination, changePage } = useGetPassengers();
+const { 
+  loading: fetchingPassengers, 
+  passengers: passengersList, 
+  pagination, 
+  changePage,   
+  filters: composableFilters,
+  updateFilter,
+  updateFilters,
+  clearFilters 
+} = useGetPassengers();
 
 // View mode
 const viewMode = ref<'grid' | 'list'>('list');
@@ -605,7 +752,9 @@ const filters = ref({
   authProvider: '',
   verificationStatus: '',
   emailVerified: '',
-  sortBy: 'walletBalance'
+  phoneVerified: '',
+  countryCode: '',
+  sortBy: 'newest'
 });
 
 // Dropdown state
@@ -639,6 +788,8 @@ const personalFields = [
   { key: 'email', label: 'Email' },
   { key: 'phone', label: 'Phone Number' },
   { key: 'dob', label: 'Date of Birth' },
+  { key: 'countryCode', label: 'Country' },
+  { key: 'timeZone', label: 'Time Zone' },
   { key: 'createdAt', label: 'Registration Date' }
 ];
 
@@ -646,7 +797,9 @@ const accountFields = [
   { key: 'walletBalance', label: 'Wallet Balance' },
   { key: 'authProvider', label: 'Auth Provider' },
   { key: 'isDisabled', label: 'Account Status' },
-  { key: 'currentRegistrationStep', label: 'Registration Step' }
+  { key: 'currentRegistrationStep', label: 'Registration Step' },
+  { key: 'hasDriverAccount', label: 'Driver Account' },
+  { key: 'hasTransactionPin', label: 'Transaction PIN' }
 ];
 
 const verificationFields = [
@@ -668,7 +821,82 @@ const allFieldsSelected = computed(() => {
   return selectedFields.value.length === allFields.value.length;
 });
 
-// Computed properties
+// Computed properties for stats
+const idVerifiedCount = computed(() => {
+  return passengersList.value.filter(passenger => passenger.IDIsVerified).length;
+});
+
+const emailVerifiedCount = computed(() => {
+  return passengersList.value.filter(passenger => passenger.emailIsVerified).length;
+});
+
+const phoneVerifiedCount = computed(() => {
+  return passengersList.value.filter(passenger => passenger.phoneIsVerified).length;
+});
+
+const activeDriversCount = computed(() => {
+  return passengersList.value.filter(passenger => passenger.hasDriverAccount).length;
+});
+
+const totalNGNBalance = computed(() => {
+  const total = passengersList.value.reduce((sum, passenger) => {
+    const balance = passenger.driverData?.walletBalance?.priceInUserCurrency || 0;
+    const currency = passenger.driverData?.walletBalance?.currencyName;
+    return currency === 'NGN' ? sum + balance : sum;
+  }, 0);
+
+  return new Intl.NumberFormat('en-NG', {
+    style: 'currency',
+    currency: 'NGN',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(total);
+});
+
+const totalCADBalance = computed(() => {
+  const total = passengersList.value.reduce((sum, passenger) => 
+    sum + (passenger.driverData?.walletBalance?.priceInCAD || 0), 0
+  );
+
+  return new Intl.NumberFormat('en-CA', {
+    style: 'currency',
+    currency: 'CAD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(total);
+});
+
+const uniqueAuthProviders = computed(() => {
+  const providers = new Set<string>();
+  passengersList.value.forEach(passenger => {
+    if (passenger.authProvider) {
+      providers.add(passenger.authProvider);
+    }
+  });
+  return Array.from(providers);
+});
+
+const uniqueVerificationStatuses = computed(() => {
+  const statuses = new Set<string>();
+  passengersList.value.forEach(passenger => {
+    if (passenger.IDVerificationStatus) {
+      statuses.add(passenger.IDVerificationStatus);
+    }
+  });
+  return Array.from(statuses);
+});
+
+const uniqueCountries = computed(() => {
+  const countries = new Set<string>();
+  passengersList.value.forEach(passenger => {
+    if (passenger.countryCode) {
+      countries.add(passenger.countryCode);
+    }
+  });
+  return Array.from(countries);
+});
+
+// Filtered passengers
 const filteredPassengers = computed(() => {
   let result = [...passengersList.value];
   
@@ -678,7 +906,9 @@ const filteredPassengers = computed(() => {
     result = result.filter(passenger => 
       passenger.firstName.toLowerCase().includes(query) ||
       passenger.lastName.toLowerCase().includes(query) ||
-      passenger.email.toLowerCase().includes(query)
+      passenger.email.toLowerCase().includes(query) ||
+      passenger.phone?.toLowerCase().includes(query) ||
+      passenger._id.toLowerCase().includes(query)
     );
   }
   
@@ -695,11 +925,24 @@ const filteredPassengers = computed(() => {
     const isVerified = filters.value.emailVerified === 'true';
     result = result.filter(passenger => passenger.emailIsVerified === isVerified);
   }
+
+  if (filters.value.phoneVerified) {
+    const isVerified = filters.value.phoneVerified === 'true';
+    result = result.filter(passenger => passenger.phoneIsVerified === isVerified);
+  }
+
+  if (filters.value.countryCode) {
+    result = result.filter(passenger => passenger.countryCode === filters.value.countryCode);
+  }
   
   // Apply sorting
   switch (filters.value.sortBy) {
     case 'walletBalance':
-      result.sort((a, b) => b.walletBalance - a.walletBalance);
+      result.sort((a, b) => {
+        const balanceA = a.driverData?.walletBalance?.priceInUserCurrency || 0;
+        const balanceB = b.driverData?.walletBalance?.priceInUserCurrency || 0;
+        return balanceB - balanceA;
+      });
       break;
     case 'name':
       result.sort((a, b) => {
@@ -730,61 +973,6 @@ const paginatedPassengers = computed(() => {
   return filteredPassengers.value.slice(start, end);
 });
 
-const totalPages = computed(() => {
-  return Math.ceil(filteredPassengers.value.length / itemsPerPage);
-});
-
-const startIndex = computed(() => {
-  return (currentPage.value - 1) * itemsPerPage;
-});
-
-const endIndex = computed(() => {
-  const end = startIndex.value + itemsPerPage;
-  return end > filteredPassengers.value.length ? filteredPassengers.value.length : end;
-});
-
-const uniqueAuthProviders = computed(() => {
-  const providers = new Set<string>();
-  passengersList.value.forEach(passenger => {
-    if (passenger.authProvider) {
-      providers.add(passenger.authProvider);
-    }
-  });
-  return Array.from(providers);
-});
-
-const verifiedPassengersCount = computed(() => {
-  return passengersList.value.filter(passenger => passenger.IDIsVerified).length;
-});
-
-const emailVerifiedCount = computed(() => {
-  return passengersList.value.filter(passenger => passenger.emailIsVerified).length;
-});
-
-const totalBalance = computed(() => {
-  const total = passengersList.value.reduce((sum, passenger) => sum + passenger?.driverData?.walletBalance?.priceInUserCurrency, 0);
-  return new Intl.NumberFormat('en-NG', {
-    style: 'currency',
-    currency: 'NGN',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  }).format(total);
-});
-
-const totalCADBalance = computed(() => {
-  const total = passengersList.value.reduce((sum, passenger) => 
-    sum + (passenger?.driverData?.walletBalance?.priceInCAD || 0), 0
-  );
-
-  return new Intl.NumberFormat('en-CA', {
-    style: 'currency',
-    currency: 'CAD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  }).format(total);
-});
-
-
 // Reset pagination when filters change
 watch([filters, searchQuery], () => {
   currentPage.value = 1;
@@ -806,19 +994,74 @@ onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside);
 });
 
-// Methods
-const nextPage = () => {
-  if (currentPage.value < totalPages.value) {
-    currentPage.value++;
-  }
+// Helper methods
+const getWalletCurrency = (passenger: Passenger): string => {
+  return passenger.driverData?.walletBalance?.currencySymbol || 'NGN';
 };
 
-const prevPage = () => {
-  if (currentPage.value > 1) {
-    currentPage.value--;
+const formatWalletBalance = (passenger: Passenger): string => {
+  const balance = passenger.driverData?.walletBalance?.priceInUserCurrency || 0;
+  const currency = passenger.driverData?.walletBalance?.currencySymbol || 'NGN';
+  
+  if (currency === 'NGN') {
+    return new Intl.NumberFormat('en-NG', {
+      style: 'currency',
+      currency: 'NGN',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(balance);
   }
+  
+  return `${currency} ${balance.toLocaleString()}`;
 };
 
+const formatCADBalance = (passenger: Passenger): string => {
+  const balance = passenger.driverData?.walletBalance?.priceInCAD || 0;
+  return new Intl.NumberFormat('en-CA', {
+    style: 'currency',
+    currency: 'CAD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(balance);
+};
+
+const getDriverCarInfo = (passenger: Passenger): string => {
+  const driverData = passenger.driverData;
+  if (!driverData) return 'N/A';
+  
+  const parts = [
+    driverData.carBrand,
+    driverData.carModel,
+    driverData.carColor
+  ].filter(Boolean);
+  
+  return parts.length > 0 ? parts.join(' ') : 'Not specified';
+};
+
+const getStatusColor = (passenger: Passenger): string => {
+  if (passenger.isDisabled) return 'bg-red-500';
+  if (passenger.IDIsVerified && passenger.emailIsVerified) return 'bg-green-500';
+  if (passenger.emailIsVerified) return 'bg-yellow-500';
+  return 'bg-gray-500';
+};
+
+const getStatusText = (passenger: Passenger): string => {
+  if (passenger.isDisabled) return 'Disabled';
+  if (passenger.IDIsVerified && passenger.emailIsVerified) return 'Fully Verified';
+  if (passenger.emailIsVerified) return 'Email Verified';
+  return 'Unverified';
+};
+
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat('en-US', { 
+    month: 'short', 
+    day: 'numeric', 
+    year: 'numeric' 
+  }).format(date);
+};
+
+// Action methods
 const toggleDropdown = (passengerId: string) => {
   // Stop event propagation to prevent immediate closing
   event?.stopPropagation();
@@ -832,19 +1075,19 @@ const toggleDropdown = (passengerId: string) => {
 
 const viewPassengerDetails = (passenger: Passenger) => {
   activeDropdown.value = null;
-  // Navigate to passenger details page
   console.log('View passenger details:', passenger._id);
   navigateTo(`/dashboard/passengers/${passenger._id}`);
 };
 
 const editPassenger = (passenger: Passenger) => {
   activeDropdown.value = null;
-  // Navigate to edit passenger page
   console.log('Edit passenger:', passenger._id);
-  // navigateTo(`/passengers/${passenger._id}/edit`);
+  // navigateTo(`/dashboard/passengers/${passenger._id}/edit`);
 };
 
 const showDisableConfirmation = (passenger: Passenger) => {
+  if (passenger.isDisabled) return;
+  
   activeDropdown.value = null;
   selectedPassenger.value = passenger;
   showModal.value = true;
@@ -865,18 +1108,6 @@ const disableAccount = async () => {
   try {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    // Make actual API call here
-    // const response = await fetch(`/api/passengers/${selectedPassenger.value._id}/disable`, {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json'
-    //   }
-    // });
-    
-    // if (!response.ok) {
-    //   throw new Error('Failed to disable passenger account');
-    // }
     
     // Show success toast
     toastMessage.value = `${selectedPassenger.value.firstName} ${selectedPassenger.value.lastName}'s account has been disabled.`;
@@ -954,25 +1185,21 @@ const formatValueForExport = (value: any, key: string) => {
 
 // Export data as CSV
 const exportAsCSV = (data: any[], fields: string[], includeHeaders: boolean) => {
-  // Create headers row if needed
   let csv = '';
   
   if (includeHeaders) {
     const headers = fields.map(field => {
-      // Find the field label
       const fieldDef = allFields.value.find(f => f.key === field);
       return fieldDef ? fieldDef.label : field;
     });
     csv += headers.join(',') + '\n';
   }
   
-  // Add data rows
   data.forEach(item => {
     const row = fields.map(field => {
       const value = getNestedValue(item, field);
       const formattedValue = formatValueForExport(value, field);
       
-      // Escape commas and quotes
       if (formattedValue.includes(',') || formattedValue.includes('"') || formattedValue.includes('\n')) {
         return `"${formattedValue.replace(/"/g, '""')}"`;
       }
@@ -997,61 +1224,6 @@ const downloadFile = (content: string, fileName: string, mimeType: string) => {
   URL.revokeObjectURL(url);
 };
 
-// Generate PDF content
-const generatePDFContent = async (data: any[], fields: string[], includeHeaders: boolean) => {
-  // This is a placeholder for PDF generation
-  // In a real implementation, you would use a library like jspdf or pdfmake
-  
-  // For demonstration purposes, we'll create a simple HTML structure
-  // that could be converted to PDF with a proper library
-  
-  let html = `
-    <html>
-    <head>
-      <style>
-        body { font-family: Arial, sans-serif; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        .title { text-align: center; margin-bottom: 20px; }
-      </style>
-    </head>
-    <body>
-      <h1 class="title">Passengers Report</h1>
-      <table>
-  `;
-  
-  // Add headers if needed
-  if (includeHeaders) {
-    html += '<tr>';
-    fields.forEach(field => {
-      const fieldDef = allFields.value.find(f => f.key === field);
-      html += `<th>${fieldDef ? fieldDef.label : field}</th>`;
-    });
-    html += '</tr>';
-  }
-  
-  // Add data rows
-  data.forEach(item => {
-    html += '<tr>';
-    fields.forEach(field => {
-      const value = getNestedValue(item, field);
-      const formattedValue = formatValueForExport(value, field);
-      html += `<td>${formattedValue}</td>`;
-    });
-    html += '</tr>';
-  });
-  
-  html += `
-      </table>
-      <p style="text-align: right; margin-top: 20px;">Generated on ${new Date().toLocaleString()}</p>
-    </body>
-    </html>
-  `;
-  
-  return html;
-};
-
 // Export data
 const exportData = async () => {
   if (selectedFields.value.length === 0) {
@@ -1064,14 +1236,10 @@ const exportData = async () => {
   isExporting.value = true;
   
   try {
-    // Determine which data to export
     const dataToExport = exportOptions.value.onlyFiltered ? filteredPassengers.value : passengersList.value;
-    
-    // Generate timestamp for filename
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     
     if (exportFormat.value === 'csv') {
-      // Export as CSV
       const csvContent = exportAsCSV(
         dataToExport, 
         selectedFields.value, 
@@ -1079,23 +1247,10 @@ const exportData = async () => {
       );
       
       downloadFile(csvContent, `passengers-export-${timestamp}.csv`, 'text/csv');
-      
       toastMessage.value = `Successfully exported ${dataToExport.length} passengers to CSV.`;
     } else {
-      // Export as PDF
-      // In a real implementation, you would use a PDF library
-      // For this example, we'll generate HTML that could be converted to PDF
-      const pdfContent = await generatePDFContent(
-        dataToExport,
-        selectedFields.value,
-        exportOptions.value.includeHeaders
-      );
-      
-      // For demonstration, we'll download this as an HTML file
-      // In a real app, you would convert this to PDF using a library
-      downloadFile(pdfContent, `passengers-export-${timestamp}.html`, 'text/html');
-      
-      toastMessage.value = `Successfully exported ${dataToExport.length} passengers to PDF.`;
+      // For PDF export, you would implement PDF generation here
+      toastMessage.value = 'PDF export feature coming soon!';
     }
     
     showToast.value = true;
@@ -1110,25 +1265,6 @@ const exportData = async () => {
   } finally {
     isExporting.value = false;
   }
-};
-
-// Helper functions
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat('en-US', { 
-    month: 'short', 
-    day: 'numeric', 
-    year: 'numeric' 
-  }).format(date);
-};
-
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('en-NG', {
-    style: 'currency',
-    currency: 'NGN',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  }).format(amount);
 };
 </script>
 

@@ -144,11 +144,11 @@
             <p class="text-gray-500">No upcoming rides scheduled</p>
           </div>
           <ul v-else class="divide-y divide-gray-200">
-            <li v-for="trip in upcomingTrips" :key="trip._id" class="py-4">
+            <NuxtLink :to="`/dashboard/trips/${trip._id}`" v-for="trip in upcomingTrips" :key="trip._id" class="py-4 block">
               <div class="flex items-center space-x-4">
                 <div class="flex-shrink-0">
                   <img 
-                    :src="trip.driverId?.firstName ? `/placeholder.svg?height=40&width=40` : '/placeholder.svg?height=40&width=40'" 
+                    src="@/assets/img/avatar-male.svg" 
                     alt="Driver avatar" 
                     class="h-10 w-10 rounded-full"
                   />
@@ -175,7 +175,7 @@
                   </span>
                 </div>
               </div>
-            </li>
+            </NuxtLink>
           </ul>
         </div>
       </div>
