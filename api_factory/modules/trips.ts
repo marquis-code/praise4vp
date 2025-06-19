@@ -177,4 +177,60 @@ export const trips_api = {
     const url = `/trips/${id}/reschedule-trip`
     return GATEWAY_ENDPOINT.patch(url, { scheduledFor: newDateTime, reason })
   },
+
+    $_fetch_driver_trip_history: (id: string, params: GetTripHistoryParams = {}) => {
+    const { page = 1, limit = 10, status, type, isPrivate, isScheduled, startDate, endDate, search } = params
+
+    // Build query parameters object, only including defined values
+    const queryParams: Record<string, string | number | boolean> = {
+      page,
+      limit,
+    }
+
+    // Add optional parameters only if they exist
+    if (status) queryParams.status = status
+    if (type) queryParams.type = type
+    if (isPrivate !== undefined) queryParams.isPrivate = isPrivate
+    if (isScheduled !== undefined) queryParams.isScheduled = isScheduled
+    if (startDate) queryParams.startDate = startDate
+    if (endDate) queryParams.endDate = endDate
+    if (search) queryParams.search = search
+
+    // Convert to URL search params
+    const searchParams = new URLSearchParams()
+    Object.entries(queryParams).forEach(([key, value]) => {
+      searchParams.append(key, String(value))
+    })
+
+    const url = `/trips/drivers/${id}?${searchParams.toString()}`
+    return GATEWAY_ENDPOINT.get(url)
+  },
+
+    $_fetch_passenger_trip_history: (id: string, params: GetTripHistoryParams = {}) => {
+    const { page = 1, limit = 10, status, type, isPrivate, isScheduled, startDate, endDate, search } = params
+
+    // Build query parameters object, only including defined values
+    const queryParams: Record<string, string | number | boolean> = {
+      page,
+      limit,
+    }
+
+    // Add optional parameters only if they exist
+    if (status) queryParams.status = status
+    if (type) queryParams.type = type
+    if (isPrivate !== undefined) queryParams.isPrivate = isPrivate
+    if (isScheduled !== undefined) queryParams.isScheduled = isScheduled
+    if (startDate) queryParams.startDate = startDate
+    if (endDate) queryParams.endDate = endDate
+    if (search) queryParams.search = search
+
+    // Convert to URL search params
+    const searchParams = new URLSearchParams()
+    Object.entries(queryParams).forEach(([key, value]) => {
+      searchParams.append(key, String(value))
+    })
+
+    const url = `/trips/passengers/${id}?${searchParams.toString()}`
+    return GATEWAY_ENDPOINT.get(url)
+  },
 }

@@ -68,6 +68,7 @@ export const useGetDriverTripHistory = () => {
   }
 
   onMounted(() => {
+    console.log('hello worls')
     fetchDriverTripHistory()
   })
 

@@ -672,31 +672,6 @@ const filteredIssues = computed(() => {
   return result.slice(start, end)
 })
 
-// const fetchTripDetails = async () => {
-//       try {
-//         const response = await axios.get(`https://64f841b182469e069b532f6a.mockapi.io/api/trips/${tripId}`);
-//         trip.value = response.data;
-//       } catch (error) {
-//         console.error('Error fetching trip details:', error);
-//       }
-//     };
-
-// const fetchRealTimeRoute = async () => {
-//       try {
-//         connectionStatus.value = 'CONNECTING';
-//         const response = await axios.get(`https://64f841b182469e069b532f6a.mockapi.io/api/real_time_routes/${tripId}`);
-//         realTimeRoute.value = response.data;
-//         driverPosition.value = {
-//           lat: realTimeRoute.value.driver_lat,
-//           lng: realTimeRoute.value.driver_lng
-//         };
-//         connectionStatus.value = 'CONNECTED';
-//         lastUpdateTime.value = new Date();
-//       } catch (error) {
-//         console.error('Error fetching real-time route:', error);
-//         connectionStatus.value = 'ERROR';
-//       }
-//     };
 
 // Watch for selectAllPassengers changes
 watch(selectAllPassengers, (newValue) => {
@@ -753,56 +728,6 @@ const currentLocation = computed(() => {
   return passengerLocations.value[currentLocationIndex.value]
 })
 
-
-// Watch for selectAllPassengers changes
-// watch(selectAllPassengers, (newValue) => {
-//   if (newValue) {
-//     selectedPassengers.value = currentLocationPassengers.value.map(p => p._id)
-//   } else {
-//     selectedPassengers.value = []
-//   }
-// })
-
-// // Watch for tab changes to load data
-// watch(activeTab, (newTab) => {
-//   if (newTab === 'passengers') {
-//     loadPassengers()
-//   } else if (newTab === 'issues') {
-//     loadIssues()
-//   } else if (newTab === 'ratings') {
-//     loadRatings()
-//   }
-// })
-
-
-// const loadIssues = async () => {
-//   loadingIssues.value = true
-//   try {
-//     // In a real app, you would fetch issues from an API
-//     // For now, we'll just simulate a delay and set empty issues
-//     await new Promise(resolve => setTimeout(resolve, 500))
-//     issues.value = []
-//   } catch (error) {
-//     console.error('Error loading issues:', error)
-//   } finally {
-//     loadingIssues.value = false
-//   }
-// }
-
-// const loadRatings = async () => {
-//   loadingRatings.value = true
-//   try {
-//     // In a real app, you would fetch ratings from an API
-//     // For now, we'll just simulate a delay
-//     await new Promise(resolve => setTimeout(resolve, 500))
-//   } catch (error) {
-//     console.error('Error loading ratings:', error)
-//   } finally {
-//     loadingRatings.value = false
-//   }
-// }
-
-
 const totalIssuePages = computed(() => {
   if (issues.value.length === 0) return 0
   return Math.ceil(issues.value.length / issuesPerPage)
@@ -830,37 +755,11 @@ const handleTripAction = (action: string) => {
 }
 
 
-// const handleTripAction = (action: string) => {
-//   console.log(`Action ${action} for trip ${trip.value?._id}`)
-//   showActionsDropdown.value = false
-  
-//   // In a real app, these would make API calls
-//   switch (action) {
-//     case 'cancel':
-//       // Cancel trip
-//       break
-//     case 'reschedule':
-//       // Open reschedule modal
-//       break
-//     case 'invoice':
-//       // Generate and download invoice
-//       break
-//     case 'share':
-//       // Share trip
-//       break
-//   }
-// }
-
-
 
 // Get trip ID from URL
 const tripId = computed(() => route.params.id as string)
 
-// WebSocket tracking composable
-
-// // Trip data (you'll need to implement this composable or API call)
-// const loading = ref(true)
-// const trip = ref<any>(null)
+// WebSocket tracking composabl
 
 // State
 const activeTab = ref('details')
@@ -868,108 +767,6 @@ const showActionsDropdown = ref(false)
 const mapType = ref('roadmap')
 const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
 
-// const trip = ref({
-//   "_id": "684dbd7ef7f9866e2100c170",
-//   "primaryUserId": "66f2d0d77221a76fb77852a8",
-//   "driverId": "66ed3deaa0eaa9a24d61085a",
-//   "type": "local",
-//   "isScheduled": false,
-//   "scheduledFor": null,
-//   "status": "active",
-//   "passengers": [
-//     {
-//       "passengerId": "66f2d0d77221a76fb77852a8",
-//       "origin": {
-//         "type": "Feature",
-//         "geometry": {
-//           "type": "Point",
-//           "coordinates": [3.2919835, 6.5477189]
-//         },
-//         "properties": {
-//           "address": "Olanrewaju Street, Ejigbo, Lagos, Nigeria",
-//           "timeStamps": []
-//         }
-//       },
-//       "destination": {
-//         "type": "Feature",
-//         "geometry": {
-//           "type": "Point",
-//           "coordinates": [3.2930769, 6.547518]
-//         },
-//         "properties": {
-//           "address": "Adekoroye Street, Ejigbo, Lagos, Nigeria",
-//           "timeStamps": []
-//         }
-//       },
-//       "fare": {
-//         "priceInCAD": 43,
-//         "priceInUserCurrency": 49142,
-//         "rate": 1116.874233,
-//         "rateTimestamp": "2025-06-14T00:02:32.000Z",
-//         "currencySymbol": "NGN",
-//         "currencyName": "NGN",
-//         "attribution": "https://www.exchangerate-api.com"
-//       },
-//       "totalFare": {
-//         "priceInCAD": 43,
-//         "priceInUserCurrency": 49142,
-//         "rate": 1116.874233,
-//         "rateTimestamp": "2025-06-14T00:02:32.000Z",
-//         "currencySymbol": "NGN",
-//         "currencyName": "NGN",
-//         "attribution": "https://www.exchangerate-api.com"
-//       },
-//       "passengerStatus": "driving to destination"
-//     }
-//   ],
-//   "route": {
-//     "type": "FeatureCollection",
-//     "features": [
-//       {
-//         "type": "Feature",
-//         "geometry": {
-//           "type": "LineString",
-//           "coordinates": [
-//             [3.291676375739558, 6.54756840575801],
-//             [3.291676375739558, 6.54756840575801],
-//             [3.29170196104068, 6.547522268807215]
-//           ]
-//         },
-//         "properties": {
-//           "timeStamps": [
-//             "2025-06-14T18:21:29.843Z",
-//             "2025-06-14T18:21:33.594Z",
-//             "2025-06-14T18:22:10.549Z"
-//           ]
-//         }
-//       },
-//       {
-//         "type": "Feature",
-//         "geometry": {
-//           "type": "Point",
-//           "coordinates": [3.29170196104068, 6.547522268807215]
-//         },
-//         "properties": {
-//           "event": "arrived-and-pickup",
-//           "userId": "66f2d0d77221a76fb77852a8",
-//           "timeStamp": "2025-06-14T18:22:10.549Z",
-//           "timeStamps": []
-//         }
-//       }
-//     ]
-//   },
-//   "createdAt": "2025-06-14T18:20:46.796Z",
-//   "updatedAt": "2025-06-14T18:22:10.709Z",
-//   "isPrivate": true
-// })
-
-// const availableTrips = ref([
-//   { id: "684dbd7ef7f9866e2100c170", status: "active" },
-//   { id: "684dbd7ef7f9866e2100c171", status: "completed" },
-//   { id: "684dbd7ef7f9866e2100c172", status: "in-progress" }
-// ])
-
-// const selectedTripId = ref(route?.params?.id)
 
 // Tabs
 const tabs = [
@@ -978,16 +775,6 @@ const tabs = [
   { name: 'Ratings', value: 'ratings' },
   { name: 'Issues', value: 'issues' }
 ]
-
-// const switchTrip = () => {
-//   if (selectedTripId.value) {
-//     console.log('🔄 Switching to trip:', selectedTripId.value)
-//     subscribeToTrip(selectedTripId.value)
-    
-//     // Update current trip data (in real app, fetch from API)
-//     // For demo, we'll keep the same trip data
-//   }
-// }
 
 onMounted(() => {
   console.log('🚀 Trip tracking page mounted')
@@ -1003,23 +790,6 @@ onUnmounted(() => {
   console.log('🛑 Trip tracking page unmounted')
   disconnect()
 })
-
-// Fetch trip data
-// const fetchTripData = async () => {
-//   if (!tripId.value) return
-
-//   loading.value = true
-//   try {
-//     // Replace this with your actual API call
-//     const response = await $fetch(`/api/trips/${tripId.value}`)
-//     trip.value = response
-//   } catch (error) {
-//     console.error('Error fetching trip:', error)
-//     trip.value = null
-//   } finally {
-//     loading.value = false
-//   }
-// }
 
 // Helper functions
 const getStatusClass = (status: string) => {

@@ -152,15 +152,21 @@
               <div class="px-6 py-4 border-b border-gray-200">
                 <h3 class="text-lg font-medium text-gray-900">Account Information</h3>
               </div>
+              <!-- {{passenger.driverData.walletBalance }} -->
               <div class="p-6">
                 <div class="grid grid-cols-1 gap-4">
                   <div>
                     <p class="text-sm text-gray-500">Auth Provider</p>
-                    <p class="text-base font-medium text-gray-900 capitalize">{{ passenger.authProvider }}</p>
+                    <p class="text-base font-medium text-gray-900 capitalize">{{ passenger?.authProvider }}</p>
                   </div>
                   <div>
-                    <p class="text-sm text-gray-500">Wallet Balance</p>
-                    <p class="text-xl font-bold text-gray-900">{{ formatCurrency(passenger.walletBalance) }}</p>
+                    <p class="text-sm text-gray-500">Wallet Balance in CAD</p>
+                    <p class="text-xl font-bold text-gray-900">{{ formatCurrencyInCAD(passenger?.driverData?.walletBalance?.priceInCAD) }}</p>
+                  </div>
+
+                  <div>
+                    <p class="text-sm text-gray-500">Wallet Balance in NGN</p>
+                    <p class="text-xl font-bold text-gray-900">{{ formatCurrency(passenger?.driverData?.walletBalance?.priceInUserCurrency) }}</p>
                   </div>
                   <div>
                     <p class="text-sm text-gray-500">Has Transaction PIN</p>
@@ -917,6 +923,15 @@ const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('en-NG', {
     style: 'currency',
     currency: 'NGN',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(amount);
+};
+
+const formatCurrencyInCAD = (amount: number) => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
   }).format(amount);
