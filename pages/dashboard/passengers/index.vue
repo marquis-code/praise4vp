@@ -4,12 +4,14 @@
       title="Passengers" 
       description="Manage and monitor all ride-hailing service passengers"
     />
+
+    <!-- {{pagination}} -->
     
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 animate-fadeIn">
       <ModulesPassengersStatsCard 
         title="Total Passengers" 
-        :value="passengersList.length" 
+        :value="pagination?.total" 
         icon="user" 
         color="primary"
       />

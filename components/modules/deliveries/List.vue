@@ -1,13 +1,13 @@
 <template>
     <div class="min-h-screen">
-      {{deliveries}}
+      <!-- {{deliveries}} -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div class="bg-white rounded-lg shadow-sm p-6 border">
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm text-gray-600">Total Deliveries</p>
               <p class="text-2xl font-bold text-gray-900">{{ stats.total }}</p>
-              <p class="text-xs text-green-600">+8% from last month</p>
+              <!-- <p class="text-xs text-green-600">+8% from last month</p> -->
             </div>
             <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
               <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -22,7 +22,7 @@
             <div>
               <p class="text-sm text-gray-600">Pending</p>
               <p class="text-2xl font-bold text-gray-900">{{ stats.pending }}</p>
-              <p class="text-xs text-orange-600">+5% from last month</p>
+              <!-- <p class="text-xs text-orange-600">+5% from last month</p> -->
             </div>
             <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
               <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -37,7 +37,7 @@
             <div>
               <p class="text-sm text-gray-600">Completed</p>
               <p class="text-2xl font-bold text-gray-900">{{ stats.completed }}</p>
-              <p class="text-xs text-green-600">+12% from last month</p>
+              <!-- <p class="text-xs text-green-600">+12% from last month</p> -->
             </div>
             <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
               <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -52,7 +52,7 @@
             <div>
               <p class="text-sm text-gray-600">Total Revenue</p>
               <p class="text-2xl font-bold text-gray-900">₦{{ formatCurrency(stats.totalRevenue) }}</p>
-              <p class="text-xs text-green-600">+15% from last month</p>
+              <!-- <p class="text-xs text-green-600">+15% from last month</p> -->
             </div>
             <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
               <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

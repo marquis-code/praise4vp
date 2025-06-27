@@ -103,6 +103,7 @@
     FileText, Eye, Download, ZoomIn, AlertCircle, Upload, 
     CheckCircle, Clock, XCircle, Camera, Shield 
   } from 'lucide-vue-next';
+    import avatar from "@/assets/img/avatar-male.svg"
   
   interface Props {
     title: string;
@@ -177,7 +178,7 @@
   
   const handleImageError = (event: Event) => {
     const img = event.target as HTMLImageElement;
-    img.src = '/placeholder.svg?height=128&width=200';
+    img.src = avatar
   };
   </script>
   

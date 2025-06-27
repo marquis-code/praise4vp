@@ -9,11 +9,6 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
-  vue: {
-    compilerOptions: {
-      isCustomElement: tag => tag === 'cursor-fx'
-    }
-  },
   plugins: ["~/plugins/aos.client.ts", "~/plugins/googleMaps.client.ts"],
   css: ["/assets/css/main.css"],
   runtimeConfig: {

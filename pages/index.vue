@@ -3,9 +3,9 @@
     <div class="w-full max-w-md bg-white rounded-lg shadow-xl overflow-hidden">
       <div class="p-6 sm:p-8">
         <div class="text-center mb-8">
-          <img src="@/assets/img/logo.png" alt="CoMiles Logo" class="h-12 mx-auto mb-4" />
-          <h1 class="text-2xl font-bold text-primary">Admin</h1>
-          <p class="text-gray-600 mt-1">Sign in to your account</p>
+          <img src="@/assets/img/logo.png" alt="CoMiles Logo" class="h-8 mx-auto mb-4" />
+          <h1 class="text-xl font-bold text-primary">Admin</h1>
+          <p class="text-gray-600 text-sm mt-1">Sign in to your account</p>
         </div>
         
         <form @submit.prevent="handleLogin" class="space-y-6">
@@ -16,7 +16,7 @@
               v-model="email" 
               type="email" 
               required 
-              class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              class="w-full px-4 py-3 border text-sm border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               placeholder="admin@comiles.com"
             />
           </div>
@@ -28,7 +28,7 @@
               v-model="password" 
               type="password" 
               required 
-              class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              class="w-full px-4 py-3 border text-sm border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               placeholder="••••••••"
             />
           </div>

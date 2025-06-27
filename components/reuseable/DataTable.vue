@@ -19,7 +19,7 @@
                 class="focus:ring-primary p-3 outline-none border focus:border-primary block w-full pl-10 sm:text-sm border-gray-300 rounded-md" 
                 :placeholder="searchPlaceholder || 'Search...'"
                 @input="handleSearch"
-              />
+              />holder
             </div>
             
             <!-- Filter dropdown -->
@@ -178,7 +178,7 @@
                   </template>
                   <template v-else-if="column.type === 'image'">
                     <img 
-                      :src="item[column.key] || '/placeholder.svg?height=40&width=40'" 
+                      :src="item[column.key] || avatar" 
                       :alt="`${column.label} image`"
                       class="h-10 w-10 rounded-full object-cover"
                     />
@@ -309,6 +309,7 @@
   
   <script setup lang="ts">
   import { ref, computed, watch } from 'vue'
+  import avatar from "@/assets/img/avatar-male.svg"
   
   interface Column {
     key: string

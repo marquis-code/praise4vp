@@ -1072,6 +1072,7 @@ import { useGetDriverTripHistory } from "@/composables/modules/trips/useGetDrive
 import { Driver, Trip } from '@/types/drivers';
 import TabsComponent from '@/components/modules/drivers/TabsComponent.vue';
 import DocumentCard from '@/components/modules/drivers/DocumentCard.vue';
+  import avatar from "@/assets/img/avatar-male.svg"
 
 // Router and route
 const router = useRouter();
@@ -1240,7 +1241,7 @@ const closeImagePreview = () => {
 
 const handleImageError = (event: Event) => {
   const img = event.target as HTMLImageElement;
-  img.src = '/placeholder.svg?height=200&width=200';
+  img.src = avatar
 };
 
 // Pagination handler

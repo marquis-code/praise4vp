@@ -233,4 +233,22 @@ export const trips_api = {
     const url = `/trips/passengers/${id}?${searchParams.toString()}`
     return GATEWAY_ENDPOINT.get(url)
   },
+  $_trip_offers: (params: GetTripsParams = {}) => {
+    const { page = 1, limit = 10 } = params
+
+    // Build query parameters object, only including defined values
+    const queryParams: Record<string, string | number | boolean> = {
+      page,
+      limit,
+    }
+ 
+        // Convert to URL search params
+    const searchParams = new URLSearchParams()
+        Object.entries(queryParams).forEach(([key, value]) => {
+          searchParams.append(key, String(value))
+        })
+
+    const url = `/trips/trip-offers?${searchParams.toString()}`
+    return GATEWAY_ENDPOINT.get(url)
+  },
 }

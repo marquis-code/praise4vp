@@ -9,7 +9,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 animate-fadeIn">
       <ModulesDriversStatsCard 
         title="Total Drivers" 
-        :value="driversList.length" 
+        :value="pagination?.total" 
         icon="car" 
         color="primary"
       />

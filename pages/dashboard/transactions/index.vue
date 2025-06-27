@@ -5,6 +5,7 @@
       <h1 class="text-2xl font-bold text-gray-900">Transactions</h1>
       <p class="text-gray-600 mt-2">Manage and monitor all payment transactions</p>
     </div>
+    <!-- {{pagination}} -->
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -12,10 +13,10 @@
         <div class="flex items-center justify-between">
           <div>
             <p class="text-sm text-gray-600">Total Transactions</p>
-            <p class="text-2xl font-bold text-gray-900">{{ stats.total }}</p>
+            <p class="text-2xl font-bold text-gray-900">{{ pagination?.total }}</p>
           </div>
           <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
             </svg>
           </div>
@@ -87,7 +88,7 @@
         <h3 class="text-lg font-semibold text-gray-900">Filters</h3>
         <button 
           @click="resetFilters"
-          class="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center"
+          class="text-sm text-primary hover:text-primary font-medium flex items-center"
         >
           <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
@@ -99,7 +100,7 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">Transaction Type</label>
-          <select v-model="filters.type" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          <select v-model="filters.type" class="w-full px-3 py-2 border text-xs border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
             <option value="">All Types</option>
             <option v-for="type in uniqueTypes" :key="type" :value="type">
               {{ formatTransactionType(type) }}
@@ -109,7 +110,7 @@
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-          <select v-model="filters.status" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          <select v-model="filters.status" class="w-full px-3 py-2 border text-xs border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
             <option value="">All Statuses</option>
             <option v-for="status in uniqueStatuses" :key="status" :value="status">
               {{ formatStatus(status) }}
@@ -119,7 +120,7 @@
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">Date Range</label>
-          <select v-model="filters.dateRange" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          <select v-model="filters.dateRange" class="w-full px-3 py-2 border text-xs border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
             <option value="">All Dates</option>
             <option value="today">Today</option>
             <option value="week">This Week</option>
@@ -130,7 +131,7 @@
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">Amount Range (NGN)</label>
-          <select v-model="filters.amountRange" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          <select v-model="filters.amountRange" class="w-full px-3 py-2 border text-xs border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
             <option value="">Any Amount</option>
             <option value="0-1000">₦0 - ₦1,000</option>
             <option value="1000-10000">₦1,000 - ₦10,000</option>
@@ -141,7 +142,7 @@
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">Currency</label>
-          <select v-model="filters.currency" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          <select v-model="filters.currency" class="w-full px-3 py-2 border text-xs border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
             <option value="">All Currencies</option>
             <option v-for="currency in uniqueCurrencies" :key="currency" :value="currency">
               {{ currency }}
@@ -212,8 +213,8 @@
           <input 
             v-model="searchQuery"
             type="text" 
-            placeholder="Search transactions by description, reference, or user ID..."
-            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Search transactions by description, reference, or user..."
+            class="w-full pl-10 pr-4 py-3 text-sm border border-primary  rounded-md focus:outline-none"
           >
         </div>
 
@@ -241,7 +242,7 @@
 
           <button 
             @click="exportTransactions"
-            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors duration-200 flex items-center"
+            class="bg-primary text-white px-4 py-2 rounded-md transition-colors duration-200 flex items-center"
           >
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -254,7 +255,7 @@
 
     <!-- Loading State -->
     <div v-if="loading && !transactions?.length" class="flex justify-center items-center py-12">
-      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
     </div>
 
     <!-- Transactions Display -->
@@ -324,6 +325,7 @@
           <thead class="bg-gray-50 border-b border-gray-200">
             <tr>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transaction</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
@@ -344,6 +346,12 @@
                   <div v-if="transaction.metadata?.tripId" class="text-xs text-gray-400">
                     Trip: {{ transaction.metadata.tripId.slice(-8) }}
                   </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-900 capitalize">
+                 <span class="block"> {{ `${transaction?.userId?.firstName} ${transaction?.userId?.lastName}` }}</span>
+                  <span>{{ transaction?.userId?.email }}</span>
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
@@ -373,7 +381,7 @@
               <td class="px-6 py-4 whitespace-nowrap">
                 <button 
                   @click="viewTransaction(transaction)"
-                  class="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                  class="text-primary hover:text-primary text-sm font-medium"
                 >
                   View Details
                 </button>
@@ -432,15 +440,16 @@
             <div class="space-y-6">
               <!-- Basic Info -->
               <div>
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Basic Information</h3>
+                <h3 class="text-base font-medium text-gray-900 mb-4">Basic Information</h3>
                 <div class="space-y-3">
                   <div class="flex justify-between">
                     <span class="text-sm font-medium text-gray-700">Reference ID:</span>
                     <span class="text-sm text-gray-900 font-mono">{{ selectedTransaction.ref }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span class="text-sm font-medium text-gray-700">User ID:</span>
-                    <span class="text-sm text-gray-900 font-mono">{{ selectedTransaction.userId }}</span>
+                    <span class="text-sm font-medium text-gray-700">User:</span>
+                    <span class="text-sm block text-gray-900 font-mono">{{ `${selectedTransaction?.userId?.firstName} ${selectedTransaction?.userId?.lastName}` }}</span>
+                    <span class="text-sm text-gray-900 font-mono">{{ selectedTransaction?.userId?.email }}</span>
                   </div>
                   <div class="flex justify-between">
                     <span class="text-sm font-medium text-gray-700">Description:</span>
@@ -486,7 +495,7 @@
             <div class="space-y-6">
               <!-- Amount Breakdown -->
               <div>
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Amount Breakdown</h3>
+                <h3 class="text-base font-medium text-gray-900 mb-4">Amount Breakdown</h3>
                 <div class="bg-gray-50 rounded-lg p-4 space-y-3">
                   <div class="flex justify-between">
                     <span class="text-sm text-gray-600">Base Amount:</span>
@@ -525,7 +534,7 @@
 
               <!-- Exchange Rate Info -->
               <div>
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Exchange Rate Information</h3>
+                <h3 class="text-base font-medium text-gray-900 mb-4">Exchange Rate Information</h3>
                 <div class="space-y-3">
                   <div class="flex justify-between">
                     <span class="text-sm font-medium text-gray-700">Currency:</span>
@@ -550,7 +559,7 @@
                     <a 
                       :href="selectedTransaction.total.attribution" 
                       target="_blank" 
-                      class="text-sm text-blue-600 hover:text-blue-800"
+                      class="text-sm text-primary hover:text-primary"
                     >
                       Exchange Rate API
                     </a>
@@ -563,7 +572,7 @@
           <div class="mt-8 flex justify-end space-x-3">
             <button 
               @click="exportSingleTransaction(selectedTransaction)"
-              class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors duration-200"
+              class="bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors duration-200"
             >
               Export Details
             </button>
@@ -727,7 +736,9 @@ const filteredTransactions = computed(() => {
     filtered = filtered.filter(transaction =>
       transaction.description?.toLowerCase()?.includes(query) ||
       transaction.ref?.toLowerCase()?.includes(query) ||
-      transaction.userId?.toLowerCase()?.includes(query) ||
+      transaction.userId?.firstName?.toLowerCase()?.includes(query) ||
+      transaction.userId?.lastName?.toLowerCase()?.includes(query) ||
+      transaction.userId?.email?.toLowerCase()?.includes(query) ||
       transaction.status?.toLowerCase()?.includes(query) ||
       transaction.type?.toLowerCase()?.includes(query)
     )
