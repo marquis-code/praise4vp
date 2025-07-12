@@ -72,12 +72,12 @@ export const useGetTripOffers = () => {
   const changeLimit = async (limit: number) => {
     pagination.value.page = 1 // Reset to first page when changing limit
     pagination.value.limit = limit
-    await fetchDrivers(1, limit, filters.value)
+    await fetchTripOffers(1, limit)
   }
 
   const changePage = async (page: number) => {
     pagination.value.page = page
-    await fetchDrivers(page, pagination.value.limit, filters.value)
+    await fetchTripOffers(page, pagination.value.limit)
   }
 
     // Watch for pagination changes (separate from filters)
@@ -87,7 +87,7 @@ export const useGetTripOffers = () => {
         // Only refetch if page or limit changed, not on initial load
         if (oldPage !== undefined && oldLimit !== undefined) {
           if (newPage !== oldPage || newLimit !== oldLimit) {
-            await fetchDrivers(newPage, newLimit, filters.value)
+            await fetchTripOffers(newPage, newLimit)
           }
         }
       }

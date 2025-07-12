@@ -21,12 +21,13 @@
       <!-- Logo Section -->
       <div class="relative flex items-center justify-between h-16 px-4 border-b border-slate-700/50 backdrop-blur-sm">
         <div class="flex items-center">
-          <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+          <!-- <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
             <span class="text-white font-bold text-sm">CM</span>
           </div>
           <span class="ml-2 text-lg font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
             CoMiles
-          </span>
+          </span> -->
+          <img src="@/assets/img/logo-white.png" class="h-7 w-auto" />
         </div>
         <button 
           class="p-1 rounded-md lg:hidden focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 hover:bg-slate-700/50"
@@ -267,6 +268,7 @@
             <span class="text-white font-medium text-sm">{{ getUserInitials() }}</span>
           </div>
           <div class="ml-3 flex-1">
+            <!-- {{user}} -->
             <p class="text-sm font-medium text-white">{{ user?.name || 'Admin User' }}</p>
             <button 
               @click="showLogoutModal = true" 
@@ -487,6 +489,22 @@ const navigationItems: NavigationItem[] = [
     path: '/dashboard',
   },
   {
+    title: 'Marketing Management',
+    path: '/dashboard/marketing/promocode',
+    children: [
+      {
+        title: 'PromoCode Management',
+        path: '/dashboard/marketing/promocode',
+        icon: 'svg'
+      },
+      {
+        title: 'Referral Codes Management',
+        path: '/dashboard/marketing/referralcode',
+        icon: 'svg'
+      }
+    ]
+  },
+  {
     title: 'Drivers Management',
     path: '/dashboard/drivers',
     children: [
@@ -626,7 +644,7 @@ const navigationItems: NavigationItem[] = [
         icon: 'svg'
       }
     ]
-  }
+  },
 ]
 
 // Mock notifications
