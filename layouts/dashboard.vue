@@ -215,6 +215,52 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
               </button>
+
+              <button
+                class="w-full group flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all duration-300 hover:scale-105 transform"
+                :class="getNavItemClass('/dashboard/promo-code')"
+                @click="handleNavClick('/dashboard/promo-code', navigationItems.find(item => item.path === '/dashboard/promo-code'))"
+              >
+                <div class="mr-3 p-2 rounded-lg bg-gradient-to-r from-red-500/20 to-red-600/20 group-hover:from-red-500/30 group-hover:to-red-600/30 transition-all duration-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                  </svg>
+                </div>
+                <span class="flex-1 text-left">Promo Code</span>
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
+                  v-if="navigationItems.find(item => item.path === '/dashboard/promo-code')?.children"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+
+              <button
+                class="w-full group flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all duration-300 hover:scale-105 transform"
+                :class="getNavItemClass('/dashboard/referral-code')"
+                @click="handleNavClick('/dashboard/referral-code', navigationItems.find(item => item.path === '/dashboard/referral-code'))"
+              >
+                <div class="mr-3 p-2 rounded-lg bg-gradient-to-r from-red-500/20 to-red-600/20 group-hover:from-red-500/30 group-hover:to-red-600/30 transition-all duration-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                  </svg>
+                </div>
+                <span class="flex-1 text-left">Referral Code</span>
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
+                  v-if="navigationItems.find(item => item.path === '/dashboard/referral-code')?.children"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
             </div>
           </nav>
         </div>
