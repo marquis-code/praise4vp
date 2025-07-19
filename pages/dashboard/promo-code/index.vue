@@ -1,44 +1,82 @@
 <template>
-  <div class="min-h-screen ">
+  <div class="min-h-screen">
     <div class="max-w-7xl mx-auto">
       <!-- Header -->
       <div class="mb-8">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <div
+          class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6"
+        >
           <div>
             <h1 class="text-2xl font-semibold text-gray-900">Promo Codes</h1>
-            <p class="text-gray-600 mt-1">Manage your promotional campaigns and discount codes</p>
+            <p class="text-gray-600 mt-1">
+              Manage your promotional campaigns and discount codes
+            </p>
           </div>
           <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <button
               @click="showCreatePromoModal = true"
               class="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
             >
-              <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              <svg
+                class="w-5 h-5 inline mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                ></path>
               </svg>
               Create Promo Code
             </button>
           </div>
         </div>
-        
+
         <!-- Go back button -->
         <button
           @click="goBack"
           class="inline-flex items-center text-sm px-4 py-2 bg-white hover:bg-gray-50 text-gray-600 rounded-lg font-medium transition-colors shadow-sm border border-gray-200"
         >
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          <svg
+            class="w-4 h-4 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"
+            ></path>
           </svg>
           Go back
         </button>
       </div>
 
       <!-- Search and Actions Section -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-        <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div
+        class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6"
+      >
+        <div
+          class="flex flex-col sm:flex-row justify-between items-center gap-4"
+        >
           <div class="relative flex-1 max-w-md">
-            <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            <svg
+              class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              ></path>
             </svg>
             <input
               v-model="searchQuery"
@@ -51,8 +89,18 @@
             @click="downloadReport"
             class="flex items-center px-4 py-3 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition-colors shadow-sm"
           >
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            <svg
+              class="w-4 h-4 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              ></path>
             </svg>
             Download report
           </button>
@@ -61,11 +109,16 @@
 
       <!-- Loading State -->
       <div v-if="allLoading" class="flex justify-center items-center py-12">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div
+          class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"
+        ></div>
       </div>
 
       <!-- Promo Codes Grid -->
-      <div v-else-if="filteredPromoCodes.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div
+        v-else-if="filteredPromoCodes.length > 0"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+      >
         <div
           v-for="promo in filteredPromoCodes"
           :key="promo._id"
@@ -73,36 +126,62 @@
         >
           <div class="flex justify-between items-start mb-4">
             <div class="flex-1">
-              <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ promo.name }}</h3>
+              <h3 class="text-lg font-semibold text-gray-900 mb-1">
+                {{ promo.name }}
+              </h3>
               <p class="text-sm text-gray-600">{{ promo.description }}</p>
             </div>
             <span
               :class="[
                 'px-3 py-1 rounded-full text-xs font-medium',
-                !promo.hasPromotionExpired 
-                  ? 'bg-green-100 text-green-800' 
-                  : 'bg-red-100 text-red-800'
+                !promo.hasPromotionExpired
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-red-100 text-red-800',
               ]"
             >
-              {{ !promo.has_promotion_expired ? 'Active' : 'Expired' }}
+              {{ !promo.hasPromotionExpired ? "Active" : "Expired" }}
             </span>
           </div>
 
           <div class="space-y-3">
-            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+            <div
+              class="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+            >
               <div class="flex items-center">
-                <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                <svg
+                  class="w-4 h-4 text-gray-400 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                  ></path>
                 </svg>
-                <span class="text-sm font-mono font-medium text-gray-900">{{ promo.promoCode }}</span>
+                <span class="text-sm font-mono font-medium text-gray-900">{{
+                  promo.promoCode
+                }}</span>
               </div>
               <button
                 @click="copyToClipboard(promo.promoCode)"
                 class="text-blue-600 hover:text-blue-800 transition-colors"
                 title="Copy to clipboard"
               >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                  ></path>
                 </svg>
               </button>
             </div>
@@ -110,19 +189,40 @@
             <div class="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <span class="text-gray-500">Reward:</span>
-                <div class="font-medium text-gray-900">{{ promo.rewardAmount }}% {{ promo?.rewardKind?.replace(/_/g, ' ') }}</div>
+                <div class="font-medium text-gray-900">
+                  {{ promo.rewardAmount }}%
+                  {{ promo?.rewardKind?.replace(/_/g, " ") }}
+                </div>
+              </div>
+              <div>
+                <span class="text-gray-500">Service Type:</span>
+                <div class="font-medium text-gray-900">
+                  {{ promo.serviceType }}
+                </div>
+              </div>
+              <div>
+                <span class="text-gray-500">Max Amount Per User:</span>
+                <div class="font-medium text-gray-900">
+                  {{ promo.maxAmountPerUser }}
+                </div>
               </div>
               <div>
                 <span class="text-gray-500">Max Uses:</span>
-                <div class="font-medium text-gray-900">{{ promo.maxNumberOfUses || 'Unlimited' }}</div>
+                <div class="font-medium text-gray-900">
+                  {{ promo.maxNumberOfUses || "Unlimited" }}
+                </div>
               </div>
               <div>
                 <span class="text-gray-500">Per User:</span>
-                <div class="font-medium text-gray-900">{{ promo.maxAmountPerUser }}</div>
+                <div class="font-medium text-gray-900">
+                  {{ promo.maxAmountPerUser }}
+                </div>
               </div>
               <div>
                 <span class="text-gray-500">Used:</span>
-                <div class="font-medium text-gray-900">{{ promo.numberOfUsages || 0 }}</div>
+                <div class="font-medium text-gray-900">
+                  {{ promo.numberOfUsages || 0 }}
+                </div>
               </div>
             </div>
 
@@ -131,7 +231,9 @@
             </div>
           </div>
 
-          <div class="flex justify-between items-center mt-6 pt-4 border-t border-gray-100">
+          <div
+            class="flex justify-between items-center mt-6 pt-4 border-t border-gray-100"
+          >
             <button
               @click="viewPromoCode(promo._id)"
               class="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
@@ -144,8 +246,18 @@
                 class="p-2 text-gray-400 hover:text-blue-600 transition-colors"
                 title="Edit"
               >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  ></path>
                 </svg>
               </button>
               <button
@@ -153,8 +265,18 @@
                 class="p-2 text-gray-400 hover:text-red-600 transition-colors"
                 title="Delete"
               >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  ></path>
                 </svg>
               </button>
             </div>
@@ -165,11 +287,25 @@
       <!-- Empty State -->
       <div v-else class="text-center py-12">
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-12">
-          <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          <svg
+            class="mx-auto h-16 w-16 text-gray-400 mb-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            ></path>
           </svg>
-          <h3 class="text-xl font-medium text-gray-900 mb-2">No promo codes found</h3>
-          <p class="text-gray-500 mb-6">Get started by creating your first promotional campaign</p>
+          <h3 class="text-xl font-medium text-gray-900 mb-2">
+            No promo codes found
+          </h3>
+          <p class="text-gray-500 mb-6">
+            Get started by creating your first promotional campaign
+          </p>
           <button
             @click="showCreatePromoModal = true"
             class="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg font-medium transition-all duration-200 transform hover:scale-105"
@@ -181,13 +317,26 @@
     </div>
 
     <!-- Create/Edit Promo Code Modal -->
-    <div v-if="showCreatePromoModal || showEditPromoModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div class="bg-white rounded-xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <h2 class="text-lg font-bold mb-6">{{ showEditPromoModal ? 'Edit' : 'Create' }} Promo Code</h2>
-        <form @submit.prevent="showEditPromoModal ? updatePromo() : createPromoCode()">
+    <div
+      v-if="showCreatePromoModal || showEditPromoModal"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+    >
+      <div
+        class="bg-white rounded-xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto"
+      >
+        <h2 class="text-lg font-bold mb-6">
+          {{ showEditPromoModal ? "Edit" : "Create" }} Promo Code
+        </h2>
+        <form
+          @submit.prevent="
+            showEditPromoModal ? updatePromo() : createPromoCode()
+          "
+        >
           <div class="space-y-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Campaign Name</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Campaign Name</label
+              >
               <input
                 v-model="promoForm.name"
                 type="text"
@@ -196,9 +345,11 @@
                 placeholder="Enter campaign name"
               />
             </div>
-            
+
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Description</label
+              >
               <textarea
                 v-model="promoForm.description"
                 rows="3"
@@ -206,9 +357,11 @@
                 placeholder="Enter description"
               ></textarea>
             </div>
-            
+
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Promo Code</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Promo Code</label
+              >
               <input
                 v-model="promoForm.promoCode"
                 type="text"
@@ -217,10 +370,12 @@
                 placeholder="Enter promo code"
               />
             </div>
-            
+
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Max Uses</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                  >Max Uses</label
+                >
                 <input
                   v-model.number="promoForm.maxNumberOfUses"
                   type="number"
@@ -229,9 +384,11 @@
                   placeholder="0 for unlimited"
                 />
               </div>
-              
+
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Max Uses Per User</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                  >Max Uses Per User</label
+                >
                 <input
                   v-model.number="promoForm.maxNumberOfUsesPerUser"
                   type="number"
@@ -242,10 +399,26 @@
                 />
               </div>
             </div>
-            
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                  >Maximum Amount Per User</label
+                >
+                <input
+                  v-model.number="promoForm.maxAmountPerUser"
+                  type="number"
+                  required
+                  min="0"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  placeholder="Enter amount"
+                />
+              </div>
+
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Reward Amount</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                  >Reward Amount</label
+                >
                 <input
                   v-model.number="promoForm.rewardAmount"
                   type="number"
@@ -255,23 +428,50 @@
                   placeholder="Enter amount"
                 />
               </div>
-              
+
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Reward Type</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                  >Reward Type</label
+                >
                 <select
                   v-model="promoForm.rewardKind"
                   required
                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 >
                   <option value="">Select type</option>
-                  <option value="percentage_discount_on_trips">Percentage Discount on Trips</option>
-                  <option value="fixed_discount_on_trips">Fixed Discount on Trips</option>
-                  <option value="cashback">Cashback</option>
+                  <option value="percentage_discount">
+                    Percentage Discount on Trips
+                  </option>
+                  <option value="amount_discount">
+                    Amount Discount on Trips
+                  </option>
                 </select>
               </div>
             </div>
+
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                  >Service Type</label
+                >
+                <select
+                  v-model="promoForm.serviceType"
+                  required
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                >
+                  <option value="">Select type</option>
+                  <option value="trips">
+                    Trips
+                  </option>
+                  <option value="delivery">
+                    Delivery
+                  </option>
+                  <option value="all">All</option>
+                </select>
+              </div>
+
           </div>
-          
+
           <div class="flex justify-end space-x-3 mt-8">
             <button
               type="button"
@@ -285,11 +485,28 @@
               :disabled="createLoading || updateLoading"
               class="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
             >
-              <svg v-if="createLoading || updateLoading" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <svg
+                v-if="createLoading || updateLoading"
+                class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
               </svg>
-              {{ showEditPromoModal ? 'Update' : 'Create' }} Promo Code
+              {{ showEditPromoModal ? "Update" : "Create" }} Promo Code
             </button>
           </div>
         </form>
@@ -297,57 +514,96 @@
     </div>
 
     <!-- View Promo Code Modal -->
-    <div v-if="showViewModal && selectedPromoCode" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div class="bg-white rounded-xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+    <div
+      v-if="showViewModal && selectedPromoCode"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+    >
+      <div
+        class="bg-white rounded-xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto"
+      >
         <div class="flex justify-between items-start mb-6">
           <h2 class="text-lg font-bold">Promo Code Details</h2>
           <button
             @click="showViewModal = false"
             class="text-gray-400 hover:text-gray-600 transition-colors"
           >
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              ></path>
             </svg>
           </button>
         </div>
 
         <div v-if="singleLoading" class="flex justify-center py-8">
-          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <div
+            class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"
+          ></div>
         </div>
 
         <div v-else-if="selectedPromoCode" class="space-y-6">
-          <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg">
+          <div
+            class="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg"
+          >
             <div class="flex items-center justify-between">
               <div>
-                <h3 class="text-lg font-semibold text-gray-900">{{ selectedPromoCode.name }}</h3>
-                <p class="text-sm text-gray-600 mt-1">{{ selectedPromoCode.description }}</p>
+                <h3 class="text-lg font-semibold text-gray-900">
+                  {{ selectedPromoCode.name }}
+                </h3>
+                <p class="text-sm text-gray-600 mt-1">
+                  {{ selectedPromoCode.description }}
+                </p>
               </div>
               <span
                 :class="[
                   'px-3 py-1 rounded-full text-xs font-medium',
-                  !selectedPromoCode.has_promotion_expired 
-                    ? 'bg-green-100 text-green-800' 
-                    : 'bg-red-100 text-red-800'
+                  !selectedPromoCode.has_promotion_expired
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-red-100 text-red-800',
                 ]"
               >
-                {{ !selectedPromoCode.hasPromotionExpired ? 'Active' : 'Expired' }}
+                {{
+                  !selectedPromoCode.hasPromotionExpired ? "Active" : "Expired"
+                }}
               </span>
             </div>
           </div>
 
           <div class="grid grid-cols-1 gap-4">
-            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+            <div
+              class="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+            >
               <div>
                 <span class="text-sm text-gray-500">Promo Code</span>
-                <div class="font-mono font-medium text-lg">{{ selectedPromoCode.promoCode }}</div>
+                <div class="font-mono font-medium text-lg">
+                  {{ selectedPromoCode.promoCode }}
+                </div>
               </div>
               <button
                 @click="copyToClipboard(selectedPromoCode.promoCode)"
                 class="p-2 text-blue-600 hover:text-blue-800 transition-colors"
                 title="Copy to clipboard"
               >
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                  ></path>
                 </svg>
               </button>
             </div>
@@ -355,38 +611,66 @@
             <div class="grid grid-cols-2 gap-4">
               <div class="p-4 bg-gray-50 rounded-lg">
                 <span class="text-sm text-gray-500">Reward Amount</span>
-                <div class="font-medium text-lg">{{ selectedPromoCode.rewardAmount }}%</div>
+                <div class="font-medium text-lg">
+                  {{ selectedPromoCode.rewardAmount }}%
+                </div>
               </div>
               <div class="p-4 bg-gray-50 rounded-lg">
                 <span class="text-sm text-gray-500">Reward Type</span>
-                <div class="font-medium">{{ selectedPromoCode.rewardKind?.replace(/_/g, ' ') }}</div>
+                <div class="font-medium">
+                  {{ selectedPromoCode.rewardKind?.replace(/_/g, " ") }}
+                </div>
               </div>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
               <div class="p-4 bg-gray-50 rounded-lg">
                 <span class="text-sm text-gray-500">Max Uses</span>
-                <div class="font-medium text-lg">{{ selectedPromoCode.maxNumberOfUses || 'Unlimited' }}</div>
+                <div class="font-medium text-lg">
+                  {{ selectedPromoCode.maxNumberOfUses || "Unlimited" }}
+                </div>
               </div>
               <div class="p-4 bg-gray-50 rounded-lg">
                 <span class="text-sm text-gray-500">Max Per User</span>
-                <div class="font-medium text-lg">{{ selectedPromoCode.maxNumberOfUsesPerUser }}</div>
+                <div class="font-medium text-lg">
+                  {{ selectedPromoCode.maxNumberOfUsesPerUser }}
+                </div>
               </div>
             </div>
 
             <div class="p-4 bg-gray-50 rounded-lg">
               <span class="text-sm text-gray-500">Usage Statistics</span>
-              <div class="font-medium text-lg">{{ selectedPromoCode.numberOfUsages || 0 }} times used</div>
+              <div class="font-medium text-lg">
+                {{ selectedPromoCode.numberOfUsages || 0 }} times used
+              </div>
+            </div>
+
+            <div class="p-4 bg-gray-50 rounded-lg">
+              <span class="text-sm text-gray-500">Service Type</span>
+              <div class="font-medium text-lg">
+                {{ selectedPromoCode.serviceType}}
+              </div>
+            </div>
+
+            <div class="p-4 bg-gray-50 rounded-lg">
+              <span class="text-sm text-gray-500">Max Amount Per User</span>
+              <div class="font-medium text-lg">
+                {{ selectedPromoCode.maxAmountPerUser}}
+              </div>
             </div>
 
             <div class="grid grid-cols-2 gap-4 text-sm text-gray-500">
               <div>
                 <span>Created:</span>
-                <div class="font-medium text-gray-900">{{ formatDate(selectedPromoCode.createdAt) }}</div>
+                <div class="font-medium text-gray-900">
+                  {{ formatDate(selectedPromoCode.createdAt) }}
+                </div>
               </div>
               <div>
                 <span>Updated:</span>
-                <div class="font-medium text-gray-900">{{ formatDate(selectedPromoCode.updatedAt) }}</div>
+                <div class="font-medium text-gray-900">
+                  {{ formatDate(selectedPromoCode.updatedAt) }}
+                </div>
               </div>
             </div>
           </div>
@@ -410,12 +694,27 @@
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div v-if="showDeleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div
+      v-if="showDeleteModal"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+    >
       <div class="bg-white rounded-xl p-6 w-full max-w-md">
         <div class="flex items-center mb-4">
-          <div class="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+          <div
+            class="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center"
+          >
+            <svg
+              class="w-6 h-6 text-red-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+              ></path>
             </svg>
           </div>
           <div class="ml-4">
@@ -423,11 +722,13 @@
             <p class="text-sm text-gray-500">This action cannot be undone.</p>
           </div>
         </div>
-        
+
         <p class="text-gray-700 mb-6">
-          Are you sure you want to delete the promo code <strong>{{ promoToDelete?.promoCode }}</strong>?
+          Are you sure you want to delete the promo code
+          <strong>{{ promoToDelete?.promoCode }}</strong
+          >?
         </p>
-        
+
         <div class="flex justify-end space-x-3">
           <button
             @click="showDeleteModal = false"
@@ -440,9 +741,26 @@
             :disabled="endLoading"
             class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
           >
-            <svg v-if="endLoading" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            <svg
+              v-if="endLoading"
+              class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
             </svg>
             Delete
           </button>
@@ -455,15 +773,37 @@
       <div
         :class="[
           'px-6 py-4 rounded-lg shadow-lg text-white font-medium transition-all duration-300 transform',
-          toastType === 'success' ? 'bg-green-500' : 'bg-red-500'
+          toastType === 'success' ? 'bg-green-500' : 'bg-red-500',
         ]"
       >
         <div class="flex items-center">
-          <svg v-if="toastType === 'success'" class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          <svg
+            v-if="toastType === 'success'"
+            class="w-5 h-5 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 13l4 4L19 7"
+            ></path>
           </svg>
-          <svg v-else class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          <svg
+            v-else
+            class="w-5 h-5 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            ></path>
           </svg>
           {{ toastMessage }}
         </div>
@@ -473,102 +813,120 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useCreatePromoCode } from '@/composables/modules/promo-codes/useCreatePromoCode'
-import { useGetAllPromoCodes } from '@/composables/modules/promo-codes/useGetAllPromoCodes'
-import { useGetPromoCodeById } from '@/composables/modules/promo-codes/useGetPromoCodeById'
-import { useUpdatePromoCode } from '@/composables/modules/promo-codes/useUpdatePromoCode'
-import { useEndPromotion } from '@/composables/modules/promo-codes/useEndPromotion'
+import { ref, computed, onMounted } from "vue";
+import { useCreatePromoCode } from "@/composables/modules/promo-codes/useCreatePromoCode";
+import { useGetAllPromoCodes } from "@/composables/modules/promo-codes/useGetAllPromoCodes";
+import { useGetPromoCodeById } from "@/composables/modules/promo-codes/useGetPromoCodeById";
+import { useUpdatePromoCode } from "@/composables/modules/promo-codes/useUpdatePromoCode";
+import { useEndPromotion } from "@/composables/modules/promo-codes/useEndPromotion";
 
 // Composable instances
-const { loading: createLoading, createPromoCode: createPromo } = useCreatePromoCode()
-const { loading: allLoading, promoCodes, fetchAllPromoCodes } = useGetAllPromoCodes()
-const { loading: singleLoading, promoCode, fetchPromoCodeById } = useGetPromoCodeById()
-const { loading: updateLoading, handleUpdatePromo } = useUpdatePromoCode()
-const { loading: endLoading, endPromotion } = useEndPromotion()
+const { loading: createLoading, createPromoCode: createPromo } =
+  useCreatePromoCode();
+const {
+  loading: allLoading,
+  promoCodes,
+  fetchAllPromoCodes,
+} = useGetAllPromoCodes();
+const {
+  loading: singleLoading,
+  promoCode,
+  fetchPromoCodeById,
+} = useGetPromoCodeById();
+const { loading: updateLoading, handleUpdatePromo } = useUpdatePromoCode();
+const { loading: endLoading, endPromotion } = useEndPromotion();
 
 // Reactive data
-const searchQuery = ref('')
-const showCreatePromoModal = ref(false)
-const showEditPromoModal = ref(false)
-const showViewModal = ref(false)
-const showDeleteModal = ref(false)
-const showToast = ref(false)
-const toastMessage = ref('')
-const toastType = ref<'success' | 'error'>('success')
-const selectedPromoCode = ref<any>(null)
-const promoToDelete = ref<any>(null)
-const editingPromoId = ref<string | null>(null)
+const searchQuery = ref("");
+const showCreatePromoModal = ref(false);
+const showEditPromoModal = ref(false);
+const showViewModal = ref(false);
+const showDeleteModal = ref(false);
+const showToast = ref(false);
+const toastMessage = ref("");
+const toastType = ref<"success" | "error">("success");
+const selectedPromoCode = ref<any>(null);
+const promoToDelete = ref<any>(null);
+const editingPromoId = ref<string | null>(null);
 
 // Form data
 const promoForm = ref({
-  name: '',
-  description: '',
-  promoCode: '',
+  name: "",
+  description: "",
+  promoCode: "",
   maxNumberOfUses: 0,
   maxNumberOfUsesPerUser: 1,
   rewardAmount: 0,
-  rewardKind: ''
-})
+  rewardKind: "",
+  serviceType: "",
+  maxAmountPerUser: 0
+});
 
 // Computed
 const filteredPromoCodes = computed(() => {
-  if (!searchQuery.value) return promoCodes.value
-  
-  const query = searchQuery.value.toLowerCase()
-  return promoCodes.value.filter((promo: any) =>
-    promo.name?.toLowerCase().includes(query) ||
-    promo.description?.toLowerCase().includes(query) ||
-    promo.promoCode?.toLowerCase().includes(query) ||
-    promo.rewardKind?.toLowerCase().includes(query)
-  )
-})
+  if (!searchQuery.value) return promoCodes.value;
+
+  const query = searchQuery.value.toLowerCase();
+  return promoCodes.value.filter(
+    (promo: any) =>
+      promo.name?.toLowerCase().includes(query) ||
+      promo.description?.toLowerCase().includes(query) ||
+      promo.promoCode?.toLowerCase().includes(query) ||
+      promo.rewardKind?.toLowerCase().includes(query) ||
+      promo.serviceType?.toLowerCase().includes(query)
+  );
+});
 
 // Methods
-const showToastMessage = (message: string, type: 'success' | 'error' = 'success') => {
-  toastMessage.value = message
-  toastType.value = type
-  showToast.value = true
+const showToastMessage = (
+  message: string,
+  type: "success" | "error" = "success"
+) => {
+  toastMessage.value = message;
+  toastType.value = type;
+  showToast.value = true;
   setTimeout(() => {
-    showToast.value = false
-  }, 3000)
-}
+    showToast.value = false;
+  }, 3000);
+};
 
 const resetForm = () => {
   promoForm.value = {
-    name: '',
-    description: '',
-    promoCode: '',
+    name: "",
+    description: "",
+    promoCode: "",
     maxNumberOfUses: 0,
     maxNumberOfUsesPerUser: 1,
     rewardAmount: 0,
-    rewardKind: ''
-  }
-}
+    maxAmountPerUser: 0,
+    rewardKind: "",
+    serviceType: "",
+  };
+};
 
 const closeModals = () => {
-  showCreatePromoModal.value = false
-  showEditPromoModal.value = false
-  showViewModal.value = false
-  editingPromoId.value = null
-  resetForm()
-}
+  showCreatePromoModal.value = false;
+  showEditPromoModal.value = false;
+  showViewModal.value = false;
+  editingPromoId.value = null;
+  resetForm();
+};
 
 const createPromoCode = async () => {
   try {
-    console.log(promoForm.value, 'hereo feom')
-    const payloadObj = { ...promoForm.value, serviceType: promoForm.value.rewardKind, maxAmountPerUser: promoForm.value.rewardAmount}
-    await createPromo(payloadObj)
-    showToastMessage('Promo code created successfully!')
-    closeModals()
-    await fetchAllPromoCodes()
+    console.log(promoForm.value, "hereo feom");
+    // const payloadObj = { ...promoForm.value, serviceType: promoForm.value.rewardKind, maxAmountPerUser: promoForm.value.rewardAmount}
+    await createPromo(promoForm.value);
+    showToastMessage("Promo code created successfully!");
+    closeModals();
+    await fetchAllPromoCodes();
   } catch (error: any) {
-    showToastMessage(error.message || 'Failed to create promo code', 'error')
+    showToastMessage(error.message || "Failed to create promo code", "error");
   }
-}
+};
 
 const editPromoCode = (promo: any) => {
-  editingPromoId.value = promo._id
+  editingPromoId.value = promo._id;
   promoForm.value = {
     name: promo.name,
     description: promo.description,
@@ -576,90 +934,95 @@ const editPromoCode = (promo: any) => {
     maxNumberOfUses: promo.maxNumberOfUses,
     maxNumberOfUsesPerUser: promo.maxNumberOfUsesPerUser,
     rewardAmount: promo.rewardAmount,
-    rewardKind: promo.rewardKind
-  }
-  showViewModal.value = false
-  showEditPromoModal.value = true
-}
+    maxAmountPerUser: promo.maxAmountPerUser,
+    rewardKind: promo.rewardKind,
+    serviceType: promo.serviceType,
+  };
+  showViewModal.value = false;
+  showEditPromoModal.value = true;
+};
 
 const updatePromo = async () => {
-  if (!editingPromoId.value) return
-  
+  if (!editingPromoId.value) return;
+
   try {
-    await handleUpdatePromo(editingPromoId.value, promoForm.value)
-    showToastMessage('Promo code updated successfully!')
-    closeModals()
-    await fetchAllPromoCodes()
+    await handleUpdatePromo(editingPromoId.value, promoForm.value);
+    showToastMessage("Promo code updated successfully!");
+    closeModals();
+    await fetchAllPromoCodes();
   } catch (error: any) {
-    showToastMessage(error.message || 'Failed to update promo code', 'error')
+    showToastMessage(error.message || "Failed to update promo code", "error");
   }
-}
+};
 
 const viewPromoCode = async (id: string) => {
   try {
-    await fetchPromoCodeById(id)
-    selectedPromoCode.value = promoCode.value
-    showViewModal.value = true
+    await fetchPromoCodeById(id);
+    selectedPromoCode.value = promoCode.value;
+    showViewModal.value = true;
   } catch (error: any) {
-    showToastMessage(error.message || 'Failed to fetch promo code details', 'error')
+    showToastMessage(
+      error.message || "Failed to fetch promo code details",
+      "error"
+    );
   }
-}
+};
 
 const confirmDelete = (promo: any) => {
-  promoToDelete.value = promo
-  showViewModal.value = false
-  showDeleteModal.value = true
-}
+  promoToDelete.value = promo;
+  showViewModal.value = false;
+  showDeleteModal.value = true;
+};
 
 const deletePromoCode = async () => {
-  if (!promoToDelete.value) return
-  
+  if (!promoToDelete.value) return;
+
   try {
-    await endPromotion(promoToDelete.value._id)
-    showToastMessage('Promo code deleted successfully!')
-    showDeleteModal.value = false
-    promoToDelete.value = null
-    await fetchAllPromoCodes()
+    await endPromotion(promoToDelete.value._id);
+    showToastMessage("Promo code deleted successfully!");
+    showDeleteModal.value = false;
+    promoToDelete.value = null;
+    await fetchAllPromoCodes();
   } catch (error: any) {
-    showToastMessage(error.message || 'Failed to delete promo code', 'error')
+    showToastMessage(error.message || "Failed to delete promo code", "error");
   }
-}
+};
 
 const copyToClipboard = async (text: string) => {
   try {
-    await navigator.clipboard.writeText(text)
-    showToastMessage('Copied to clipboard!')
+    await navigator.clipboard.writeText(text);
+    showToastMessage("Copied to clipboard!");
   } catch (error) {
-    showToastMessage('Failed to copy to clipboard', 'error')
+    showToastMessage("Failed to copy to clipboard", "error");
   }
-}
+};
 
 const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
-}
+  return new Date(dateString).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
 
 const goBack = () => {
   // Navigate back or to dashboard
-  window.history.back()
-}
+  window.history.back();
+};
 
 const downloadReport = () => {
   // Implement download functionality
-  showToastMessage('Download feature coming soon!')
-}
+  showToastMessage("Download feature coming soon!");
+};
 
 // Lifecycle
 onMounted(() => {
-  fetchAllPromoCodes()
-})
+  fetchAllPromoCodes();
+});
 
 definePageMeta({
-  layout: "dashboard"
-})
+  layout: "dashboard",
+});
 </script>
