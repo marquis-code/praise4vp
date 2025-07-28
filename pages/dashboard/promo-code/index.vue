@@ -15,7 +15,7 @@
           <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <button
               @click="showCreatePromoModal = true"
-              class="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
+              class="px-6 py-3 bg-gradient-to-r bg-primary text-white rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
             >
               <svg
                 class="w-5 h-5 inline mr-2"
@@ -64,7 +64,7 @@
         <div
           class="flex flex-col sm:flex-row justify-between items-center gap-4"
         >
-          <div class="relative flex-1 max-w-md">
+          <div class="relative w-full flex-1 max-w-md">
             <svg
               class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
               fill="none"
@@ -82,12 +82,12 @@
               v-model="searchQuery"
               type="text"
               placeholder="Search promo codes..."
-              class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              class="w-full pl-10 w-full pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
             />
           </div>
           <button
             @click="downloadReport"
-            class="flex items-center px-4 py-3 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition-colors shadow-sm"
+            class="flex items-center px-4 text-sm py-3 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition-colors shadow-sm"
           >
             <svg
               class="w-4 h-4 mr-2"
@@ -110,7 +110,7 @@
       <!-- Loading State -->
       <div v-if="allLoading" class="flex justify-center items-center py-12">
         <div
-          class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"
+          class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"
         ></div>
       </div>
 
@@ -167,7 +167,7 @@
               </div>
               <button
                 @click="copyToClipboard(promo.promoCode)"
-                class="text-blue-600 hover:text-blue-800 transition-colors"
+                class="text-primary hover:text-primary transition-colors"
                 title="Copy to clipboard"
               >
                 <svg
@@ -236,14 +236,14 @@
           >
             <button
               @click="viewPromoCode(promo._id)"
-              class="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
+              class="text-primary text-sm font-medium transition-colors"
             >
-              View Details
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256"><path d="M228,175a8,8,0,0,1-10.92-3l-19-33.2A123.23,123.23,0,0,1,162,155.46l5.87,35.22a8,8,0,0,1-6.58,9.21A8.4,8.4,0,0,1,160,200a8,8,0,0,1-7.88-6.69l-5.77-34.58a133.06,133.06,0,0,1-36.68,0l-5.77,34.58A8,8,0,0,1,96,200a8.4,8.4,0,0,1-1.32-.11,8,8,0,0,1-6.58-9.21L94,155.46a123.23,123.23,0,0,1-36.06-16.69L39,172A8,8,0,1,1,25.06,164l20-35a153.47,153.47,0,0,1-19.3-20A8,8,0,1,1,38.22,99c16.6,20.54,45.64,45,89.78,45s73.18-24.49,89.78-45A8,8,0,1,1,230.22,109a153.47,153.47,0,0,1-19.3,20l20,35A8,8,0,0,1,228,175Z"></path></svg>
             </button>
             <div class="flex space-x-2">
               <button
                 @click="editPromoCode(promo)"
-                class="p-2 text-gray-400 hover:text-blue-600 transition-colors"
+                class="p-2 text-primary transition-colors"
                 title="Edit"
               >
                 <svg
@@ -308,7 +308,7 @@
           </p>
           <button
             @click="showCreatePromoModal = true"
-            class="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg font-medium transition-all duration-200 transform hover:scale-105"
+            class="px-6 py-3 bg-primary text-white rounded-lg font-medium transition-all duration-200 transform hover:scale-105"
           >
             Create Your First Promo Code
           </button>
@@ -341,7 +341,7 @@
                 v-model="promoForm.name"
                 type="text"
                 required
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 placeholder="Enter campaign name"
               />
             </div>
@@ -353,7 +353,7 @@
               <textarea
                 v-model="promoForm.description"
                 rows="3"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 placeholder="Enter description"
               ></textarea>
             </div>
@@ -366,7 +366,7 @@
                 v-model="promoForm.promoCode"
                 type="text"
                 required
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 placeholder="Enter promo code"
               />
             </div>
@@ -380,7 +380,7 @@
                   v-model.number="promoForm.maxNumberOfUses"
                   type="number"
                   min="0"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                   placeholder="0 for unlimited"
                 />
               </div>
@@ -394,7 +394,7 @@
                   type="number"
                   required
                   min="1"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                   placeholder="Enter max uses per user"
                 />
               </div>
@@ -409,7 +409,7 @@
                   type="number"
                   required
                   min="0"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                   placeholder="Enter amount"
                 />
               </div>
@@ -424,7 +424,7 @@
                   type="number"
                   required
                   min="0"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                   placeholder="Enter amount"
                 />
               </div>
@@ -436,7 +436,7 @@
                 <select
                   v-model="promoForm.rewardKind"
                   required
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 >
                   <option value="">Select type</option>
                   <option value="percentage_discount">
@@ -457,7 +457,7 @@
                 <select
                   v-model="promoForm.serviceType"
                   required
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 >
                   <option value="">Select type</option>
                   <option value="trips">
@@ -476,14 +476,14 @@
             <button
               type="button"
               @click="closeModals"
-              class="px-6 py-3 text-gray-600 hover:text-gray-800 font-medium transition-colors"
+              class="px-6 py-3 text-gray-600 text-sm bg-gray-50 font-bold rounded-xl hover:text-gray-800 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               :disabled="createLoading || updateLoading"
-              class="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+              class="px-6 py-3 bg-primary text-white text-sm font-bold rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
             >
               <svg
                 v-if="createLoading || updateLoading"
@@ -545,7 +545,7 @@
 
         <div v-if="singleLoading" class="flex justify-center py-8">
           <div
-            class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"
+            class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"
           ></div>
         </div>
 
@@ -589,7 +589,7 @@
               </div>
               <button
                 @click="copyToClipboard(selectedPromoCode.promoCode)"
-                class="p-2 text-blue-600 hover:text-blue-800 transition-colors"
+                class="p-2 text-primary hover:text-primary transition-colors"
                 title="Copy to clipboard"
               >
                 <svg
@@ -638,6 +638,7 @@
               </div>
             </div>
 
+            <div class="grid grid-cols-2 gap-4">
             <div class="p-4 bg-gray-50 rounded-lg">
               <span class="text-sm text-gray-500">Usage Statistics</span>
               <div class="font-medium text-lg">
@@ -650,6 +651,7 @@
               <div class="font-medium text-lg">
                 {{ selectedPromoCode.serviceType}}
               </div>
+            </div>
             </div>
 
             <div class="p-4 bg-gray-50 rounded-lg">
@@ -678,13 +680,13 @@
           <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
             <button
               @click="editPromoCode(selectedPromoCode)"
-              class="px-4 py-2 text-blue-600 hover:text-blue-800 font-medium transition-colors"
+              class="px-6 py-3 border-[0.5px] border-gray-200 text-sm rounded-2xl text-primary hover:text-primary font-medium transition-colors"
             >
               Edit
             </button>
             <button
               @click="confirmDelete(selectedPromoCode)"
-              class="px-4 py-2 text-red-600 hover:text-red-800 font-medium transition-colors"
+              class="px-6 py-3 border-[0.5px] border-gray-200 text-sm rounded-2xl text-red-600 hover:text-red-800 font-medium transition-colors"
             >
               Delete
             </button>
@@ -699,7 +701,7 @@
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
     >
       <div class="bg-white rounded-xl p-6 w-full max-w-md">
-        <div class="flex items-center mb-4">
+        <div class="flex justify-center flex-col space-y-3 items-center mb-4">
           <div
             class="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center"
           >
@@ -718,28 +720,28 @@
             </svg>
           </div>
           <div class="ml-4">
-            <h3 class="text-lg font-medium text-gray-900">Delete Promo Code</h3>
-            <p class="text-sm text-gray-500">This action cannot be undone.</p>
+            <h3 class="text-lg font-medium text-gray-900 text-center">End Promotion</h3>
+            <p class="text-sm text-gray-500 text-center">This action cannot be undone.</p>
           </div>
         </div>
 
-        <p class="text-gray-700 mb-6">
-          Are you sure you want to delete the promo code
+        <p class="text-gray-700 text-center mb-6">
+          Are you sure you want to end the usage of the promo code
           <strong>{{ promoToDelete?.promoCode }}</strong
           >?
         </p>
 
-        <div class="flex justify-end space-x-3">
+        <div class="flex justify-end pt-6 space-x-3">
           <button
             @click="showDeleteModal = false"
-            class="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium transition-colors"
+            class="px-4 py-3 text-center text-gray-600 w-full text-sm bg-gray-100 border-[0.5px] border-gray-100 rounded-full hover:text-gray-800 font-medium transition-colors"
           >
             Cancel
           </button>
           <button
             @click="deletePromoCode"
             :disabled="endLoading"
-            class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+            class="px-4 py-3 text-center flex justify-center items-center bg-red-600 w-full text-sm border-[0.5px] border-gray-100 rounded-full hover:bg-red-700 text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg
               v-if="endLoading"

@@ -66,6 +66,21 @@
                 <span class="flex-1">Dashboard Management</span>
                 <div class="w-2 h-2 rounded-full bg-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </NuxtLink>
+
+              <NuxtLink 
+                to="/dashboard/documents" 
+                class="group flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all duration-300 hover:scale-105 transform"
+                :class="getNavItemClass('/dashboard/documents')"
+                @click="handleNavClick('/dashboard/documents')"
+              >
+                <div class="mr-3 p-2 rounded-lg bg-gradient-to-r from-blue-500/20 to-blue-600/20 group-hover:from-blue-500/30 group-hover:to-blue-600/30 transition-all duration-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                </div>
+                <span class="flex-1">Documents Management</span>
+                <div class="w-2 h-2 rounded-full bg-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              </NuxtLink>
               
               <!-- Section Header -->
               <div class="mt-6 mb-3 px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">
@@ -535,6 +550,10 @@ const navigationItems: NavigationItem[] = [
     path: '/dashboard',
   },
   {
+    title: 'Documents mgt',
+    path: '/dashboard/documents',
+  },
+  {
     title: 'Marketing Management',
     path: '/dashboard/marketing/promocode',
     children: [
@@ -559,21 +578,21 @@ const navigationItems: NavigationItem[] = [
         path: '/dashboard/drivers',
         icon: 'svg'
       },
-      {
-        title: 'Driver Applications',
-        path: '/dashboard/drivers/applications',
-        icon: 'svg'
-      },
-      {
-        title: 'Driver Verification',
-        path: '/dashboard/drivers/verification',
-        icon: 'svg'
-      },
-      {
-        title: 'Driver Performance',
-        path: '/dashboard/drivers/performance',
-        icon: 'svg'
-      }
+      // {
+      //   title: 'Driver Applications',
+      //   path: '/dashboard/drivers/applications',
+      //   icon: 'svg'
+      // },
+      // {
+      //   title: 'Driver Verification',
+      //   path: '/dashboard/drivers/verification',
+      //   icon: 'svg'
+      // },
+      // {
+      //   title: 'Driver Performance',
+      //   path: '/dashboard/drivers/performance',
+      //   icon: 'svg'
+      // }
     ]
   },
   {
@@ -582,19 +601,19 @@ const navigationItems: NavigationItem[] = [
     children: [
       {
         title: 'Support Tickets',
-        path: '/dashboard/customer-support/tickets',
+        path: '/dashboard/customer-support',
         icon: 'svg'
       },
-      {
-        title: 'Live Chat',
-        path: '/dashboard/customer-support/chat',
-        icon: 'svg'
-      },
-      {
-        title: 'FAQ Management',
-        path: '/dashboard/customer-support/faq',
-        icon: 'svg'
-      }
+      // {
+      //   title: 'Live Chat',
+      //   path: '/dashboard/customer-support/chat',
+      //   icon: 'svg'
+      // },
+      // {
+      //   title: 'FAQ Management',
+      //   path: '/dashboard/customer-support/faq',
+      //   icon: 'svg'
+      // }
     ]
   },
   {
@@ -606,21 +625,21 @@ const navigationItems: NavigationItem[] = [
         path: '/dashboard/transactions',
         icon: 'svg'
       },
-      {
-        title: 'Payment Methods',
-        path: '/dashboard/transactions/payment-methods',
-        icon: 'svg'
-      },
-      {
-        title: 'Refunds',
-        path: '/dashboard/transactions/refunds',
-        icon: 'svg'
-      },
-      {
-        title: 'Financial Reports',
-        path: '/dashboard/transactions/reports',
-        icon: 'svg'
-      }
+      // {
+      //   title: 'Payment Methods',
+      //   path: '/dashboard/transactions/payment-methods',
+      //   icon: 'svg'
+      // },
+      // {
+      //   title: 'Refunds',
+      //   path: '/dashboard/transactions/refunds',
+      //   icon: 'svg'
+      // },
+      // {
+      //   title: 'Financial Reports',
+      //   path: '/dashboard/transactions/reports',
+      //   icon: 'svg'
+      // }
     ]
   },
   {
@@ -632,16 +651,16 @@ const navigationItems: NavigationItem[] = [
         path: '/dashboard/passengers',
         icon: 'svg'
       },
-      {
-        title: 'Passenger Feedback',
-        path: '/dashboard/passengers/feedback',
-        icon: 'svg'
-      },
-      {
-        title: 'Loyalty Program',
-        path: '/dashboard/passengers/loyalty',
-        icon: 'svg'
-      }
+      // {
+      //   title: 'Passenger Feedback',
+      //   path: '/dashboard/passengers/feedback',
+      //   icon: 'svg'
+      // },
+      // {
+      //   title: 'Loyalty Program',
+      //   path: '/dashboard/passengers/loyalty',
+      //   icon: 'svg'
+      // }
     ]
   },
   {
@@ -653,16 +672,16 @@ const navigationItems: NavigationItem[] = [
         path: '/dashboard/package-delivery',
         icon: 'svg'
       },
-      {
-        title: 'Delivery Tracking',
-        path: '/dashboard/package-delivery/tracking',
-        icon: 'svg'
-      },
-      {
-        title: 'Delivery Reports',
-        path: '/dashboard/package-delivery/reports',
-        icon: 'svg'
-      }
+      // {
+      //   title: 'Delivery Tracking',
+      //   path: '/dashboard/package-delivery/tracking',
+      //   icon: 'svg'
+      // },
+      // {
+      //   title: 'Delivery Reports',
+      //   path: '/dashboard/package-delivery/reports',
+      //   icon: 'svg'
+      // }
     ]
   },
   {
@@ -674,21 +693,21 @@ const navigationItems: NavigationItem[] = [
         path: '/dashboard/trips',
         icon: 'svg'
       },
-      {
-        title: 'Trip Offers',
-        path: '/dashboard/trips/offers',
-        icon: 'svg'
-      },
-      {
-        title: 'Trip Analytics',
-        path: '/dashboard/trips/analytics',
-        icon: 'svg'
-      },
-      {
-        title: 'Route Optimization',
-        path: '/dashboard/trips/routes',
-        icon: 'svg'
-      }
+      // {
+      //   title: 'Trip Offers',
+      //   path: '/dashboard/trips/offers',
+      //   icon: 'svg'
+      // },
+      // {
+      //   title: 'Trip Analytics',
+      //   path: '/dashboard/trips/analytics',
+      //   icon: 'svg'
+      // },
+      // {
+      //   title: 'Route Optimization',
+      //   path: '/dashboard/trips/routes',
+      //   icon: 'svg'
+      // }
     ]
   },
 ]

@@ -290,7 +290,7 @@
         </div>
       </div>
       
-      <div v-else-if="activeTab === 'passengers'" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div v-else-if="activeTab === 'passengers'" class="max-w-7xl mx-auto py-6">
         <div class="bg-white shadow rounded-lg overflow-hidden">
           <div class="p-4 border-b border-gray-200 flex justify-end">
             <button 
@@ -384,8 +384,9 @@
                 </div>
               </div>
             </div>
-            
-            <div class="divide-y divide-gray-200">
+            <RouteTripPassengers :currentLocationPassengers="currentLocationPassengers" />
+            <!-- {{ currentLocationPassengers }} -->
+            <!-- <div class="divide-y divide-gray-200">
               <div 
                 v-for="passenger in currentLocationPassengers" 
                 :key="passenger._id"
@@ -465,7 +466,7 @@
                 <h3 class="mt-2 text-sm font-medium text-gray-900">No passengers</h3>
                 <p class="mt-1 text-sm text-gray-500">There are no passengers at this location.</p>
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
@@ -717,7 +718,7 @@ const passengerLocations = computed(() => {
 
 const getInitials = (user: any) => {
   if (!user) return 'NA'
-  return `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`
+  return `${user?.firstName?.charAt(0)}${user?.lastName?.charAt(0)}`
 }
 
 const currentLocation = computed(() => {
