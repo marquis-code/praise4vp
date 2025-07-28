@@ -549,10 +549,10 @@ const navigationItems: NavigationItem[] = [
     title: 'Dashboard Management',
     path: '/dashboard',
   },
-  {
-    title: 'Documents mgt',
-    path: '/dashboard/documents',
-  },
+  // {
+  //   title: 'Documents mgt',
+  //   path: '/dashboard/documents',
+  // },
   {
     title: 'Marketing Management',
     path: '/dashboard/marketing/promocode',
@@ -708,6 +708,17 @@ const navigationItems: NavigationItem[] = [
       //   path: '/dashboard/trips/routes',
       //   icon: 'svg'
       // }
+    ]
+  },
+  {
+    title: 'Documents Management',
+    path: '/dashboard/documents',
+    children: [
+      {
+        title: 'All Documents',
+        path: '/dashboard/documents',
+        icon: 'svg'
+      }
     ]
   },
 ]

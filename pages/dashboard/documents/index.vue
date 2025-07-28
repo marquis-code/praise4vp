@@ -1,11 +1,11 @@
 <template>
-    <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div class="min-h-screen">
       <!-- Header Section -->
       <div class="bg-white shadow-sm border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 class="text-3xl font-bold text-gray-900">Document Requirements</h1>
+              <h1 class="text-2xl font-bold text-gray-900">Document Requirements</h1>
               <p class="text-sm text-gray-600 mt-1">Manage country-specific document requirements</p>
             </div>
             <button
@@ -22,7 +22,7 @@
       </div>
   
       <!-- Main Content -->
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="max-w-7xl mx-auto py-8">
         <!-- Filters Section -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -226,14 +226,14 @@
   })
   
   // Methods
-  const debouncedSearch = useDebounceFn(() => {
-    currentPage.value = 1
-    fetchAllDocumentRequirements({
-      page: currentPage.value,
-      limit: pageSize.value,
-      ...filters
-    })
-  }, 300)
+  // const debouncedSearch = useDebounceFn(() => {
+  //   currentPage.value = 1
+  //   fetchAllDocumentRequirements({
+  //     page: currentPage.value,
+  //     limit: pageSize.value,
+  //     ...filters
+  //   })
+  // }, 300)
   
   const clearFilters = () => {
     filters.countryCode = ''
