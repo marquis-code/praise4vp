@@ -2,39 +2,39 @@
   <div class="min-h-screen animate-fadeIn">
     <ModulesDriversPageHeader 
       title="Drivers" 
-      description="Manage and monitor all ride-hailing service drivers"
+      description="Manage and monitor all ride-hailing service drivers" 
     />
-    
+
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 animate-fadeIn">
       <ModulesDriversStatsCard 
         title="Total Drivers" 
         :value="pagination?.total" 
         icon="car" 
-        color="primary"
+        color="primary" 
       />
       <ModulesDriversStatsCard 
         title="Average Rating" 
         :value="averageRating" 
         icon="star" 
-        color="yellow"
+        color="yellow" 
       />
       <ModulesDriversStatsCard 
         title="Verified Drivers" 
         :value="verifiedDriversCount" 
         icon="users" 
         color="green"
-        :change="12"
+        :change="12" 
       />
       <ModulesDriversStatsCard 
         title="Total Earnings" 
         :value="totalEarnings" 
         icon="wallet" 
         color="blue"
-        :change="8"
+        :change="8" 
       />
     </div>
-    
+
     <!-- Filters -->
     <ModulesDriversFilter 
       :car-brands="uniqueCarBrands"
@@ -43,9 +43,9 @@
       :verification-statuses="verificationStatuses"
       @update:filters="handleFiltersUpdate"
       @country-selected="handleCountrySelected"
-      v-model:filters="filters"
+      v-model:filters="filters" 
     />
-    
+
     <!-- Search and Actions -->
     <div class="flex flex-col md:flex-row md:items-center lg:space-x-6 justify-between mb-6">
       <div class="relative mb-4 md:mb-0 md:w-full">
@@ -59,7 +59,7 @@
           <Search class="w-5 h-5" />
         </span>
       </div>
-      
+
       <div class="flex space-x-3">
         <!-- View Toggle -->
         <div class="flex border border-gray-300 rounded-md overflow-hidden">
@@ -78,7 +78,7 @@
             <List class="h-4 w-4" />
           </button>
         </div>
-        
+
         <button 
           @click="showExportModal = true"
           class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-150 flex items-center"
@@ -86,20 +86,14 @@
           <Download class="h-4 w-4 mr-2" />
           Export
         </button>
-        <!-- <button 
-          class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-150 flex items-center"
-        >
-          <Plus class="h-4 w-4 mr-2" />
-          Add Driver
-        </button> -->
       </div>
     </div>
-    
+
     <!-- Loading State -->
     <div v-if="fetchingDrivers" class="flex justify-center items-center py-12">
       <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
     </div>
-    
+
     <!-- Empty State -->
     <div v-else-if="filteredDrivers.length === 0" class="bg-white rounded-lg shadow p-12 text-center">
       <UserX class="mx-auto h-12 w-12 text-gray-400" />
@@ -108,13 +102,12 @@
         Try adjusting your search or filter criteria to find what you're looking for.
       </p>
     </div>
-    
+
     <!-- Grid View -->
     <div v-else-if="viewMode === 'grid'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fadeIn">
       <div v-for="driver in paginatedDrivers" :key="driver._id" class="bg-white rounded-lg shadow overflow-hidden relative">
-        <ModulesDriversCard 
-          :driver="driver"
-        />
+        <ModulesDriversCard :driver="driver" />
+        
         <!-- Actions Dropdown for Grid View -->
         <div class="absolute top-3 right-3">
           <div class="relative inline-block text-left">
@@ -127,7 +120,7 @@
             
             <div 
               v-if="activeDropdown === driver._id"
-              class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 py-1"
+              class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50 py-1 border border-gray-200"
             >
               <button 
                 @click="viewDriverDetails(driver)"
@@ -156,158 +149,174 @@
         </div>
       </div>
     </div>
-    
-    <!-- List View -->
-    <div v-else class="bg-white rounded-lg overflow-x-auto shadow overflow-hidden animate-fadeIn">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-          <tr>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              ID
-            </th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Driver
-            </th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Country
-                </th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Car Details
-            </th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Contact
-            </th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Status
-            </th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Wallet
-            </th>
-            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          <tr v-for="driver in paginatedDrivers" :key="driver._id">
-            <td class="px-6 py-4 whitespace-nowrap">
-              <div>
-                {{ driver._id }}
-              </div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <div class="flex items-center">
-                <div class="h-10 w-10 rounded-full bg-gray-200 overflow-hidden">
-                  <img 
-                    v-if="driver.photoURL" 
-                    src="@/assets/img/avatar-male.svg" 
-                    :alt="`${driver.firstName} ${driver.lastName}`"
-                    class="h-full w-full object-cover"
-                  />
-                  <User v-else class="h-full w-full p-2 text-gray-500" />
+
+    <!-- List View with Fixed Dropdown Positioning -->
+    <div v-else class="bg-white rounded-lg shadow animate-fadeIn">
+      <!-- Mobile responsive wrapper -->
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                ID
+              </th>
+              <th scope="col" class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Driver
+              </th>
+              <th scope="col" class="hidden md:table-cell px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Country
+              </th>
+              <th scope="col" class="hidden lg:table-cell px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Car Details
+              </th>
+              <th scope="col" class="hidden sm:table-cell px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Contact
+              </th>
+              <th scope="col" class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Status
+              </th>
+              <th scope="col" class="hidden md:table-cell px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Wallet
+              </th>
+              <th scope="col" class="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr v-for="(driver, index) in paginatedDrivers" :key="driver._id" class="hover:bg-gray-50">
+              <!-- ID Column -->
+              <td class="px-3 sm:px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900 truncate max-w-[100px]">
+                  {{ driver._id }}
                 </div>
-                <div class="ml-4">
-                  <div class="text-sm font-medium text-gray-900">
-                    {{ driver.firstName }} {{ driver.lastName }}
+              </td>
+
+              <!-- Driver Column -->
+              <td class="px-3 sm:px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                  <div class="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-gray-200 overflow-hidden flex-shrink-0">
+                    <img 
+                      v-if="driver.photoURL" 
+                      src="@/assets/img/avatar-male.svg" 
+                      :alt="`${driver.firstName} ${driver.lastName}`"
+                      class="h-full w-full object-cover"
+                    />
+                    <User v-else class="h-full w-full p-2 text-gray-500" />
                   </div>
-                  <div class="flex items-center">
-                    <Star class="h-3 w-3 text-yellow-400 mr-1" :fill="true" />
-                    <span class="text-xs text-gray-500">{{ driver.rating.toFixed(1) }}</span>
+                  <div class="ml-2 sm:ml-4 min-w-0 flex-1">
+                    <div class="text-sm font-medium text-gray-900 truncate">
+                      {{ driver.firstName }} {{ driver.lastName }}
+                    </div>
+                    <div class="flex items-center">
+                      <Star class="h-3 w-3 text-yellow-400 mr-1" :fill="true" />
+                      <span class="text-xs text-gray-500">{{ driver.rating.toFixed(1) }}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900">{{ getCountryName(driver.countryCode) || 'Nil' }}</div>
-                  <div class="text-xs text-gray-500">{{ driver.countryCode || 'Nil' }}</div>
-                </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm text-gray-900">{{ driver.driverData.carBrand }} {{ driver.driverData.carModel }}</div>
-              <div class="text-xs text-gray-500">
-                {{ driver.driverData.carColor }} {{ driver.driverData.carYear }} • {{ driver.driverData.plateNumber }}
-              </div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm text-gray-900">{{ driver.phone }}</div>
-              <div class="text-xs text-gray-500">{{ driver.email }}</div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <!-- <span 
-                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
-                :class="driver.IDIsVerified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'"
-              >
-                {{ driver.IDIsVerified ? 'Verified' : 'Pending' }}
-              </span> -->
-              <span 
-                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
-                :class="!driver.isDisabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
-              >
-                {{ driver.isDisabled ? 'Deactivated' : 'Active' }}
-              </span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              {{ formatCurrency(driver?.driverData?.walletBalance?.priceInUserCurrency) }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-              <div class="relative inline-block text-left">
-                <button 
-                  @click="toggleDropdown(driver._id)"
-                  class="p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-                >
-                  <MoreVertical class="h-5 w-5 text-gray-500" />
-                </button>
-                
-                <div 
-                  v-if="activeDropdown === driver._id"
-                  class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 py-1"
-                >
-                  <button 
-                    @click="viewDriverDetails(driver)"
-                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
-                  >
-                    <Eye class="h-4 w-4 mr-2" />
-                    View Details
-                  </button>
-                  <button 
-                    @click="editDriver(driver)"
-                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
-                  >
-                    <Edit class="h-4 w-4 mr-2" />
-                    Edit Driver
-                  </button>
-                  <button 
-                    @click="showBanConfirmation(driver)"
-                    :class="{'text-red-600': !driver?.isDisabled, 'text-green-600': driver?.isDisabled}"
-                    class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center"
-                  >
-                    <Ban class="h-4 w-4 mr-2" />
-                    <!-- Ban Driver -->{{driver?.isDisabled ? 'Activate' : 'Ban'}} Driver
-                  </button>
+              </td>
+
+              <!-- Country Column (Hidden on mobile) -->
+              <td class="hidden md:table-cell px-3 sm:px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900">{{ getCountryName(driver.countryCode) || 'Nil' }}</div>
+                <div class="text-xs text-gray-500">{{ driver.countryCode || 'Nil' }}</div>
+              </td>
+
+              <!-- Car Details Column (Hidden on mobile and tablet) -->
+              <td class="hidden lg:table-cell px-3 sm:px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900 truncate max-w-[150px]">
+                  {{ driver.driverData.carBrand }} {{ driver.driverData.carModel }}
                 </div>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                <div class="text-xs text-gray-500 truncate max-w-[150px]">
+                  {{ driver.driverData.carColor }} {{ driver.driverData.carYear }} • {{ driver.driverData.plateNumber }}
+                </div>
+              </td>
+
+              <!-- Contact Column (Hidden on mobile) -->
+              <td class="hidden sm:table-cell px-3 sm:px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900 truncate max-w-[120px]">{{ driver.phone }}</div>
+                <div class="text-xs text-gray-500 truncate max-w-[120px]">{{ driver.email }}</div>
+              </td>
+
+              <!-- Status Column -->
+              <td class="px-3 sm:px-6 py-4 whitespace-nowrap">
+                <span 
+                  class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                  :class="!driver.isDisabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                >
+                  {{ driver.isDisabled ? 'Deactivated' : 'Active' }}
+                </span>
+              </td>
+
+              <!-- Wallet Column (Hidden on mobile) -->
+              <td class="hidden md:table-cell px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {{ formatCurrency(driver?.driverData?.walletBalance?.priceInUserCurrency) }}
+              </td>
+
+              <!-- Actions Column with Dynamic Positioning -->
+              <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <div class="relative inline-block text-left">
+                  <button 
+                    :ref="`dropdown-trigger-${driver._id}`"
+                    @click="toggleDropdown(driver._id, index)"
+                    class="p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-150"
+                  >
+                    <MoreVertical class="h-5 w-5 text-gray-500" />
+                  </button>
+                  
+                  <!-- Dynamic Dropdown with Smart Positioning -->
+                  <div 
+                    v-if="activeDropdown === driver._id"
+                    :ref="`dropdown-menu-${driver._id}`"
+                    class="absolute w-48 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-50"
+                    :class="getDropdownPositionClass(index)"
+                    :style="getDropdownStyle(index)"
+                  >
+                    <button 
+                      @click="viewDriverDetails(driver)"
+                      class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center transition-colors duration-150"
+                    >
+                      <Eye class="h-4 w-4 mr-2" />
+                      View Details
+                    </button>
+                    <button 
+                      @click="editDriver(driver)"
+                      class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center transition-colors duration-150"
+                    >
+                      <Edit class="h-4 w-4 mr-2" />
+                      Edit Driver
+                    </button>
+                    <button 
+                      @click="showBanConfirmation(driver)"
+                      :class="{'text-red-600': !driver?.isDisabled, 'text-green-600': driver?.isDisabled}"
+                      class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center transition-colors duration-150"
+                    >
+                      <Ban class="h-4 w-4 mr-2" />
+                      {{driver?.isDisabled ? 'Activate' : 'Ban'}} Driver
+                    </button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-    
-       <!-- Pagination -->
+
+    <!-- Pagination -->
     <div class="mt-6">
       <CorePagination 
         :current-page="pagination.page"
         :total-pages="pagination.totalPages"
         :total="pagination.total"
         :limit="pagination.limit"
-        @page-change="handlePageChange"
+        @page-change="handlePageChange" 
       />
     </div>
-    
+
     <!-- Ban Confirmation Modal -->
     <Teleport to="body">
-      <div 
-        v-if="showModal" 
-        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fadeIn"
-      >
+      <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fadeIn p-4">
         <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 overflow-hidden">
           <div class="p-6">
             <div class="flex items-center justify-center mb-4">
@@ -315,27 +324,28 @@
                 <AlertTriangle class="h-6 w-6 text-red-600" />
               </div>
             </div>
-            <h3 class="text-lg font-medium text-center text-gray-900 mb-2">{{selectedDriver?.isDisabled ? 'Activate' : 'Ban'}} Driver</h3>
+            <h3 class="text-lg font-medium text-center text-gray-900 mb-2">
+              {{selectedDriver?.isDisabled ? 'Activate' : 'Ban'}} Driver
+            </h3>
             <p class="text-sm text-gray-500 text-center mb-6">
-              Are you sure you want to ban 
-              <span class="font-medium text-gray-900">{{ selectedDriver?.firstName }} {{ selectedDriver?.lastName }}</span>? 
+              Are you sure you want to ban <span class="font-medium text-gray-900">{{ selectedDriver?.firstName }} {{ selectedDriver?.lastName }}</span>? 
               This action cannot be undone.
             </p>
-            <div class="flex justify-end w-full space-x-3">
+            <div class="flex flex-col sm:flex-row justify-end w-full space-y-2 sm:space-y-0 sm:space-x-3">
               <button 
                 @click="closeModal"
-                class="px-4 py-2 border w-full border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-150"
+                class="px-4 py-2 border w-full sm:w-auto border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-150"
               >
                 Cancel
               </button>
               <button 
                 v-if="!selectedDriver.isDisabled"
                 @click="banDriver"
-                class="px-4 py-2 border w-full border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-150"
+                class="px-4 py-2 border w-full sm:w-auto border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-150"
                 :class="{ 'opacity-50 cursor-not-allowed': isBanning }"
                 :disabled="isBanning"
               >
-                <span v-if="isBanning" class="flex items-center">
+                <span v-if="isBanning" class="flex items-center justify-center">
                   <span class="animate-spin h-4 w-4 mr-2 border-2 border-white border-t-transparent rounded-full"></span>
                   Processing...
                 </span>
@@ -344,11 +354,15 @@
               <button 
                 v-else
                 @click="banDriver"
-                class="px-4 py-2 border w-full border-transparent rounded-md shadow-sm text-sm font-medium text-white  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-150"
-                :class="{ 'opacity-50 cursor-not-allowed': isBanning, 'bg-red-600 hover:bg-red-700' : !selectedDriver.isDisabled, 'bg-green-600 hover:bg-green-700' : selectedDriver.isDisabled  }"
+                class="px-4 py-2 border w-full sm:w-auto border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-150"
+                :class="{ 
+                  'opacity-50 cursor-not-allowed': isBanning, 
+                  'bg-red-600 hover:bg-red-700' : !selectedDriver.isDisabled, 
+                  'bg-green-600 hover:bg-green-700' : selectedDriver.isDisabled  
+                }"
                 :disabled="isBanning"
               >
-                <span v-if="isBanning" class="flex items-center">
+                <span v-if="isBanning" class="flex items-center justify-center">
                   <span class="animate-spin h-4 w-4 mr-2 border-2 border-white border-t-transparent rounded-full"></span>
                   Processing...
                 </span>
@@ -359,15 +373,12 @@
         </div>
       </div>
     </Teleport>
-    
+
     <!-- Export Modal -->
     <Teleport to="body">
-      <div 
-        v-if="showExportModal" 
-        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fadeIn"
-        @click.self="closeExportModal"
-      >
-        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 overflow-hidden">
+      <div v-if="showExportModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fadeIn p-4"
+           @click.self="closeExportModal">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 overflow-hidden max-h-[90vh] overflow-y-auto">
           <div class="p-6">
             <div class="flex items-center justify-between mb-6">
               <h3 class="text-lg font-medium text-gray-900">Export Drivers Data</h3>
@@ -378,7 +389,7 @@
                 <X class="h-5 w-5 text-gray-500" />
               </button>
             </div>
-            
+
             <!-- Export Format Selection -->
             <div class="mb-6">
               <label class="block text-sm font-medium text-gray-700 mb-2">Export Format</label>
@@ -403,7 +414,7 @@
                 </label>
               </div>
             </div>
-            
+
             <!-- Field Selection -->
             <div>
               <div class="flex items-center justify-between mb-2">
@@ -415,7 +426,6 @@
                   {{ allFieldsSelected ? 'Deselect All' : 'Select All' }}
                 </button>
               </div>
-              
               <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-60 overflow-y-auto p-2 border border-gray-200 rounded-md">
                 <!-- Personal Information -->
                 <div class="space-y-2">
@@ -431,7 +441,7 @@
                     <label :for="field.key" class="ml-2 text-sm text-gray-700">{{ field.label }}</label>
                   </div>
                 </div>
-                
+
                 <!-- Vehicle Information -->
                 <div class="space-y-2">
                   <h4 class="text-xs font-semibold text-gray-500 uppercase">Vehicle Information</h4>
@@ -446,7 +456,7 @@
                     <label :for="field.key" class="ml-2 text-sm text-gray-700">{{ field.label }}</label>
                   </div>
                 </div>
-                
+
                 <!-- Account Information -->
                 <div class="space-y-2">
                   <h4 class="text-xs font-semibold text-gray-500 uppercase">Account Information</h4>
@@ -461,7 +471,7 @@
                     <label :for="field.key" class="ml-2 text-sm text-gray-700">{{ field.label }}</label>
                   </div>
                 </div>
-                
+
                 <!-- Verification Information -->
                 <div class="space-y-2">
                   <h4 class="text-xs font-semibold text-gray-500 uppercase">Verification Information</h4>
@@ -477,12 +487,9 @@
                   </div>
                 </div>
               </div>
-              
-              <p class="mt-2 text-xs text-gray-500">
-                {{ selectedFields.length }} fields selected
-              </p>
+              <p class="mt-2 text-xs text-gray-500">{{ selectedFields.length }} fields selected</p>
             </div>
-            
+
             <!-- Export Options -->
             <div class="mt-6">
               <label class="block text-sm font-medium text-gray-700 mb-2">Export Options</label>
@@ -505,8 +512,8 @@
                 </label>
               </div>
             </div>
-            
-            <div class="mt-8 flex justify-end space-x-3">
+
+            <div class="mt-8 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
               <button 
                 @click="closeExportModal"
                 class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-150"
@@ -515,7 +522,7 @@
               </button>
               <button 
                 @click="exportData"
-                class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-150 flex items-center"
+                class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-150 flex items-center justify-center"
                 :disabled="isExporting || selectedFields.length === 0"
                 :class="{ 'opacity-50 cursor-not-allowed': isExporting || selectedFields.length === 0 }"
               >
@@ -533,13 +540,10 @@
         </div>
       </div>
     </Teleport>
-    
+
     <!-- Success Toast -->
     <Teleport to="body">
-      <div 
-        v-if="showToast" 
-        class="fixed bottom-4 right-4 bg-green-600 text-white px-4 py-3 rounded-lg shadow-lg flex items-center z-50 animate-fadeIn"
-      >
+      <div v-if="showToast" class="fixed bottom-4 right-4 bg-green-600 text-white px-4 py-3 rounded-lg shadow-lg flex items-center z-50 animate-fadeIn">
         <CheckCircle class="h-5 w-5 mr-2" />
         <span>{{ toastMessage }}</span>
       </div>
@@ -548,24 +552,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
-import { 
-  Search, Download, Plus, UserX, ChevronLeft, ChevronRight, 
-  MoreVertical, Eye, Edit, Ban, User, Star, CheckCircle, 
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
+import {
+  Search, Download, Plus, UserX, ChevronLeft, ChevronRight,
+  MoreVertical, Eye, Edit, Ban, User, Star, CheckCircle,
   Grid, List, AlertTriangle, X
 } from 'lucide-vue-next';
 import { useGetDrivers } from "@/composables/modules/drivers/useGetDrivers";
 import { useEnableDriverAccount } from "@/composables/modules/drivers/useActivateAccount"
 import { useDisableDriverAccount } from "@/composables/modules/drivers/useDeactivateAccount"
 import { Driver } from '@/types/drivers';
-import { definePageMeta } from '#imports'
+import { definePageMeta, navigateTo } from '#imports'
 
-const { loading: fetchingDrivers, drivers: driversList, pagination, changePage, filters: filtersObj,  filterByCountry, filterByStatus,
-  updateFilters, filters: filterObj } = useGetDrivers();
-const { loading: enabling,
-  enableAccount } = useEnableDriverAccount()
-const { loading: disabling,
-  disableAccount } = useDisableDriverAccount()
+const { loading: fetchingDrivers, drivers: driversList, pagination, changePage, filters: filtersObj, filterByCountry, filterByStatus, updateFilters, filters: filterObj } = useGetDrivers();
+const { loading: enabling, enableAccount } = useEnableDriverAccount()
+const { loading: disabling, disableAccount } = useDisableDriverAccount()
 
 // View mode - Changed default to 'list' instead of 'grid'
 const viewMode = ref<'grid' | 'list'>('list');
@@ -600,10 +601,7 @@ const isBanning = ref(false);
 const showExportModal = ref(false);
 const exportFormat = ref<'csv' | 'pdf'>('csv');
 const isExporting = ref(false);
-const selectedFields = ref<string[]>([
-  'firstName', 'lastName', 'email', 'phone', 
-  'driverData.carBrand', 'driverData.carModel', 'driverData.plateNumber'
-]);
+const selectedFields = ref<string[]>(['firstName', 'lastName', 'email', 'phone', 'driverData.carBrand', 'driverData.carModel', 'driverData.plateNumber']);
 const exportOptions = ref({
   includeHeaders: true,
   onlyFiltered: false
@@ -693,11 +691,11 @@ const handlePageChange = async (page: number) => {
 // Computed properties
 const filteredDrivers = computed(() => {
   let result = [...driversList.value];
-  
+
   // Apply search
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase();
-    result = result.filter(driver => 
+    result = result.filter(driver =>
       driver.firstName.toLowerCase().includes(query) ||
       driver.lastName.toLowerCase().includes(query) ||
       driver.email.toLowerCase().includes(query) ||
@@ -705,34 +703,34 @@ const filteredDrivers = computed(() => {
       driver.driverData.plateNumber.toLowerCase().includes(query)
     );
   }
-  
+
   // Apply filters
   if (filters.value.carBrand) {
     result = result.filter(driver => driver.driverData.carBrand === filters.value.carBrand);
   }
-  
+
   if (filters.value.carColor) {
     result = result.filter(driver => driver.driverData.carColor === filters.value.carColor);
   }
-  
+
   if (filters.value.verificationStatus) {
     result = result.filter(driver => driver.IDVerificationStatus === filters.value.verificationStatus);
   }
-  
+
   if (filters.value.rating) {
     const minRating = parseInt(filters.value.rating);
     result = result.filter(driver => driver.rating >= minRating);
   }
-  
+
   if (filters.value.carYear) {
     result = result.filter(driver => driver.driverData.carYear === parseInt(filters.value.carYear));
   }
-  
+
   if (filters.value.seats) {
     const minSeats = parseInt(filters.value.seats);
     result = result.filter(driver => driver.driverData.seats >= minSeats);
   }
-  
+
   if (filters.value.accountStatus) {
     if (filters.value.accountStatus === 'active') {
       result = result.filter(driver => !driver.isDisabled);
@@ -740,7 +738,7 @@ const filteredDrivers = computed(() => {
       result = result.filter(driver => driver.isDisabled);
     }
   }
-  
+
   // Apply sorting
   switch (filters.value.sortBy) {
     case 'rating':
@@ -763,7 +761,7 @@ const filteredDrivers = computed(() => {
       result.sort((a, b) => b?.driverData?.walletBalance?.priceInUserCurrency - a?.driverData?.walletBalance?.priceInUserCurrency);
       break;
   }
-  
+
   return result;
 });
 
@@ -875,7 +873,6 @@ const getCountryName = (countryCode: string): string => {
     'PS': 'Palestine',
     'CY': 'Cyprus'
   };
-  
   return countryMap[countryCode] || countryCode;
 };
 
@@ -940,7 +937,39 @@ const prevPage = () => {
   }
 };
 
-const toggleDropdown = (driverId: string) => {
+// Enhanced dropdown positioning logic
+const getDropdownPositionClass = (index: number) => {
+  const isLastItems = index >= paginatedDrivers.value.length - 2; // Last 2 items
+  const isMobile = window.innerWidth < 640; // sm breakpoint
+  
+  if (isMobile) {
+    // On mobile, always position to the left to avoid overflow
+    return 'right-0';
+  }
+  
+  if (isLastItems) {
+    // For last items, position dropdown upward and to the right
+    return 'right-0 bottom-full mb-2';
+  } else {
+    // For other items, position normally
+    return 'right-0 mt-2';
+  }
+};
+
+const getDropdownStyle = (index: number) => {
+  // Additional inline styles for better positioning if needed
+  const isLastItems = index >= paginatedDrivers.value.length - 2;
+  
+  if (isLastItems) {
+    return {
+      transform: 'translateY(-8px)', // Small offset for better visual spacing
+    };
+  }
+  
+  return {};
+};
+
+const toggleDropdown = (driverId: string, index?: number) => {
   // Stop event propagation to prevent immediate closing
   event?.stopPropagation();
   
@@ -948,6 +977,12 @@ const toggleDropdown = (driverId: string) => {
     activeDropdown.value = null;
   } else {
     activeDropdown.value = driverId;
+    
+    // Use nextTick to ensure DOM is updated before positioning calculations
+    nextTick(() => {
+      // Additional positioning logic can be added here if needed
+      // For example, checking if dropdown is cut off and adjusting position
+    });
   }
 };
 
@@ -980,13 +1015,9 @@ const closeModal = () => {
 
 const banDriver = async () => {
   if (!selectedDriver.value) return;
-  
-  isBanning.value = true;
-  
-  try {
-    // Simulate API call
-    // await new Promise(resolve => setTimeout(resolve, 1500));
 
+  isBanning.value = true;
+  try {
     const driver = selectedDriver?.value;
     if (!driver) return;
 
@@ -998,14 +1029,10 @@ const banDriver = async () => {
       showToast.value = true;
       closeModal();
     });
-
-
-    
   } catch (error) {
     console.error('Error banning driver:', error);
     toastMessage.value = 'Failed to ban driver. Please try again.';
     showToast.value = true;
-    
     // Auto-hide toast after 3 seconds
     setTimeout(() => {
       showToast.value = false;
@@ -1038,22 +1065,22 @@ const getNestedValue = (obj: any, path: string) => {
 // Format value for export
 const formatValueForExport = (value: any, key: string) => {
   if (value === null || value === undefined) return '';
-  
+
   // Format dates
   if (key === 'createdAt' || key === 'updatedAt' || key === 'dob') {
     return formatDate(value);
   }
-  
+
   // Format currency
   if (key === 'driverData.walletBalance' || key === 'walletBalance') {
     return value.toString();
   }
-  
+
   // Format booleans
   if (typeof value === 'boolean') {
     return value ? 'Yes' : 'No';
   }
-  
+
   return value.toString();
 };
 
@@ -1061,7 +1088,6 @@ const formatValueForExport = (value: any, key: string) => {
 const exportAsCSV = (data: any[], fields: string[], includeHeaders: boolean) => {
   // Create headers row if needed
   let csv = '';
-  
   if (includeHeaders) {
     const headers = fields.map(field => {
       // Find the field label
@@ -1070,13 +1096,12 @@ const exportAsCSV = (data: any[], fields: string[], includeHeaders: boolean) => 
     });
     csv += headers.join(',') + '\n';
   }
-  
+
   // Add data rows
   data.forEach(item => {
     const row = fields.map(field => {
       const value = getNestedValue(item, field);
       const formattedValue = formatValueForExport(value, field);
-      
       // Escape commas and quotes
       if (formattedValue.includes(',') || formattedValue.includes('"') || formattedValue.includes('\n')) {
         return `"${formattedValue.replace(/"/g, '""')}"`;
@@ -1085,7 +1110,7 @@ const exportAsCSV = (data: any[], fields: string[], includeHeaders: boolean) => 
     });
     csv += row.join(',') + '\n';
   });
-  
+
   return csv;
 };
 
@@ -1106,10 +1131,9 @@ const downloadFile = (content: string, fileName: string, mimeType: string) => {
 const generatePDFContent = async (data: any[], fields: string[], includeHeaders: boolean) => {
   // This is a placeholder for PDF generation
   // In a real implementation, you would use a library like jspdf or pdfmake
-  
   // For demonstration purposes, we'll create a simple HTML structure
   // that could be converted to PDF with a proper library
-  
+
   let html = `
     <html>
     <head>
@@ -1123,9 +1147,8 @@ const generatePDFContent = async (data: any[], fields: string[], includeHeaders:
     </head>
     <body>
       <h1 class="title">Drivers Report</h1>
-      <table>
-  `;
-  
+      <table>`;
+
   // Add headers if needed
   if (includeHeaders) {
     html += '<tr>';
@@ -1135,7 +1158,7 @@ const generatePDFContent = async (data: any[], fields: string[], includeHeaders:
     });
     html += '</tr>';
   }
-  
+
   // Add data rows
   data.forEach(item => {
     html += '<tr>';
@@ -1146,14 +1169,13 @@ const generatePDFContent = async (data: any[], fields: string[], includeHeaders:
     });
     html += '</tr>';
   });
-  
+
   html += `
       </table>
       <p style="text-align: right; margin-top: 20px;">Generated on ${new Date().toLocaleString()}</p>
     </body>
-    </html>
-  `;
-  
+    </html>`;
+
   return html;
 };
 
@@ -1165,16 +1187,15 @@ const exportData = async () => {
     setTimeout(() => { showToast.value = false; }, 3000);
     return;
   }
-  
+
   isExporting.value = true;
-  
   try {
     // Determine which data to export
     const dataToExport = exportOptions.value.onlyFiltered ? filteredDrivers.value : driversList.value;
-    
+
     // Generate timestamp for filename
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    
+
     if (exportFormat.value === 'csv') {
       // Export as CSV
       const csvContent = exportAsCSV(
@@ -1182,9 +1203,7 @@ const exportData = async () => {
         selectedFields.value, 
         exportOptions.value.includeHeaders
       );
-      
       downloadFile(csvContent, `drivers-export-${timestamp}.csv`, 'text/csv');
-      
       toastMessage.value = `Successfully exported ${dataToExport.length} drivers to CSV.`;
     } else {
       // Export as PDF
@@ -1195,18 +1214,15 @@ const exportData = async () => {
         selectedFields.value,
         exportOptions.value.includeHeaders
       );
-      
       // For demonstration, we'll download this as an HTML file
       // In a real app, you would convert this to PDF using a library
       downloadFile(pdfContent, `drivers-export-${timestamp}.html`, 'text/html');
-      
       toastMessage.value = `Successfully exported ${dataToExport.length} drivers to PDF.`;
     }
-    
+
     showToast.value = true;
     setTimeout(() => { showToast.value = false; }, 3000);
     closeExportModal();
-    
   } catch (error) {
     console.error('Error exporting data:', error);
     toastMessage.value = 'Failed to export data. Please try again.';
@@ -1251,7 +1267,6 @@ const getColorClass = (color: string) => {
     'Purple': 'bg-purple-500',
     'Pink': 'bg-pink-500'
   };
-  
   return colorMap[color] || 'bg-gray-400';
 };
 
@@ -1290,5 +1305,42 @@ definePageMeta({
 
 .animate-fadeIn {
   animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Ensure dropdowns are always visible */
+.relative {
+  position: relative;
+}
+
+/* Custom scrollbar for better mobile experience */
+.overflow-x-auto::-webkit-scrollbar {
+  height: 6px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Ensure table cells don't break on mobile */
+@media (max-width: 640px) {
+  .truncate {
+    max-width: 80px;
+  }
+}
+
+@media (max-width: 768px) {
+  .truncate {
+    max-width: 120px;
+  }
 }
 </style>
