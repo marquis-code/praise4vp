@@ -256,8 +256,8 @@
 
               <button
                 class="w-full group flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all duration-300 hover:scale-105 transform"
-                :class="getNavItemClass('/dashboard/referral-code')"
-                @click="handleNavClick('/dashboard/referral-code', navigationItems.find(item => item.path === '/dashboard/referral-code'))"
+                :class="getNavItemClass('/dashboard/referrals')"
+                @click="handleNavClick('/dashboard/referrals', navigationItems.find(item => item.path === '/dashboard/referrals'))"
               >
                 <div class="mr-3 p-2 rounded-lg bg-gradient-to-r from-red-500/20 to-red-600/20 group-hover:from-red-500/30 group-hover:to-red-600/30 transition-all duration-300">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -271,7 +271,7 @@
                   fill="none" 
                   viewBox="0 0 24 24" 
                   stroke="currentColor"
-                  v-if="navigationItems.find(item => item.path === '/dashboard/referral-code')?.children"
+                  v-if="navigationItems.find(item => item.path === '/dashboard/promo-code')?.children"
                 >
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
@@ -564,7 +564,7 @@ const navigationItems: NavigationItem[] = [
       },
       {
         title: 'Referral Codes Management',
-        path: '/dashboard/marketing/referralcode',
+        path: '/dashboard/marketing/referrals',
         icon: 'svg'
       }
     ]

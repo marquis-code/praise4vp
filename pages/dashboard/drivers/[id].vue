@@ -916,7 +916,7 @@
                   id="rejectionReason"
                   v-model="rejectionReason"
                   rows="4"
-                  class="w-full rounded-md border-gray-300 border shadow-sm focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50"
+                  class="w-full rounded-md text-sm p-3 border-gray-300 border shadow-sm focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50"
                   placeholder="Please provide a detailed reason for rejecting this document..."
                   required
                 ></textarea>
@@ -1193,6 +1193,8 @@ import {
   LayoutGrid, List, Eye, FileText, Camera, Shield, ZoomIn,
   Bell
 } from 'lucide-vue-next';
+import { useRejectCountrySpecificDocument } from "@/composables/modules/drivers/useRejectCountrySpecificDocument"
+import { useApproveCountrySpecificDocument } from  "@/composables/modules/drivers/useApproveCountrySpecificDocument"
 import avatarImage from "@/assets/icons/avatar.svg";
 import { useGetDriverById } from "@/composables/modules/drivers/useGetDriversById";
 import { useGetDriverTripHistory } from "@/composables/modules/trips/useGetDriverTripsHistory";
@@ -1200,6 +1202,9 @@ import { useGetDriverTripHistory } from "@/composables/modules/trips/useGetDrive
 import TabsComponent from '@/components/modules/drivers/TabsComponent.vue';
 import DocumentCard from '@/components/modules/drivers/DocumentCard.vue';
 import avatar from "@/assets/img/avatar-male.svg"
+
+const { rejectDocument, loading: rejecting } = useRejectCountrySpecificDocument()
+const { loading: approving, approveDocument } = useApproveCountrySpecificDocument()
 
 // Types
 interface Driver {
@@ -1642,13 +1647,14 @@ const getDocumentType = (url: string) => {
 
 // Document approval/rejection handlers
 const handleApproveDocument = (documentCode: string) => {
-  const document = driver.value?.driverData?.countrySpecificDocuments?.find(
-    doc => doc.documentCode === documentCode
-  );
-  if (document) {
-    selectedDocument.value = document;
-    showApprovalModal.value = true;
-  }
+  approveDocument()
+  // const document = driver.value?.driverData?.countrySpecificDocuments?.find(
+  //   doc => doc.documentCode === documentCode
+  // );
+  // if (document) {
+  //   selectedDocument.value = document;
+  //   showApprovalModal.value = true;
+  // }
 };
 
 const handleRejectDocument = (documentCode: string) => {

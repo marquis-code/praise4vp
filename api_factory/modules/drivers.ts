@@ -55,5 +55,9 @@ export const drivers_api = {
     $_enable_account: (id: string) => {
         const url = `/drivers/${id}/activate`
         return GATEWAY_ENDPOINT.patch(url)
+    },
+    $_verify_country_specific_documents: (driverId: string, documentCode: string, payload: Record<string, any>) => {
+        const url = `/drivers/${driverId}/documents/${documentCode}/verify`
+        return GATEWAY_ENDPOINT.patch(url, payload)
     }
 }
