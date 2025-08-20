@@ -23,6 +23,7 @@
     "@fawmi/vue-google-maps": "^0.9.79",
     "@googlemaps/google-maps-services-js": "^3.4.0",
     "@googlemaps/js-api-loader": "^1.16.8",
+    "@heroicons/vue": "^2.2.0",
     "@luxdamore/vue-cursor-fx": "^1.6.2",
     "@nuxt/nitro": "^0.10.0",
     "@nuxtjs/pwa": "^3.3.5",

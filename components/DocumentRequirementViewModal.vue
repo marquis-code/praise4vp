@@ -1,25 +1,21 @@
-<template>
+<!-- <template>
     <div
       v-if="show"
       class="fixed inset-0 z-50 overflow-y-auto"
       @click="closeModal"
     >
       <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <!-- Background overlay -->
         <div
           class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
           @click="closeModal"
         ></div>
   
-        <!-- Center the modal -->
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
   
-        <!-- Modal panel -->
         <div
           class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6"
           @click.stop
         >
-          <!-- Header -->
           <div class="flex items-center justify-between mb-6">
             <h3 class="text-lg font-semibold text-gray-900">
               Document Requirement Details
@@ -34,9 +30,8 @@
             </button>
           </div>
   
-          <!-- Content -->
+    
           <div v-if="requirement" class="space-y-6">
-            <!-- Document Name -->
             <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4">
               <h4 class="text-xl font-semibold text-gray-900 mb-2">{{ requirement.name }}</h4>
               <div class="flex flex-wrap gap-2">
@@ -81,7 +76,6 @@
               </div>
             </div>
   
-            <!-- Details Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div class="bg-gray-50 rounded-lg p-4">
                 <div class="flex items-center mb-2">
@@ -130,7 +124,6 @@
               </div>
             </div>
   
-            <!-- Timestamps -->
             <div v-if="requirement.createdAt || requirement.updatedAt" class="border-t border-gray-200 pt-4">
               <h5 class="text-sm font-medium text-gray-700 mb-3">Timestamps</h5>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
@@ -152,12 +145,10 @@
             </div>
           </div>
   
-          <!-- Loading State -->
           <div v-else class="flex justify-center items-center py-8">
             <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
           </div>
   
-          <!-- Actions -->
           <div class="flex justify-end pt-6 border-t border-gray-200">
             <button
               @click="closeModal"
@@ -227,4 +218,255 @@
       document.removeEventListener('keydown', handleEscape)
     })
   })
-  </script>
+  </script> -->
+
+
+  <template>
+  <div
+    v-if="isOpen"
+    class="fixed inset-0 z-50 overflow-y-auto"
+    @click="closeModal"
+  >
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+      <!-- Background overlay -->
+      <div
+        class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+        @click="closeModal"
+      ></div>
+
+      <!-- Center the modal -->
+      <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+
+      <!-- Modal panel -->
+      <div
+        class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6"
+        @click.stop
+      >
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-lg font-semibold text-gray-900">
+            Document Requirement Details
+          </h3>
+          <button
+            @click="closeModal"
+            class="text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <XMarkIcon class="w-6 h-6" />
+          </button>
+        </div>
+
+        <!-- Content -->
+        <div v-if="document" class="space-y-6">
+          <!-- Document Name -->
+          <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4">
+            <h4 class="text-xl font-semibold text-gray-900 mb-2">{{ document.name }}</h4>
+            <div class="flex flex-wrap gap-2">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                <GlobeAltIcon class="w-4 h-4 mr-1" />
+                {{ getCountryName(document.countryCode) }}
+              </span>
+              <!-- Added state display with proper icon -->
+              <span v-if="document.state" class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                <MapPinIcon class="w-4 h-4 mr-1" />
+                {{ document.state }}
+              </span>
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
+                <DocumentTextIcon class="w-4 h-4 mr-1" />
+                {{ document.documentCode }}
+              </span>
+              <span
+                :class="[
+                  'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium',
+                  document.required
+                    ? 'bg-red-100 text-red-800'
+                    : 'bg-green-100 text-green-800'
+                ]"
+              >
+                <ExclamationTriangleIcon v-if="document.required" class="w-4 h-4 mr-1" />
+                <CheckCircleIcon v-else class="w-4 h-4 mr-1" />
+                {{ document.required ? 'Required' : 'Optional' }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Details Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="bg-gray-50 rounded-lg p-4">
+              <div class="flex items-center mb-2">
+                <GlobeAltIcon class="w-5 h-5 text-gray-500 mr-2" />
+                <h5 class="text-sm font-medium text-gray-700">Country</h5>
+              </div>
+              <p class="text-lg font-semibold text-gray-900">{{ getCountryName(document.countryCode) }}</p>
+              <p class="text-sm text-gray-600">{{ document.countryCode }}</p>
+            </div>
+
+            <!-- Added state details section with proper conditional rendering -->
+            <div v-if="document.state" class="bg-gray-50 rounded-lg p-4">
+              <div class="flex items-center mb-2">
+                <MapPinIcon class="w-5 h-5 text-gray-500 mr-2" />
+                <h5 class="text-sm font-medium text-gray-700">State/Province</h5>
+              </div>
+              <p class="text-lg font-semibold text-gray-900">{{ document.state }}</p>
+            </div>
+
+            <div class="bg-gray-50 rounded-lg p-4">
+              <div class="flex items-center mb-2">
+                <DocumentTextIcon class="w-5 h-5 text-gray-500 mr-2" />
+                <h5 class="text-sm font-medium text-gray-700">Document Code</h5>
+              </div>
+              <p class="text-lg font-semibold text-gray-900">{{ document.documentCode }}</p>
+            </div>
+
+            <div class="bg-gray-50 rounded-lg p-4 sm:col-span-2">
+              <div class="flex items-center mb-2">
+                <InformationCircleIcon class="w-5 h-5 text-gray-500 mr-2" />
+                <h5 class="text-sm font-medium text-gray-700">Requirement Status</h5>
+              </div>
+              <div class="flex items-center">
+                <div
+                  :class="[
+                    'w-3 h-3 rounded-full mr-3',
+                    document.required ? 'bg-red-500' : 'bg-green-500'
+                  ]"
+                ></div>
+                <span class="text-lg font-semibold text-gray-900">
+                  {{ document.required ? 'Required Document' : 'Optional Document' }}
+                </span>
+              </div>
+              <p class="text-sm text-gray-600 mt-1">
+                {{ document.required 
+                  ? 'This document must be provided for verification.' 
+                  : 'This document is optional and may be provided for additional verification.' 
+                }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Timestamps -->
+          <div v-if="document.createdAt || document.updatedAt" class="border-t border-gray-200 pt-4">
+            <h5 class="text-sm font-medium text-gray-700 mb-3">Timestamps</h5>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+              <div v-if="document.createdAt" class="flex items-center text-gray-600">
+                <PlusIcon class="w-4 h-4 mr-2" />
+                <span class="font-medium mr-2">Created:</span>
+                {{ formatDate(document.createdAt) }}
+              </div>
+              <div v-if="document.updatedAt" class="flex items-center text-gray-600">
+                <PencilIcon class="w-4 h-4 mr-2" />
+                <span class="font-medium mr-2">Updated:</span>
+                {{ formatDate(document.updatedAt) }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div v-else class="flex justify-center items-center py-8">
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex justify-end gap-3 pt-6 border-t border-gray-200">
+          <button
+            @click="handleEdit"
+            class="btn-secondary"
+          >
+            Edit
+          </button>
+          <button
+            @click="closeModal"
+            class="btn-primary"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { 
+  XMarkIcon, 
+  GlobeAltIcon, 
+  MapPinIcon, 
+  DocumentTextIcon, 
+  ExclamationTriangleIcon, 
+  CheckCircleIcon, 
+  InformationCircleIcon, 
+  PlusIcon, 
+  PencilIcon 
+} from '@heroicons/vue/24/outline'
+import { countries } from '~/utils/countries-states'
+import { onMounted, onUnmounted } from 'vue'
+
+interface DocumentRequirement {
+  _id?: string
+  name: string
+  documentCode: string
+  countryCode: string
+  state: string
+  required: boolean
+  createdAt?: string
+  updatedAt?: string
+}
+
+interface Props {
+  isOpen: boolean
+  document?: DocumentRequirement | null
+}
+
+interface Emits {
+  (e: 'close'): void
+  (e: 'edit', document: DocumentRequirement): void
+}
+
+const props = defineProps<Props>()
+const emit = defineEmits<Emits>()
+
+// Methods
+const getCountryName = (countryCode: string): string => {
+  const country = countries.find(c => c.code === countryCode)
+  return country ? country.name : countryCode
+}
+
+const closeModal = () => {
+  emit('close')
+}
+
+const handleEdit = () => {
+  if (props.document) {
+    emit('edit', props.document)
+  }
+}
+
+const formatDate = (dateString: string) => {
+  try {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  } catch {
+    return dateString
+  }
+}
+
+// Handle escape key
+const handleEscape = (e: KeyboardEvent) => {
+  if (e.key === 'Escape' && props.isOpen) {
+    closeModal()
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('keydown', handleEscape)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleEscape)
+})
+</script>

@@ -37,21 +37,22 @@
           </div>
   
           <!-- Actions -->
-          <div class="flex flex-col sm:flex-row gap-3">
+          <div class="flex flex-col mt-10 space-x-6 sm:flex-row gap-3">
             <button
               @click="closeModal"
-              class="w-full sm:w-auto px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+              class="w-full  px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-700 text-sm font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
             >
               {{ cancelText }}
             </button>
             <button
               @click="handleConfirm"
+              :disabled="loading"
               :class="[
-                'w-full sm:w-auto px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors',
+                'w-full disabled:cursor-not-allowed disabled:opacity-25  px-4 py-3 text-white text-sm font-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors',
                 confirmClass || 'bg-red-600 hover:bg-red-700 focus:ring-red-500'
               ]"
             >
-              {{ confirmText }}
+              {{ loading ? 'processing..' : confirmText }}
             </button>
           </div>
         </div>
@@ -63,6 +64,7 @@
   interface Props {
     show: boolean
     title: string
+    loading: boolean
     message: string
     confirmText?: string
     cancelText?: string

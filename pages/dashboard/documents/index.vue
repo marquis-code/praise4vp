@@ -1,315 +1,401 @@
 <template>
-    <div class="min-h-screen">
-      <!-- Header Section -->
-      <div class="bg-white shadow-sm border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h1 class="text-2xl font-bold text-gray-900">Document Requirements</h1>
-              <p class="text-sm text-gray-600 mt-1">Manage country-specific document requirements</p>
-            </div>
+  <div class="min-h-screen">
+    <div class="">
+      <!-- Header -->
+<section class="flex justify-between items-center pb-6">
+        <div class="">
+        <h1 class="text-2xl font-bold text-gray-900">Document Requirements Manager</h1>
+        <p class="mt-2 text-gray-600">Manage document requirements by country and state</p>
+      </div>
+
+   <div>
+        <button @click="openCreateModal" class="text-sm flex items-center space-x-2 py-2.5 px-3 bg-primary text-white rounded-lg">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Add Document
+          </button>
+   </div>
+</section>
+
+      <!-- Controls -->
+      <div class="mb-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+        <div class="flex flex-col sm:flex-row gap-4 flex-1">
+          <!-- Search -->
+          <div class="relative flex-1 max-w-md">
+            <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+            </svg>
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="Search documents, codes, countries, or states..."
+              class="pl-10 text-sm input-field"
+            />
+          </div>
+
+          <!-- Filters -->
+          <div class="flex gap-2">
+            <select v-model="filters.countryCode" class="select-field text-sm min-w-[140px]">
+              <option value="">All Countries</option>
+              <option v-for="country in countries" :key="country.code" :value="country.code">
+                {{ country.name }}
+              </option>
+            </select>
+
+            <select v-model="filters.state" class="select-field text-sm min-w-[140px]" :disabled="!filters.countryCode">
+              <option value="">All States</option>
+              <option v-for="state in availableStates" :key="state" :value="state">
+                {{ state }}
+              </option>
+            </select>
+
+            <button @click="clearFilters" class="btn-secondary text-sm whitespace-nowrap">
+              Clear Filters
+            </button>
+          </div>
+        </div>
+
+        <!-- View Toggle and Add Button -->
+        <div class="flex gap-2">
+          <div class="flex bg-gray-200 rounded-lg p-1">
             <button
-              @click="showCreateModal = true"
-              class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              @click="viewMode = 'grid'"
+              :class="[
+                'px-3 py-1 rounded-md text-sm font-medium transition-colors',
+                viewMode === 'grid' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+              ]"
             >
-              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
               </svg>
-              Add New Requirement
+            </button>
+            <button
+              @click="viewMode = 'list'"
+              :class="[
+                'px-3 py-1 rounded-md text-sm font-medium transition-colors',
+                viewMode === 'list' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+              ]"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+              </svg>
             </button>
           </div>
         </div>
       </div>
-  
-      <!-- Main Content -->
-      <div class="max-w-7xl mx-auto py-8">
-        <!-- Filters Section -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Country Code</label>
-              <input
-                v-model="filters.countryCode"
-                type="text"
-                placeholder="e.g., NG, US"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                @input="debouncedSearch"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Document Code</label>
-              <input
-                v-model="filters.documentCode"
-                type="text"
-                placeholder="e.g., NG-02"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                @input="debouncedSearch"
-              />
-            </div>
-            <div class="flex items-end">
-              <button
-                @click="clearFilters"
-                class="w-full px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors duration-200"
-              >
-                Clear Filters
-              </button>
-            </div>
-          </div>
-        </div>
-  
-        <!-- Loading State -->
-        <div v-if="loading" class="flex justify-center items-center py-12">
-          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        </div>
-  
-        <!-- Document Requirements Grid -->
-        <div v-else-if="documentRequirements.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div
-            v-for="requirement in documentRequirements"
-            :key="requirement.id"
-            class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 overflow-hidden"
-          >
-            <div class="p-6">
-              <div class="flex items-start justify-between mb-4">
-                <div class="flex-1">
-                  <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ requirement.name }}</h3>
-                  <div class="flex flex-wrap gap-2 mb-3">
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                      {{ requirement.countryCode }}
-                    </span>
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                      {{ requirement.documentCode }}
-                    </span>
-                  </div>
-                </div>
-                <div class="flex items-center space-x-2">
-                  <span
-                    :class="[
-                      'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium',
-                      requirement.required
-                        ? 'bg-red-100 text-red-800'
-                        : 'bg-green-100 text-green-800'
-                    ]"
-                  >
-                    {{ requirement.required ? 'Required' : 'Optional' }}
-                  </span>
-                </div>
-              </div>
-              
-              <div class="flex items-center justify-between pt-4 border-t border-gray-200">
-                <button
-                  @click="viewRequirement(requirement)"
-                  class="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
-                >
-                  View Details
-                </button>
-                <div class="flex items-center space-x-2">
-                  <button
-                    @click="editRequirement(requirement)"
-                    class="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                  >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                    </svg>
-                  </button>
-                  <button
-                    @click="confirmDelete(requirement)"
-                    class="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                  >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-  
-        <!-- Empty State -->
-        <div v-else class="text-center py-12">
-          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-          </svg>
-          <h3 class="mt-2 text-sm font-medium text-gray-900">No document requirements found</h3>
-          <p class="mt-1 text-sm text-gray-500">Get started by creating a new document requirement.</p>
-          <div class="mt-6">
-            <button
-              @click="showCreateModal = true"
-              class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow-sm transition-colors duration-200"
-            >
-              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-              </svg>
-              Add New Requirement
-            </button>
-          </div>
-        </div>
-  
-        <!-- Pagination -->
-        <div v-if="totalCount > documentRequirements.length" class="mt-8 flex justify-center">
-          <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-            <button
-              @click="changePage(currentPage - 1)"
-              :disabled="currentPage === 1"
-              class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Previous
-            </button>
-            <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
-              Page {{ currentPage }}
+
+      <!-- Loading State -->
+      <div v-if="loading" class="flex justify-center items-center py-12">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+
+      <!-- Empty State -->
+      <div v-else-if="filteredDocuments.length === 0" class="text-center py-12">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">No documents found</h3>
+        <p class="mt-1 text-sm text-gray-500">
+          {{ searchQuery || filters.countryCode || filters.state ? 'Try adjusting your search or filters.' : 'Get started by creating a new document requirement.' }}
+        </p>
+      </div>
+
+      <!-- Grid View -->
+      <div v-else-if="viewMode === 'grid'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div
+          v-for="document in filteredDocuments"
+          :key="document.id"
+          class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer"
+          @click="viewDocument(document)"
+        >
+          <div class="flex items-start justify-between mb-4">
+            <h3 class="text-lg font-medium text-gray-900 truncate">{{ document.name }}</h3>
+            <span :class="[
+              'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+              document.required ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+            ]">
+              {{ document.required ? 'Required' : 'Optional' }}
             </span>
+          </div>
+          
+          <div class="space-y-2 text-sm text-gray-600">
+            <p><span class="font-medium">Code:</span> {{ document.documentCode }}</p>
+            <p><span class="font-medium">Country:</span> {{ getCountryName(document.countryCode) }}</p>
+            <p><span class="font-medium">State:</span> {{ document.state }}</p>
+          </div>
+
+          <div class="mt-4 flex justify-end space-x-2">
             <button
-              @click="changePage(currentPage + 1)"
-              :disabled="currentPage * pageSize >= totalCount"
-              class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              @click.stop="editDocument(document)"
+              class="text-blue-600 hover:text-blue-800 text-sm font-medium"
             >
-              Next
+              Edit
             </button>
-          </nav>
+            <button
+              @click.stop="deleteDocument(document)"
+              class="text-red-600 hover:text-red-800 text-sm font-medium"
+              :disabled="deleteLoading"
+            >
+              {{ deleteLoading ? 'Deleting...' : 'Delete' }}
+            </button>
+          </div>
         </div>
       </div>
-  
-      <!-- Create/Edit Modal -->
+
+      <!-- List View -->
+      <div v-else class="bg-white shadow-sm rounded-lg overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Document</th>
+              <th class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
+              <th class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Country</th>
+              <th class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">State</th>
+              <th class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Required</th>
+              <th class="px-6 py-3.5 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr
+              v-for="document in filteredDocuments"
+              :key="document.id"
+              class="hover:bg-gray-50 cursor-pointer"
+              @click="viewDocument(document)"
+            >
+              <td class="px-6 py-6 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-900">{{ document.name }}</div>
+              </td>
+              <td class="px-6 py-6 whitespace-nowrap">
+                <div class="text-sm text-gray-900">{{ document.documentCode }}</div>
+              </td>
+              <td class="px-6 py-6 whitespace-nowrap">
+                <div class="text-sm text-gray-900">{{ getCountryName(document.countryCode) }}</div>
+              </td>
+              <td class="px-6 py-6 whitespace-nowrap">
+                <div class="text-sm text-gray-900">{{ document.state }}</div>
+              </td>
+              <td class="px-6 py-6 whitespace-nowrap">
+                <span :class="[
+                  'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                  document.required ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                ]">
+                  {{ document.required ? 'Required' : 'Optional' }}
+                </span>
+              </td>
+              <td class="px-6 py-6 whitespace-nowrap text-right text-sm font-medium">
+                <button
+                  @click.stop="editDocument(document)"
+                  class="text-blue-600 hover:text-blue-900 mr-4"
+                >
+                  Edit
+                </button>
+                <button
+                  @click.stop="deleteDocument(document)"
+                  class="text-red-600 hover:text-red-900"
+                  :disabled="deleteLoading"
+                >
+                  {{ deleteLoading ? 'Deleting...' : 'Delete' }}
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Modals -->
       <DocumentRequirementModal
-        v-model:show="showCreateModal"
-        :requirement="selectedRequirement"
-        @saved="handleSaved"
+        :show="modals.create || modals.edit"
+        :requirement="modals.edit ? selectedDocument : null"
+        @update:show="(value) => { if (!value) closeModals() }"
+        @saved="handleDocumentSaved"
       />
-  
-      <!-- View Modal -->
+
       <DocumentRequirementViewModal
-        v-model:show="showViewModal"
-        :requirement="selectedRequirement"
+        :is-open="modals.view"
+        :document="selectedDocument"
+        @close="closeModals"
+        @edit="editDocument"
       />
-  
-      <!-- Delete Confirmation Modal -->
+
       <ConfirmationModal
-        v-model:show="showDeleteModal"
+        :show="modals.delete"
         title="Delete Document Requirement"
-        :message="`Are you sure you want to delete '${selectedRequirement?.name}'? This action cannot be undone.`"
+        message="Are you sure you want to delete this document requirement? This action cannot be undone."
         confirm-text="Delete"
-        confirm-class="bg-red-600 hover:bg-red-700"
-        @confirm="handleDelete"
+        :loading="deleteLoading"
+        @close="closeModals"
+        @confirm="confirmDelete"
       />
     </div>
-  </template>
-  
-  <script setup lang="ts">
-  import { useGetAllCountryDocumentRequirements } from "@/composables/modules/documents/useGetAllCountryDocumentRequirements"
-  import { useDeleteDocumentRequirement } from "@/composables/modules/documents/useDeleteDocumentRequirement"
-  interface DocumentRequirement {
-    id: string
-    countryCode: string
-    documentCode: string
-    name: string
-    required: boolean
-    createdAt?: string
-    updatedAt?: string
-  }
-  
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, reactive, computed, watch, onMounted } from 'vue'
+import { useGetAllCountryDocumentRequirements } from "@/composables/modules/documents/useGetAllCountryDocumentRequirements"
+import { useDeleteDocumentRequirement } from "@/composables/modules/documents/useDeleteDocumentRequirement"
   // Composables
   const { documentRequirements, totalCount, loading, fetchAllDocumentRequirements } = useGetAllCountryDocumentRequirements()
   const { deleteDocumentRequirement, loading: deleteLoading } = useDeleteDocumentRequirement()
-  
-  // Reactive data
-  const showCreateModal = ref(false)
-  const showViewModal = ref(false)
-  const showDeleteModal = ref(false)
-  const selectedRequirement = ref<DocumentRequirement | null>(null)
-  const currentPage = ref(1)
-  const pageSize = ref(12)
-  
-  const filters = reactive({
-    countryCode: '',
-    documentCode: ''
-  })
-  
-  // Methods
-  // const debouncedSearch = useDebounceFn(() => {
-  //   currentPage.value = 1
-  //   fetchAllDocumentRequirements({
-  //     page: currentPage.value,
-  //     limit: pageSize.value,
-  //     ...filters
-  //   })
-  // }, 300)
-  
-  const clearFilters = () => {
-    filters.countryCode = ''
-    filters.documentCode = ''
-    currentPage.value = 1
-    fetchAllDocumentRequirements({
-      page: currentPage.value,
-      limit: pageSize.value
-    })
-  }
-  
-  const changePage = (page: number) => {
-    currentPage.value = page
-    fetchAllDocumentRequirements({
-      page: currentPage.value,
-      limit: pageSize.value,
-      ...filters
-    })
-  }
-  
-  const viewRequirement = (requirement: DocumentRequirement) => {
-    selectedRequirement.value = requirement
-    showViewModal.value = true
-  }
-  
-  const editRequirement = (requirement: DocumentRequirement) => {
-    selectedRequirement.value = requirement
-    showCreateModal.value = true
-  }
-  
-  const confirmDelete = (requirement: DocumentRequirement) => {
-    selectedRequirement.value = requirement
-    showDeleteModal.value = true
-  }
-  
-  const handleDelete = async () => {
-    if (!selectedRequirement.value) return
-    
-    const success = await deleteDocumentRequirement(selectedRequirement.value.id)
-    if (success) {
-      await fetchAllDocumentRequirements({
-        page: currentPage.value,
-        limit: pageSize.value,
-        ...filters
-      })
-    }
-    showDeleteModal.value = false
-    selectedRequirement.value = null
-  }
-  
-  const handleSaved = () => {
-    showCreateModal.value = false
-    selectedRequirement.value = null
-    fetchAllDocumentRequirements({
-      page: currentPage.value,
-      limit: pageSize.value,
-      ...filters
-    })
-  }
-  
-  // Watchers
-  watch(() => showCreateModal.value, (newVal) => {
-    if (!newVal) {
-      selectedRequirement.value = null
-    }
-  })
-  
-  // SEO
-  useHead({
-    title: 'Document Requirements',
-    meta: [
-      { name: 'description', content: 'Manage country-specific document requirements' }
-    ]
-  })
+import { countries, getStatesByCountryCode } from '~/utils/countries-states'
 
-  definePageMeta({
-  layout: "dashboard",
-});
-  </script>
+interface DocumentRequirement {
+  id: string
+  countryCode: string
+  documentCode: string
+  name: string
+  required: boolean
+  state?: string
+  createdAt?: string
+  updatedAt?: string
+}
+
+const searchQuery = ref('')
+const viewMode = ref<'grid' | 'list'>('list')
+const selectedDocument = ref<DocumentRequirement | null>(null)
+
+const filters = reactive({
+  countryCode: '',
+  state: ''
+})
+
+definePageMeta({
+  layout: 'dashboard'
+})
+
+const modals = reactive({
+  create: false,
+  edit: false,
+  view: false,
+  delete: false
+})
+
+const availableStates = computed(() => {
+  return filters.countryCode ? getStatesByCountryCode(filters.countryCode) : []
+})
+
+const filteredDocuments = computed(() => {
+  let filtered = documentRequirements.value || []
+
+  // Search filter
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase()
+    filtered = filtered.filter(doc =>
+      doc.name.toLowerCase().includes(query) ||
+      doc.documentCode.toLowerCase().includes(query) ||
+      getCountryName(doc.countryCode).toLowerCase().includes(query) ||
+      (doc.state && doc.state.toLowerCase().includes(query))
+    )
+  }
+
+  // Country filter
+  if (filters.countryCode) {
+    filtered = filtered.filter(doc => doc.countryCode === filters.countryCode)
+  }
+
+  // State filter
+  if (filters.state) {
+    filtered = filtered.filter(doc => doc.state === filters.state)
+  }
+
+  return filtered
+})
+
+const getCountryName = (countryCode: string): string => {
+  const country = countries.find(c => c.code === countryCode)
+  return country ? country.name : countryCode
+}
+
+const openCreateModal = () => {
+  selectedDocument.value = null
+  modals.create = true
+  modals.edit = false
+}
+
+const viewDocument = (document: DocumentRequirement) => {
+  selectedDocument.value = document
+  modals.view = true
+}
+
+const editDocument = (document: DocumentRequirement) => {
+  selectedDocument.value = document
+  modals.view = false
+  modals.create = false
+  modals.edit = true
+}
+
+const deleteDocument = (document: DocumentRequirement) => {
+  selectedDocument.value = document
+  modals.delete = true
+}
+
+const closeModals = () => {
+  modals.create = false
+  modals.edit = false
+  modals.view = false
+  modals.delete = false
+  selectedDocument.value = null
+}
+
+const handleDocumentSaved = async (documentData: DocumentRequirement) => {
+  try {
+    if (modals.edit && documentData.id) {
+      // Update existing document
+      const index = documentRequirements.value.findIndex(doc => doc.id === documentData.id)
+      if (index !== -1) {
+        documentRequirements.value[index] = { ...documentData, updatedAt: new Date().toISOString() }
+      }
+    } else {
+      // Create new document
+      const newDocument = {
+        ...documentData,
+        id: Date.now().toString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }
+      documentRequirements.value.push(newDocument)
+    }
+    await fetchAllDocumentRequirements()
+    closeModals()
+  } catch (error) {
+    console.error('Error saving document:', error)
+  }
+}
+
+const confirmDelete = async () => {
+  if (selectedDocument.value?._id) {
+    try {
+      await deleteDocumentRequirement(selectedDocument.value._id)
+      await fetchAllDocumentRequirements()
+    } catch (error) {
+      console.error('Error deleting document:', error)
+    }
+  }
+  closeModals()
+}
+
+const clearFilters = () => {
+  filters.countryCode = ''
+  filters.state = ''
+  searchQuery.value = ''
+}
+
+let searchTimeout: NodeJS.Timeout | null = null
+watch(searchQuery, () => {
+  if (searchTimeout) {
+    clearTimeout(searchTimeout)
+  }
+  searchTimeout = setTimeout(() => {
+    // Debounced search logic here if needed
+  }, 300)
+})
+
+watch(() => filters.countryCode, () => {
+  filters.state = ''
+})
+
+onMounted(() => {
+  fetchAllDocumentRequirements()
+})
+</script>

@@ -1,14 +1,3 @@
-<!-- <template>
-  <main>
-      {{tripOffersList}}
-  </main>
-</template>
-
-<script setup lang="ts">
-import { useGetTripOffers } from "@/composables/modules/trips/useFetchTripOffers"
-const { tripOffersList, loading } = useGetTripOffers()
-</script> -->
-
 <template>
   <div class="min-h-screen text-sm">
     <!-- Header -->

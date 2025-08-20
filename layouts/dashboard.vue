@@ -693,11 +693,11 @@ const navigationItems: NavigationItem[] = [
         path: '/dashboard/trips',
         icon: 'svg'
       },
-      // {
-      //   title: 'Trip Offers',
-      //   path: '/dashboard/trips/offers',
-      //   icon: 'svg'
-      // },
+      {
+        title: 'Trip Offers',
+        path: '/dashboard/trips/offers',
+        icon: 'svg'
+      },
       // {
       //   title: 'Trip Analytics',
       //   path: '/dashboard/trips/analytics',

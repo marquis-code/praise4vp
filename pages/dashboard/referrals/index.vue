@@ -205,11 +205,11 @@
                   </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="flex items-center">
+                  <NuxtLink :to="referral.referrer.userType === 'driver' ? `/dashboard/drivers/${referral.referrer._id}` : `/dashboard/passengers/${referral.referrer._id}`" class="flex items-center">
                     <div class="flex-shrink-0 h-8 w-8">
                       <div class="h-8 w-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
                         <span class="text-sm font-medium text-white">
-                          {{ getInitials(referral.referrer.firstName, referral.referrer.lastName) }}
+                          {{ getInitials(referral?.referrer?.firstName, referral?.referrer?.lastName) }}
                         </span>
                       </div>
                     </div>
@@ -217,29 +217,31 @@
                       <div class="text-sm font-medium text-slate-900">
                         {{ referral.referrer.firstName }} {{ referral.referrer.lastName }}
                       </div>
-                      <div class="text-sm text-slate-500">{{ referral.referrer.email }}</div>
+                       <div class="text-sm text-slate-500">{{ referral?.referrer?.phone }}</div>
+                      <div class="text-sm text-slate-500">{{ referral?.referrer?.email }}</div>
                     </div>
-                  </div>
+                  </NuxtLink>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="flex items-center">
+                  <NuxtLink :to="referral.referree.userType === 'driver' ? `/dashboard/drivers/${referral.referree._id}` : `/dashboard/passengers/${referral.referree._id}`" class="flex items-center">
                     <div class="flex-shrink-0 h-8 w-8">
                       <div class="h-8 w-8 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
                         <span class="text-sm font-medium text-white">
-                          {{ getInitials(referral.referree.firstName, referral.referree.lastName) }}
+                          {{ getInitials(referral?.referree?.firstName, referral?.referree?.lastName) }}
                         </span>
                       </div>
                     </div>
                     <div class="ml-3">
                       <div class="text-sm font-medium text-slate-900">
-                        {{ referral.referree.firstName }} {{ referral.referree.lastName }}
+                        {{ referral.referree.firstName }} {{ referral?.referree?.lastName }}
                       </div>
-                      <div class="text-sm text-slate-500">{{ referral.referree.email }}</div>
+                       <div class="text-sm text-slate-500">{{ referral?.referree?.phone }}</div>
+                      <div class="text-sm text-slate-500">{{ referral?.referree?.email }}</div>
                     </div>
-                  </div>
+                  </NuxtLink>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
-                  {{ formatDate(referral.createdAt) }}
+                  {{ formatDate(referral?.createdAt) }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button

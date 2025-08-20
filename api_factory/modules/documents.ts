@@ -5,6 +5,7 @@ export const country_documents_api = {
         countryCode: string
         documentCode: string
         name: string
+        state: string
         required: boolean
     }) => {
         const url = `/documents`
@@ -30,6 +31,7 @@ export const country_documents_api = {
         countryCode: string
         documentCode: string
         name: string
+        state: string
         required: boolean
     }>) => {
         const url = `/documents/${id}`
