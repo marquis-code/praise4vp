@@ -1,12 +1,12 @@
 <template>
   <div class="min-h-screen animate-fadeIn">
-    <!-- Loading state -->
+  
     <div v-if="loading" class="flex items-center justify-center min-h-screen">
       <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
       <p class="ml-3 text-gray-600">Loading driver details...</p>
     </div>
         
-    <!-- Driver not found -->
+
     <div v-else-if="!driver" class="flex flex-col items-center justify-center min-h-screen">
       <AlertCircle class="h-16 w-16 text-red-500 mb-4" />
       <h2 class="text-2xl font-semibold text-gray-900 mb-2">Driver Not Found</h2>
@@ -20,9 +20,7 @@
       </button>
     </div>
         
-    <!-- Driver details -->
     <div v-else>
-      <!-- Back button -->
       <div class="mb-6">
         <button 
           @click="router.push('/dashboard/drivers')"
@@ -33,7 +31,6 @@
         </button>
       </div>
             
-      <!-- Driver header -->
       <div class="bg-white shadow rounded-lg overflow-hidden mb-6">
         <div class="p-6">
           <div class="flex flex-col md:flex-row md:items-center">
@@ -92,12 +89,12 @@
         </div>
       </div>
             
-      <!-- Tabs -->
+
       <TabsComponent 
         :tabs="tabs"
         v-model:active-tab="activeTab"
       >
-        <!-- Driver Details Tab -->
+
         <div v-if="activeTab === 'details'" class="animate-fadeIn">
           <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
             <!-- Personal Information -->
@@ -315,7 +312,7 @@
           </div>
         </div>
 
-        <!-- Documents Tab -->
+
         <div v-else-if="activeTab === 'documents'" class="animate-fadeIn">
           <div class="space-y-6">
             <!-- Country Specific Documents -->
@@ -487,14 +484,14 @@
           </div>
         </div>
                 
-        <!-- Trip History Tab -->
+
         <div v-else-if="activeTab === 'trips'" class="animate-fadeIn">
-          <!-- Filters and Export -->
+
           <div class="bg-white p-5 rounded-lg shadow mb-6">
             <div class="flex flex-col md:flex-row justify-between mb-4">
               <h3 class="text-lg font-medium text-gray-900 mb-2 md:mb-0">Trip Filters</h3>
               <div class="flex space-x-2">
-                <!-- View Toggle Buttons -->
+
                 <div class="flex border border-gray-300 rounded-md overflow-hidden mr-2">
                   <button
                     @click="viewMode = 'grid'"
@@ -572,7 +569,6 @@
             </div>
           </div>
                     
-          <!-- Trip Stats -->
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <div 
               v-for="(stat, index) in tripStats"
@@ -605,12 +601,12 @@
             </div>
           </div>
                     
-          <!-- Loading State -->
+   
           <div v-if="fetchingHistory" class="flex justify-center items-center py-12">
             <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
           </div>
                     
-          <!-- Empty State -->
+
           <div v-else-if="filteredTrips.length === 0" class="bg-white rounded-lg shadow p-12 text-center">
             <FileX class="mx-auto h-12 w-12 text-gray-400" />
             <h3 class="mt-2 text-lg font-medium text-gray-900">No trips found</h3>
@@ -619,7 +615,7 @@
             </p>
           </div>
                     
-          <!-- Trips Grid View -->
+
           <div v-else-if="viewMode === 'grid'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div 
               v-for="trip in filteredTrips"
@@ -641,7 +637,7 @@
                 </div>
                                 
                 <div class="space-y-3">
-                  <!-- Passenger -->
+
                   <div class="flex items-start">
                     <div class="flex-shrink-0 mt-1">
                       <div class="h-5 w-5 rounded-full bg-blue-100 flex items-center justify-center">
@@ -656,7 +652,7 @@
                     </div>
                   </div>
                                     
-                  <!-- Origin -->
+  
                   <div class="flex items-start">
                     <div class="flex-shrink-0 mt-1">
                       <div class="h-5 w-5 rounded-full bg-green-100 flex items-center justify-center">
@@ -671,7 +667,7 @@
                     </div>
                   </div>
                                     
-                  <!-- Destination -->
+
                   <div class="flex items-start">
                     <div class="flex-shrink-0 mt-1">
                       <div class="h-5 w-5 rounded-full bg-red-100 flex items-center justify-center">
@@ -686,7 +682,7 @@
                     </div>
                   </div>
                   
-                  <!-- Fare -->
+
                   <div class="flex items-start">
                     <div class="flex-shrink-0 mt-1">
                       <div class="h-5 w-5 rounded-full bg-yellow-100 flex items-center justify-center">
@@ -714,7 +710,7 @@
             </div>
           </div>
                     
-          <!-- Trips List View -->
+
           <div v-else-if="viewMode === 'list'" class="space-y-4">
             <div 
               v-for="trip in filteredTrips"
@@ -737,7 +733,7 @@
                     <p class="text-sm text-gray-500 mb-3">{{ formatDate(trip.createdAt) }}</p>
                                         
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <!-- Passenger -->
+
                       <div class="flex items-start">
                         <div class="flex-shrink-0 mt-1">
                           <div class="h-5 w-5 rounded-full bg-blue-100 flex items-center justify-center">
@@ -752,7 +748,7 @@
                         </div>
                       </div>
                                             
-                      <!-- Fare -->
+
                       <div class="flex items-start">
                         <div class="flex-shrink-0 mt-1">
                           <div class="h-5 w-5 rounded-full bg-yellow-100 flex items-center justify-center">
@@ -770,7 +766,7 @@
                                         
                     <div class="mt-3 border-t border-gray-100 pt-3">
                       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Origin -->
+   
                         <div class="flex items-start">
                           <div class="flex-shrink-0 mt-1">
                             <div class="h-5 w-5 rounded-full bg-green-100 flex items-center justify-center">
@@ -785,7 +781,7 @@
                           </div>
                         </div>
                                                 
-                        <!-- Destination -->
+
                         <div class="flex items-start">
                           <div class="flex-shrink-0 mt-1">
                             <div class="h-5 w-5 rounded-full bg-red-100 flex items-center justify-center">
@@ -828,10 +824,165 @@
             />
           </div>
         </div>
+
+
+
+      <div v-else-if="activeTab === 'referrals'" class="animate-fadeIn">
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="px-6 py-4 border-b border-gray-200">
+              <h3 class="text-lg font-semibold text-gray-900">Referrals</h3>
+              <p class="text-sm text-gray-600 mt-1">
+                Users referred by this driver
+              </p>
+            </div>
+
+            <div class="p-6">
+              <!-- Loading State -->
+              <div v-if="fetchingReferrals || fetchingReferralDetails" class="flex items-center justify-center py-8">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <span class="ml-3 text-gray-600">Loading referrals...</span>
+              </div>
+
+              <!-- Empty State -->
+              <div v-else-if="!referralDetails || referralDetails.length === 0" class="text-center py-8">
+                <Users class="mx-auto h-12 w-12 text-gray-400" />
+                <h3 class="mt-2 text-sm font-medium text-gray-900">No referrals</h3>
+                <p class="mt-1 text-sm text-gray-500">This driver hasn't referred anyone yet.</p>
+              </div>
+
+              <!-- Referrals Table -->
+              <div v-else class="overflow-hidden">
+                <div class="overflow-x-auto">
+                  <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                      <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Referee
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Contact
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          User Type
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Referral Code
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Credential Completion
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Date Referred
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                      <tr v-for="referral in referralDetails" :key="referral._id" class="hover:bg-gray-50">
+                        <!-- Referee Info -->
+                        <td class="px-6 py-4 whitespace-nowrap">
+                          <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10">
+                              <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                <User class="h-5 w-5 text-blue-600" />
+                              </div>
+                            </div>
+                            <div class="ml-4">
+                              <div class="text-sm font-medium text-gray-900">
+                                {{ referral.referree.firstName }} {{ referral.referree.lastName }}
+                              </div>
+                              <div class="text-sm text-gray-500">
+                                ID: {{ referral.referree._id.slice(-8) }}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+
+                        <!-- Contact -->
+                        <td class="px-6 py-4 whitespace-nowrap">
+                          <div class="text-sm text-gray-900">{{ referral.referree.email }}</div>
+                          <div class="text-sm text-gray-500">{{ referral.referree.phone }}</div>
+                        </td>
+
+                        <!-- User Type -->
+                        <td class="px-6 py-4 whitespace-nowrap">
+                          <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
+                                :class="{
+                                  'bg-green-100 text-green-800': referral.referree.userType === 'driver',
+                                  'bg-blue-100 text-blue-800': referral.referree.userType === 'passenger'
+                                }">
+                            {{ referral.referree.userType }}
+                          </span>
+                        </td>
+
+                        <!-- Referral Code -->
+                        <td class="px-6 py-4 whitespace-nowrap">
+                          <div class="text-sm font-mono text-gray-900 bg-gray-100 px-2 py-1 rounded">
+                            {{ referral.referralCode }}
+                          </div>
+                        </td>
+
+                        <!-- Credential Completion -->
+                        <td class="px-6 py-4 whitespace-nowrap">
+                          <div class="flex items-center">
+                            <div class="flex-1">
+                              <div class="flex items-center justify-between text-sm">
+                                <span class="text-gray-900 font-medium">{{ referral.refereeCompletion }}%</span>
+                              </div>
+                              <div class="mt-1 w-full bg-gray-200 rounded-full h-2">
+                                <div 
+                                  class="h-2 rounded-full transition-all duration-300"
+                                  :class="{
+                                    'bg-red-500': referral.refereeCompletion < 50,
+                                    'bg-yellow-500': referral.refereeCompletion >= 50 && referral.refereeCompletion < 80,
+                                    'bg-green-500': referral.refereeCompletion >= 80
+                                  }"
+                                  :style="{ width: `${referral.refereeCompletion}%` }"
+                                ></div>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+
+                        <!-- Date Referred -->
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {{ new Date(referral.createdAt).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                          }) }}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <!-- Summary Stats -->
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div class="bg-blue-50 p-4 rounded-lg">
+                    <div class="text-2xl font-bold text-blue-600">{{ referralDetails.length }}</div>
+                    <div class="text-sm text-blue-800">Total Referrals</div>
+                  </div>
+                  <div class="bg-green-50 p-4 rounded-lg">
+                    <div class="text-2xl font-bold text-green-600">
+                      {{ referralDetails.filter(r => r.refereeCompletion >= 80).length }}
+                    </div>
+                    <div class="text-sm text-green-800">Complete Profiles</div>
+                  </div>
+                  <div class="bg-yellow-50 p-4 rounded-lg">
+                    <div class="text-2xl font-bold text-yellow-600">
+                      {{ Math.round(referralDetails.reduce((acc, r) => acc + r.refereeCompletion, 0) / referralDetails.length) }}%
+                    </div>
+                    <div class="text-sm text-yellow-800">Avg. Completion</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </TabsComponent>
     </div>
         
-    <!-- Document Approval Modal -->
+
     <Teleport to="body">
       <div 
         v-if="showApprovalModal"
@@ -884,7 +1035,6 @@
       </div>
     </Teleport>
 
-    <!-- Document Rejection Modal -->
     <Teleport to="body">
       <div 
         v-if="showRejectionModal"
@@ -951,7 +1101,7 @@
       </div>
     </Teleport>
 
-    <!-- Export Modal -->
+
     <Teleport to="body">
       <div 
         v-if="showExportModal"
@@ -970,7 +1120,7 @@
               </button>
             </div>
                         
-            <!-- Export Format Selection -->
+
             <div class="mb-6">
               <label class="block text-sm font-medium text-gray-700 mb-2">Export Format</label>
               <div class="flex space-x-4">
@@ -995,7 +1145,6 @@
               </div>
             </div>
                         
-            <!-- Field Selection -->
             <div>
               <div class="flex items-center justify-between mb-2">
                 <label class="block text-sm font-medium text-gray-700">Select Fields to Export</label>
@@ -1008,7 +1157,6 @@
               </div>
                             
               <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-60 overflow-y-auto p-2 border border-gray-200 rounded-md">
-                <!-- Trip Information -->
                 <div class="space-y-2">
                   <h4 class="text-xs font-semibold text-gray-500 uppercase">Trip Information</h4>
                   <div v-for="field in tripFields" :key="field.key" class="flex items-center">
@@ -1023,7 +1171,6 @@
                   </div>
                 </div>
                                 
-                <!-- Location Information -->
                 <div class="space-y-2">
                   <h4 class="text-xs font-semibold text-gray-500 uppercase">Location Information</h4>
                   <div v-for="field in locationFields" :key="field.key" class="flex items-center">
@@ -1038,7 +1185,6 @@
                   </div>
                 </div>
                                 
-                <!-- Passenger Information -->
                 <div class="space-y-2">
                   <h4 class="text-xs font-semibold text-gray-500 uppercase">Passenger Information</h4>
                   <div v-for="field in passengerFields" :key="field.key" class="flex items-center">
@@ -1053,7 +1199,7 @@
                   </div>
                 </div>
                                 
-                <!-- Payment Information -->
+            
                 <div class="space-y-2">
                   <h4 class="text-xs font-semibold text-gray-500 uppercase">Payment Information</h4>
                   <div v-for="field in paymentFields" :key="field.key" class="flex items-center">
@@ -1074,7 +1220,6 @@
               </p>
             </div>
                         
-            <!-- Export Options -->
             <div class="mt-6">
               <label class="block text-sm font-medium text-gray-700 mb-2">Export Options</label>
               <div class="space-y-2">
@@ -1125,7 +1270,7 @@
       </div>
     </Teleport>
 
-    <!-- Image Preview Modal -->
+
     <Teleport to="body">
       <div 
         v-if="showImagePreview"
@@ -1133,7 +1278,7 @@
         @click="closeImagePreview"
       >
         <div class="relative max-w-4xl max-h-full">
-          <!-- Close button -->
+
           <button 
             @click="closeImagePreview"
             class="absolute top-4 right-4 z-10 p-2 bg-black bg-opacity-50 rounded-full text-white hover:bg-opacity-70 transition-all duration-200"
@@ -1141,12 +1286,12 @@
             <X class="h-6 w-6" />
           </button>
                     
-          <!-- Image title -->
+
           <div class="absolute top-4 left-4 z-10 bg-black bg-opacity-50 rounded-lg px-3 py-2">
             <h3 class="text-white font-medium">{{ previewImageTitle }}</h3>
           </div>
                     
-          <!-- Image -->
+
           <img 
             :src="previewImageUrl"
             :alt="previewImageTitle"
@@ -1154,7 +1299,7 @@
             @click.stop
           />
                     
-          <!-- Download button -->
+ 
           <div class="absolute bottom-4 right-4 z-10">
             <a 
               :href="previewImageUrl"
@@ -1170,7 +1315,7 @@
       </div>
     </Teleport>
         
-    <!-- Success Toast -->
+
     <Teleport to="body">
       <div 
         v-if="showToast"
@@ -1187,92 +1332,29 @@
 import { ref, computed, onMounted, watch, onUnmounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import {
-  ArrowLeft, Star, Phone, Edit, ChevronLeft, ChevronRight,
+  ArrowLeft, Star, Phone, Edit,
   AlertCircle, FileX, Circle, MapPin, User, DollarSign,
   Download, X, CheckCircle, RefreshCw, Car, XCircle, Wallet,
   LayoutGrid, List, Eye, FileText, Camera, Shield, ZoomIn,
   Bell
 } from 'lucide-vue-next';
+import { useGetReferralsByUserId } from "@/composables/modules/referrals/useGetReferralsByUserId"
 import { useRejectCountrySpecificDocument } from "@/composables/modules/drivers/useRejectCountrySpecificDocument"
 import { useApproveCountrySpecificDocument } from  "@/composables/modules/drivers/useApproveCountrySpecificDocument"
-import avatarImage from "@/assets/icons/avatar.svg";
 import { useGetDriverById } from "@/composables/modules/drivers/useGetDriversById";
 import { useGetDriverTripHistory } from "@/composables/modules/trips/useGetDriverTripsHistory";
 // import { Driver, Trip } from '@/types/drivers';
 import TabsComponent from '@/components/modules/drivers/TabsComponent.vue';
 import DocumentCard from '@/components/modules/drivers/DocumentCard.vue';
-import avatar from "@/assets/img/avatar-male.svg"
 
 const { rejectDocument, loading: rejecting } = useRejectCountrySpecificDocument()
 const { loading: approving, approveDocument } = useApproveCountrySpecificDocument()
+const {
+    loading: fetchingReferrals,
+    referrals
+  } = useGetReferralsByUserId()
 
 // Types
-interface Driver {
-  _id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  emailIsVerified: boolean;
-  phone: string;
-  phoneIsVerified: boolean;
-  dob: string;
-  photoURL?: string;
-  IDIsVerified: boolean;
-  IDVerificationStatus: string;
-  hasDriverAccount: boolean;
-  rating: number;
-  createdAt: string;
-  updatedAt: string;
-  countryCode?: string;
-  timeZone?: string;
-  currencyName?: string;
-  currencySymbol?: string;
-  isDisabled: boolean;
-  hasTransactionPin: boolean;
-  currentRegistrationStep?: number;
-  referralCode?: string;
-  walletBalance?: {
-    priceInCAD: number;
-    priceInUserCurrency: number;
-    rate: number;
-    rateTimestamp: string;
-    currencySymbol: string;
-    currencyName: string;
-  };
-  notificationPreference?: {
-    SMS: boolean;
-    email: boolean;
-    push: boolean;
-  };
-  driverData?: {
-    licenseIsVerified: boolean;
-    proofOfInsuranceURL?: string;
-    carDetailsComplete: boolean;
-    proofOfInsuranceVerified: boolean;
-    amenities?: {
-      wifi: boolean;
-      ac: boolean;
-    };
-    carColor: string;
-    carDescription?: string;
-    carModel: string;
-    plateNumber: string;
-    seats: number;
-    carBrand: string;
-    carPhotos?: string[];
-    walletBalance?: {
-      priceInCAD: number;
-      priceInUserCurrency: number;
-      rate: number;
-      rateTimestamp: string;
-      currencySymbol: string;
-      currencyName: string;
-    };
-    countrySpecificDocuments?: CountrySpecificDocument[];
-    rating: number;
-    licenseVerificationStatus?: string;
-  };
-}
 
 interface CountrySpecificDocument {
   _id: string;
@@ -1336,201 +1418,6 @@ interface Trip {
 // Router and route
 const router = useRouter();
 const route = useRoute();
-
-//   // Mock composables (replace with actual implementations)
-//   const useGetDriverById = () => {
-//     const loading = ref(false);
-//     const driver = ref<Driver | null>(null);
-  
-//     // Mock driver data based on the provided JSON structure
-//     onMounted(() => {
-//       loading.value = true;
-//       setTimeout(() => {
-//         driver.value = {
-//           _id: "66ed3ca5a3291a0db25f5a1f",
-//           firstName: "Alfred",
-//           lastName: "Onuada",
-//           email: "aonuada5@gmail.com",
-//           emailIsVerified: true,
-//           phone: "+234 706 611 9370",
-//           phoneIsVerified: false,
-//           dob: "2003-06-10T12:30:04.903Z",
-//           photoURL: "/placeholder.svg?height=96&width=96",
-//           IDIsVerified: false,
-//           IDVerificationStatus: "resubmission_requested",
-//           hasDriverAccount: true,
-//           rating: 4.5,
-//           createdAt: "2024-09-20T09:13:09.437Z",
-//           updatedAt: "2025-08-02T05:37:48.495Z",
-//           countryCode: "NG",
-//           timeZone: "Africa/Lagos",
-//           currencyName: "NGN",
-//           currencySymbol: "NGN",
-//           isDisabled: false,
-//           hasTransactionPin: true,
-//           currentRegistrationStep: 3,
-//           referralCode: "CM-3jL4ph",
-//           walletBalance: {
-//             priceInCAD: 87678,
-//             priceInUserCurrency: 97550824,
-//             rate: 1153,
-//             rateTimestamp: "2025-06-04T23:03:46.087Z",
-//             currencySymbol: "NGN",
-//             currencyName: "NGN"
-//           },
-//           notificationPreference: {
-//             SMS: true,
-//             email: true,
-//             push: true
-//           },
-//           driverData: {
-//             licenseIsVerified: true,
-//             proofOfInsuranceURL: "/placeholder.svg?height=400&width=600",
-//             carDetailsComplete: true,
-//             proofOfInsuranceVerified: true,
-//             amenities: {
-//               wifi: true,
-//               ac: false
-//             },
-//             carColor: "Blue",
-//             carDescription: "A nice little family car",
-//             carModel: "Camry",
-//             plateNumber: "NYC1-919",
-//             seats: 4,
-//             carBrand: "Toyota",
-//             carPhotos: [
-//               "/placeholder.svg?height=300&width=400",
-//               "/placeholder.svg?height=300&width=400",
-//               "/placeholder.svg?height=300&width=400",
-//               "/placeholder.svg?height=300&width=400"
-//             ],
-//             walletBalance: {
-//               priceInCAD: 0,
-//               priceInUserCurrency: 0,
-//               rate: 1153,
-//               rateTimestamp: "2025-06-04T23:03:46.087Z",
-//               currencySymbol: "NGN",
-//               currencyName: "NGN"
-//             },
-//             countrySpecificDocuments: [
-//               {
-//                 _id: "688dc145936584ab9259a0e1",
-//                 documentCode: "NG-001",
-//                 name: "Driver Road License",
-//                 url: "/placeholder.svg?height=400&width=600",
-//                 required: true,
-//                 verified: true,
-//                 uploadedAt: "1970-01-01T00:00:00.000Z",
-//                 checkedAt: "2025-08-02T00:44:54.132Z",
-//                 rejectionReason: ""
-//               },
-//               {
-//                 _id: "688dc145936584ab9259a0e2",
-//                 documentCode: "NG-002",
-//                 name: "Vehicle Registration",
-//                 url: "/placeholder.svg?height=400&width=600",
-//                 required: true,
-//                 verified: false,
-//                 uploadedAt: "2024-10-15T10:30:00.000Z",
-//                 checkedAt: "",
-//                 rejectionReason: ""
-//               },
-//               {
-//                 _id: "688dc145936584ab9259a0e3",
-//                 documentCode: "NG-003",
-//                 name: "Proof of Address",
-//                 url: "/placeholder.svg?height=400&width=600",
-//                 required: false,
-//                 verified: false,
-//                 uploadedAt: "2024-11-01T14:20:00.000Z",
-//                 checkedAt: "",
-//                 rejectionReason: "Document is not clear enough"
-//               }
-//             ],
-//             rating: 4.5,
-//             licenseVerificationStatus: "verified"
-//           }
-//         };
-//         loading.value = false;
-//       }, 1000);
-//     });
-  
-//     return { loading, driver };
-//   };
-
-//   const useGetDriverTripHistory = () => {
-//     const driverTripHistory = ref<Trip[]>([]);
-//     const loading = ref(false);
-//     const pagination = ref({
-//       page: 1,
-//       totalPages: 1,
-//       total: 0,
-//       limit: 10
-//     });
-  
-//     const changePage = async (page: number) => {
-//       pagination.value.page = page;
-//     };
-  
-//     // Mock trip data
-//     onMounted(() => {
-//       loading.value = true;
-//       setTimeout(() => {
-//         driverTripHistory.value = [
-//           {
-//             _id: "trip1",
-//             type: "local",
-//             status: "completed",
-//             isScheduled: false,
-//             createdAt: "2024-12-01T10:00:00.000Z",
-//             updatedAt: "2024-12-01T11:00:00.000Z",
-//             isPrivate: false,
-//             passengers: [
-//               {
-//                 passengerId: {
-//                   _id: "passenger1",
-//                   firstName: "John",
-//                   lastName: "Doe",
-//                   email: "john@example.com"
-//                 },
-//                 passengerStatus: "completed",
-//                 origin: {
-//                   properties: { address: "123 Main St, Lagos" },
-//                   geometry: { coordinates: [3.3792, 6.5244] }
-//                 },
-//                 destination: {
-//                   properties: { address: "456 Oak Ave, Lagos" },
-//                   geometry: { coordinates: [3.3892, 6.5344] }
-//                 },
-//                 fare: 2000,
-//                 tax: 200,
-//                 discount: 0,
-//                 totalFare: {
-//                   priceInCAD: 5.50,
-//                   priceInUserCurrency: 2200
-//                 }
-//               }
-//             ]
-//           }
-//         ];
-//         pagination.value = {
-//           page: 1,
-//           totalPages: 1,
-//           total: 1,
-//           limit: 10
-//         };
-//         loading.value = false;
-//       }, 800);
-//     });
-  
-//     return { 
-//       driverTripHistory, 
-//       loading, 
-//       pagination, 
-//       changePage 
-//     };
-//   };
-
 // Fetch driver data
 const { loading, driver } = useGetDriverById();
 const { driverTripHistory, loading: fetchingHistory, pagination, changePage } = useGetDriverTripHistory();
@@ -1544,11 +1431,17 @@ const rejectionReason = ref('');
 const approvingDocument = ref(false);
 const rejectingDocument = ref(false);
 
+
+// Referrals state
+const referralDetails = ref<any[]>([])
+const fetchingReferralDetails = ref(false)
+
 // Tabs
 const tabs = [
   { name: 'Driver Details', value: 'details' },
   { name: 'Documents', value: 'documents' },
-  { name: 'Trip History', value: 'trips' }
+  { name: 'Trip History', value: 'trips' },
+  { name: 'Referrals', value: 'referrals' }
 ];
 const activeTab = ref('details');
 
@@ -1617,6 +1510,36 @@ const paymentFields = [
   { key: 'totalFare', label: 'Total Fare' }
 ];
 
+// Function to calculate credential completion percentage
+const calculateCredentialCompletion = (user: any) => {
+  if (!user) return 0
+  
+  const requiredFields = ['firstName', 'lastName', 'email', 'phone']
+  const completedFields = requiredFields.filter(field => user[field] && user[field].trim() !== '')
+  
+  return Math.round((completedFields.length / requiredFields.length) * 100)
+}
+
+// Function to fetch detailed referral information
+const fetchReferralDetails = async () => {
+  if (!referrals.value || referrals.value.length === 0) return
+  
+  fetchingReferralDetails.value = true
+  try {
+    // In a real app, you'd fetch additional details for each referee
+    // For now, we'll use the existing data and calculate completion
+    referralDetails.value = referrals.value.map((referral: any) => ({
+      ...referral,
+      refereeCompletion: calculateCredentialCompletion(referral.referree),
+      referrerCompletion: calculateCredentialCompletion(referral.referrer)
+    }))
+  } catch (error) {
+    console.error('Error fetching referral details:', error)
+  } finally {
+    fetchingReferralDetails.value = false
+  }
+}
+
 // Document helper functions
 const getPersonalDocumentsCount = () => {
   let count = 0;
@@ -1656,6 +1579,37 @@ const handleApproveDocument = (documentCode: string) => {
   //   showApprovalModal.value = true;
   // }
 };
+
+// // Function to calculate credential completion percentage
+// const calculateCredentialCompletion = (user: any) => {
+//   if (!user) return 0
+  
+//   const requiredFields = ['firstName', 'lastName', 'email', 'phone']
+//   const completedFields = requiredFields.filter(field => user[field] && user[field].trim() !== '')
+  
+//   return Math.round((completedFields.length / requiredFields.length) * 100)
+// }
+
+// // Function to fetch detailed referral information
+// const fetchReferralDetails = async () => {
+//   if (!referrals.value || referrals.value.length === 0) return
+  
+//   fetchingReferralDetails.value = true
+//   try {
+//     // In a real app, you'd fetch additional details for each referee
+//     // For now, we'll use the existing data and calculate completion
+//     referralDetails.value = referrals.value.map((referral: any) => ({
+//       ...referral,
+//       refereeCompletion: calculateCredentialCompletion(referral.referree),
+//       referrerCompletion: calculateCredentialCompletion(referral.referrer)
+//     }))
+//   } catch (error) {
+//     console.error('Error fetching referral details:', error)
+//   } finally {
+//     fetchingReferralDetails.value = false
+//   }
+// }
+
 
 const handleRejectDocument = (documentCode: string) => {
   const document = driver.value?.driverData?.countrySpecificDocuments?.find(
@@ -2261,7 +2215,13 @@ watch(activeTab, (newTab) => {
     // If we're switching to the trips tab and don't have trip history yet, fetch it
     // This would be handled by the composable
   }
+
+  if (newTab === 'referrals' && referralDetails.value.length === 0) {
+    fetchReferralDetails()
+  }
 });
+
+
 
 // Cleanup on unmount
 onUnmounted(() => {

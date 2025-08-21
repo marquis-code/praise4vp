@@ -514,6 +514,159 @@
           />
         </div>
         </div>
+
+      <div v-else-if="activeTab === 'referrals'" class="animate-fadeIn">
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="px-6 py-4 border-b border-gray-200">
+              <h3 class="text-lg font-semibold text-gray-900">Referrals</h3>
+              <p class="text-sm text-gray-600 mt-1">
+                Users referred by this passenger
+              </p>
+            </div>
+
+            <div class="p-6">
+              <!-- Loading State -->
+              <div v-if="fetchingReferrals || fetchingReferralDetails" class="flex items-center justify-center py-8">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <span class="ml-3 text-gray-600">Loading referrals...</span>
+              </div>
+
+              <!-- Empty State -->
+              <div v-else-if="!referralDetails || referralDetails.length === 0" class="text-center py-8">
+                <Users class="mx-auto h-12 w-12 text-gray-400" />
+                <h3 class="mt-2 text-sm font-medium text-gray-900">No referrals</h3>
+                <p class="mt-1 text-sm text-gray-500">This passennger hasn't referred anyone yet.</p>
+              </div>
+
+              <!-- Referrals Table -->
+              <div v-else class="overflow-hidden">
+                <div class="overflow-x-auto">
+                  <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                      <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Referee
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Contact
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          User Type
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Referral Code
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Credential Completion
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Date Referred
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                      <tr v-for="referral in referralDetails" :key="referral._id" class="hover:bg-gray-50">
+                        <!-- Referee Info -->
+                        <td class="px-6 py-4 whitespace-nowrap">
+                          <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10">
+                              <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                <User class="h-5 w-5 text-blue-600" />
+                              </div>
+                            </div>
+                            <div class="ml-4">
+                              <div class="text-sm font-medium text-gray-900">
+                                {{ referral.referrer.firstName }} {{ referral.referrer.lastName }}
+                              </div>
+                              <div class="text-sm text-gray-500">
+                                ID: {{ referral.referrer._id.slice(-8) }}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+
+                        <!-- Contact -->
+                        <td class="px-6 py-4 whitespace-nowrap">
+                          <div class="text-sm text-gray-900">{{ referral.referrer.email }}</div>
+                          <div class="text-sm text-gray-500">{{ referral.referrer.phone }}</div>
+                        </td>
+
+                        <!-- User Type -->
+                        <td class="px-6 py-4 whitespace-nowrap">
+                          <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
+                                :class="{
+                                  'bg-green-100 text-green-800': referral.referrer.userType === 'driver',
+                                  'bg-blue-100 text-blue-800': referral.referrer.userType === 'passenger'
+                                }">
+                            {{ referral.referrer.userType }}
+                          </span>
+                        </td>
+
+                        <!-- Referral Code -->
+                        <td class="px-6 py-4 whitespace-nowrap">
+                          <div class="text-sm font-mono text-gray-900 bg-gray-100 px-2 py-1 rounded">
+                            {{ referral.referralCode }}
+                          </div>
+                        </td>
+
+                        <!-- Credential Completion -->
+                        <td class="px-6 py-4 whitespace-nowrap">
+                          <div class="flex items-center">
+                            <div class="flex-1">
+                              <div class="flex items-center justify-between text-sm">
+                                <span class="text-gray-900 font-medium">{{ referral.refereeCompletion }}%</span>
+                              </div>
+                              <div class="mt-1 w-full bg-gray-200 rounded-full h-2">
+                                <div 
+                                  class="h-2 rounded-full transition-all duration-300"
+                                  :class="{
+                                    'bg-red-500': referral.refereeCompletion < 50,
+                                    'bg-yellow-500': referral.refereeCompletion >= 50 && referral.refereeCompletion < 80,
+                                    'bg-green-500': referral.refereeCompletion >= 80
+                                  }"
+                                  :style="{ width: `${referral.refereeCompletion}%` }"
+                                ></div>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+
+                        <!-- Date Referred -->
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {{ new Date(referral.createdAt).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                          }) }}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <!-- Summary Stats -->
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div class="bg-blue-50 p-4 rounded-lg">
+                    <div class="text-2xl font-bold text-blue-600">{{ referralDetails.length }}</div>
+                    <div class="text-sm text-blue-800">Total Referrals</div>
+                  </div>
+                  <div class="bg-green-50 p-4 rounded-lg">
+                    <div class="text-2xl font-bold text-green-600">
+                      {{ referralDetails.filter(r => r.refereeCompletion >= 80).length }}
+                    </div>
+                    <div class="text-sm text-green-800">Complete Profiles</div>
+                  </div>
+                  <div class="bg-yellow-50 p-4 rounded-lg">
+                    <div class="text-2xl font-bold text-yellow-600">
+                      {{ Math.round(referralDetails.reduce((acc, r) => acc + r.refereeCompletion, 0) / referralDetails.length) }}%
+                    </div>
+                    <div class="text-sm text-yellow-800">Avg. Completion</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </ModulesPassengersTabsComponent>
     </div>
     
@@ -713,12 +866,17 @@ import {
   Download, X, CheckCircle, RefreshCw
 } from 'lucide-vue-next';
 import avatarImage from "@/assets/icons/avatar.svg";
+import { useGetReferralsByUserId } from "@/composables/modules/referrals/useGetReferralsByUserId"
 import { useGetPassengerById } from "@/composables/modules/passengers/useGetPassengersById";
 import { useGetPassengerTripHistory } from "@/composables/modules/trips/useGetPassengerTripHistory";
 import { useGetUserDeliveries } from "@/composables/modules/deliveries/useFetchUserDeliveries"
 import { Passenger, Trip } from '@/types/passenger';
 import { useGetUserTransactions } from "@/composables/modules/transactions/useGetUserTransactions"
 const { transactions, loading: fetchingTransactions } = useGetUserTransactions()
+const {
+    loading: fetchingReferrals,
+    referrals
+  } = useGetReferralsByUserId()
   // import { definePageMeta } from '#app'
   
   // Use the composable
@@ -738,7 +896,8 @@ const tabs = [
   { name: 'Passenger Details', value: 'details' },
   { name: 'Trip History', value: 'trips' },
   { name: 'Transaction History', value: 'transactions' },
-  { name: 'Delivery History', value: 'deliveries' }
+  { name: 'Delivery History', value: 'deliveries' },
+  { name: 'Referrals', value: 'referrals' }
 ];
 const activeTab = ref('details');
 
@@ -768,6 +927,10 @@ const exportOptions = ref({
 // Toast state
 const showToast = ref(false);
 const toastMessage = ref('');
+
+// Referrals state
+const referralDetails = ref<any[]>([])
+const fetchingReferralDetails = ref(false)
 
 // Export field definitions
 const tripFields = [
@@ -810,6 +973,37 @@ const allFields = computed(() => [
   ...driverFields,
   ...paymentFields
 ]);
+
+// Function to calculate credential completion percentage
+const calculateCredentialCompletion = (user: any) => {
+  if (!user) return 0
+  
+  const requiredFields = ['firstName', 'lastName', 'email', 'phone']
+  const completedFields = requiredFields.filter(field => user[field] && user[field].trim() !== '')
+  
+  return Math.round((completedFields.length / requiredFields.length) * 100)
+}
+
+// Function to fetch detailed referral information
+const fetchReferralDetails = async () => {
+  if (!referrals.value || referrals.value.length === 0) return
+  
+  fetchingReferralDetails.value = true
+  try {
+    // In a real app, you'd fetch additional details for each referee
+    // For now, we'll use the existing data and calculate completion
+    referralDetails.value = referrals.value.map((referral: any) => ({
+      ...referral,
+      refereeCompletion: calculateCredentialCompletion(referral.referree),
+      referrerCompletion: calculateCredentialCompletion(referral.referrer)
+    }))
+  } catch (error) {
+    console.error('Error fetching referral details:', error)
+  } finally {
+    fetchingReferralDetails.value = false
+  }
+}
+
 
 // Check if all fields are selected
 const allFieldsSelected = computed(() => {
@@ -1285,6 +1479,10 @@ watch(activeTab, (newTab) => {
   if (newTab === 'trips' && !fetchingHistory.value && passengerTripHistory.value.length === 0) {
     // If we're switching to the trips tab and don't have trip history yet, fetch it
     // This would be handled by the composable
+  }
+
+    if (newTab === 'referrals' && referralDetails.value.length === 0) {
+    fetchReferralDetails()
   }
 });
 

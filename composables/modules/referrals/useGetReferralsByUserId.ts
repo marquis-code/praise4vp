@@ -1,5 +1,6 @@
 // src/composables/referrals/useGetReferralsByUserId.ts
 import { ref, readonly, onMounted, watch } from "vue"
+import { useRoute } from "vue-router"
 import { referral_api } from "@/api_factory/modules/referrals"
 import { useCustomToast } from "@/composables/core/useCustomToast"
 
@@ -11,9 +12,15 @@ interface PaginationData {
 }
 
 export const useGetReferralsByUserId = (initialUserId?: string) => {
+  const route = useRoute()
+
+  // If no initial userId is passed, fallback to router param
+  const userId = ref<string | undefined>(
+    initialUserId ?? (route.params.id as string | undefined)
+  )
+
   const loading = ref(false)
   const referrals = ref<any[]>([])
-  const userId = ref<string | undefined>(initialUserId)
   const pagination = ref<PaginationData>({
     page: 1,
     limit: 10,
@@ -32,7 +39,9 @@ export const useGetReferralsByUserId = (initialUserId?: string) => {
     loading.value = true
     try {
       const params = Object.fromEntries(
-        Object.entries({ page, limit }).filter(([, v]) => v !== undefined && v !== null && v !== "")
+        Object.entries({ page, limit }).filter(
+          ([, v]) => v !== undefined && v !== null && v !== ""
+        )
       )
 
       const res = await referral_api.$_get_referrals_by_user_id(uId, params as any)
@@ -87,6 +96,16 @@ export const useGetReferralsByUserId = (initialUserId?: string) => {
         if (newPage !== oldPage || newLimit !== oldLimit) {
           await fetchUserReferrals(userId.value, newPage, newLimit)
         }
+      }
+    }
+  )
+
+  // 🔑 Watch for changes in route param userId as well
+  watch(
+    () => route.params.userId,
+    async (newUserId) => {
+      if (newUserId && newUserId !== userId.value) {
+        await setUserId(newUserId as string)
       }
     }
   )
