@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen">
-    <div class="max-w-7xl mx-auto">
+    <div class="">
       <!-- Header -->
       <div class="mb-8">
         <div

@@ -174,7 +174,7 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span :class="[
-                    'inline-flex px-2 py-1 text-xs font-medium rounded-full',
+                    'inline-flex px-2 py-1 text-xs text-white font-medium rounded-full',
                     offer.isPrivate
                       ? 'bg-purple-100 text-purple-800'
                       : 'bg-primary text-primary'
@@ -272,7 +272,7 @@
                 {{ offer.accepted ? 'Accepted' : 'Pending' }}
               </span>
               <span :class="[
-                'inline-flex px-2 py-1 text-xs font-medium rounded-full',
+                'inline-flex px-2 py-1 text-xs text-white font-medium rounded-full',
                 offer.isPrivate ? 'bg-purple-100 text-purple-800' : 'bg-primary text-primary'
               ]">
                 {{ offer.isPrivate ? 'Private' : 'Public' }}
@@ -423,7 +423,7 @@
                 <div>
                   <p class="text-sm text-gray-500">Type</p>
                   <span :class="[
-                    'inline-flex px-2 py-1 text-xs font-medium rounded-full',
+                    'inline-flex px-2 py-1 text-xs text-white font-medium rounded-full',
                     selectedOffer.isPrivate ? 'bg-purple-100 text-purple-800' : 'bg-primary text-primary'
                   ]">
                     {{ selectedOffer.isPrivate ? 'Private' : 'Public' }}
@@ -460,6 +460,11 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import {
+  Search, Download, Plus, UserX, ChevronLeft, ChevronRight,
+  MoreVertical, Eye, Edit, Ban, User, Star, CheckCircle,
+  Grid, List, AlertTriangle, X
+} from 'lucide-vue-next';
 import { useGetTripOffers } from "@/composables/modules/trips/useFetchTripOffers"
 const { tripOffersList: tripOffers, loading, pagination, changePage } = useGetTripOffers()
 
@@ -527,9 +532,9 @@ const handlePageChange = async (page: number) => {
 
 // View modes configuration
 const viewModes = [
-  { mode: 'table', label: 'Table', icon: 'svg' },
-  { mode: 'list', label: 'List', icon: 'svg' },
-  { mode: 'grid', label: 'Grid', icon: 'svg' }
+  { mode: 'table', label: 'Table', icon: List },
+  // { mode: 'list', label: 'List', icon: 'svg' },
+  { mode: 'grid', label: 'Grid', icon: Grid }
 ]
 
 // Mock data - replace with actual API call

@@ -74,18 +74,18 @@ export const useGetUserTransactions = () => {
 
   const changePage = async (page: number) => {
     pagination.value.page = page
-    await fetchTransactions(page, pagination.value.limit, filters.value)
+    await fetchTransactions(page, pagination.value.limit)
   }
 
   const changeLimit = async (limit: number) => {
     pagination.value.page = 1 // Reset to first page when changing limit
     pagination.value.limit = limit
-    await fetchTransactions(1, limit, filters.value)
+    await fetchTransactions(1, limit)
   }
 
   // Method to refresh data with current filters
   const refreshTransactions = async () => {
-    await fetchTransactions(pagination.value.page, pagination.value.limit, filters.value)
+    await fetchTransactions(pagination.value.page, pagination.value.limit)
   }
 
 

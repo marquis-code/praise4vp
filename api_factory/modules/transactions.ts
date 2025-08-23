@@ -26,7 +26,7 @@ export const transactions_api = {
         const url = `/transactions?${searchParams.toString()}`;
         return GATEWAY_ENDPOINT.get(url);
     },
-    $_get_user_transactions_history: (id: string, params: GetTransactionsParams = {}) => {
+    $_get_user_transactions_history: (id: any, params: GetTransactionsParams = {}) => {
         const { 
             page = 1, 
             limit = 10,

@@ -15,10 +15,8 @@ export const referral_api = {
     userId: string,
     params?: { page?: number; limit?: number }
   ) => {
-    const url = `/referrals`
-    return GATEWAY_ENDPOINT.get(url, {
-      params: { userId, ...(params || {}) },
-    })
+    const url = `/referrals/users/${userId}`
+    return GATEWAY_ENDPOINT.get(url)
   },
 
   $_get_referral_stats: (params?: { userId?: string; from?: string; to?: string }) => {

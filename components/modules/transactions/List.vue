@@ -1,5 +1,6 @@
 <template>
     <div class="min-h-screen">
+      <!-- {{ transactions }} -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <div class="bg-white rounded-lg p-6 shadow-sm border">
           <div class="flex items-center justify-between">
@@ -502,68 +503,219 @@
       </div>
     </div>
   </template>
-  
-  <script setup lang="ts">
-  import { ref, computed, onMounted } from 'vue'
-  import { useGetTransactions } from "@/composables/modules/transactions/useGetTransactions"
-  const { transactions, loading, pagination, changePage, fetchTransactions } = useGetTransactions()
-  // Types
-  interface Amount {
-    priceInCAD: number
-    priceInUserCurrency: number
-    rate: number
-    rateTimestamp: string
-    currencySymbol: string
-    currencyName: string
-    attribution: string
-  }
-  
-  interface Transaction {
-    _id: string
-    ref: string
-    userId: string
-    description: string
-    amount: Amount
-    paymentProcessorFee: Amount
-    discount: Amount
-    tax: Amount
-    total: Amount
-    status: 'completed' | 'pending' | 'failed' | 'cancelled'
-    type: 'deposit' | 'withdrawal' | 'payment' | 'refund'
-    metadata: any
-    createdAt: string
-    updatedAt: string
-  }
-  
-  interface Filters {
-    type: string
-    status: string
-    dateRange: string
-    amountRange: string
-    currency: string
-    ref: string
-    userId: string
-    description: string
-  }
-  
-  const selectedTransaction = ref<Transaction | null>(null)
-  const viewMode = ref<'grid' | 'list'>('list')
-  const searchQuery = ref('')
-  const showAdvancedFilters = ref(false)
 
-  const props = defineProps({
-    transactions: {
-        type: Array,
-        defauly: []
-    },
-    loading: {
-        type: Boolean,
-        default: false
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
+
+// Types
+interface Amount {
+  priceInCAD: number
+  priceInUserCurrency: number
+  rate: number
+  rateTimestamp: string
+  currencySymbol: string
+  currencyName: string
+  attribution: string
+}
+
+interface Transaction {
+  _id: string
+  ref: string
+  userId: string
+  description: string
+  amount: Amount
+  paymentProcessorFee: Amount
+  discount: Amount
+  tax: Amount
+  total: Amount
+  status: 'completed' | 'pending' | 'failed' | 'cancelled'
+  type: 'deposit' | 'withdrawal' | 'payment' | 'refund'
+  metadata: any
+  createdAt: string
+  updatedAt: string
+}
+
+interface Filters {
+  type: string
+  status: string
+  dateRange: string
+  amountRange: string
+  currency: string
+  ref: string
+  userId: string
+  description: string
+}
+
+const selectedTransaction = ref<Transaction | null>(null)
+const viewMode = ref<'grid' | 'list'>('list')
+const searchQuery = ref('')
+const showAdvancedFilters = ref(false)
+
+const props = defineProps({
+  transactions: {
+    type: Array as () => Transaction[],
+    default: () => []
+  },
+  loading: {
+    type: Boolean,
+    default: false
+  },
+  pagination: {
+     type: Object,
+    default: {}
+  }
+})
+
+// Filters
+const filters = ref<Filters>({
+  type: '',
+  status: '',
+  dateRange: '',
+  amountRange: '',
+  currency: '',
+  ref: '',
+  userId: '',
+  description: ''
+})
+
+// Computed properties
+const stats = computed(() => {
+  const total = props.transactions?.length
+  const completed = props.transactions.filter(t => t.status === 'completed').length
+  const pending = props.transactions.filter(t => t.status === 'pending').length
+  const failed = props.transactions.filter(t => t.status === 'failed').length
+  const totalAmount = props.transactions
+    .filter(t => t.status === 'completed')
+    .reduce((sum, t) => sum + t.total.priceInUserCurrency, 0)
+
+  return {
+    total,
+    completed,
+    pending,
+    failed,
+    totalAmount
+  }
+})
+
+const filteredTransactions = computed(() => {
+  let filtered = [...props.transactions]
+
+  // Apply search query
+  if (searchQuery?.value) {
+    const query = searchQuery?.value?.toLowerCase()
+    filtered = filtered.filter(transaction =>
+      transaction?.description?.toLowerCase()?.includes(query) ||
+      transaction?.ref?.toLowerCase()?.includes(query) ||
+      transaction?.userId?.toLowerCase()?.includes(query) ||
+      transaction?.status?.toLowerCase()?.includes(query) ||
+      transaction?.type?.toLowerCase()?.includes(query)
+    )
+  }
+
+  // Apply filters
+  if (filters.value.type) {
+    filtered = filtered.filter(t => t?.type === filters?.value?.type)
+  }
+
+  if (filters.value.status) {
+    filtered = filtered.filter(t => t?.status === filters?.value?.status)
+  }
+
+  if (filters.value.currency) {
+    filtered = filtered.filter(t => t?.amount?.currencySymbol === filters?.value?.currency)
+  }
+
+  if (filters.value.dateRange) {
+    const now = new Date()
+    const filterDate = new Date()
+
+    switch (filters.value.dateRange) {
+      case 'today':
+        filterDate.setHours(0, 0, 0, 0)
+        break
+      case 'week':
+        filterDate.setDate(now.getDate() - 7)
+        break
+      case 'month':
+        filterDate.setMonth(now.getMonth() - 1)
+        break
+      case 'quarter':
+        filterDate.setMonth(now.getMonth() - 3)
+        break
+      default:
+        filterDate.setFullYear(1970)
     }
+
+    filtered = filtered.filter(t => new Date(t.createdAt) >= filterDate)
+  }
+
+  if (filters.value.amountRange) {
+    const [min, max] = filters.value.amountRange.split('-').map(v =>
+      v.includes('+') ? Infinity : parseInt(v)
+    )
+
+    filtered = filtered.filter(t => {
+      const amount = t.total.priceInUserCurrency
+      return amount >= min && (max === Infinity || amount <= max)
+    })
+  }
+
+  if (filters.value.ref) {
+    filtered = filtered.filter(t =>
+      t.ref.toLowerCase().includes(filters.value.ref.toLowerCase())
+    )
+  }
+
+  if (filters.value.userId) {
+    filtered = filtered.filter(t =>
+      t.userId.toLowerCase().includes(filters.value.userId.toLowerCase())
+    )
+  }
+
+  if (filters.value.description) {
+    filtered = filtered.filter(t =>
+      t.description.toLowerCase().includes(filters.value.description.toLowerCase())
+    )
+  }
+
+  return filtered
+})
+
+// Methods
+const formatCurrency = (amount: number): string => {
+  return new Intl.NumberFormat('en-NG').format(amount / 100)
+}
+
+const formatDate = (dateString: string): string => {
+  return new Date(dateString).toLocaleDateString('en-NG', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
   })
-  
-  // Filters
-  const filters = ref<Filters>({
+}
+
+const getStatusClass = (status: string): string => {
+  const statusClasses = {
+    completed: 'bg-green-100 text-green-800',
+    pending: 'bg-yellow-100 text-yellow-800',
+    failed: 'bg-red-100 text-red-800',
+    cancelled: 'bg-gray-100 text-gray-800'
+  }
+  return statusClasses[status as keyof typeof statusClasses] || 'bg-gray-100 text-gray-800'
+}
+
+const viewTransaction = (transaction: Transaction): void => {
+  selectedTransaction.value = transaction
+}
+
+const closeModal = (): void => {
+  selectedTransaction.value = null
+}
+
+const resetFilters = (): void => {
+  filters.value = {
     type: '',
     status: '',
     dateRange: '',
@@ -572,229 +724,74 @@
     ref: '',
     userId: '',
     description: ''
-  })
-  
-  // Computed properties
-  const stats = computed(() => {
-    const total = props.transactions?.length
-    const completed = props.transactions.filter(t => t.status === 'completed').length
-    const pending = props.transactions.filter(t => t.status === 'pending').length
-    const failed = props.transactions.filter(t => t.status === 'failed').length
-    const totalAmount = props.transactions
-      .filter(t => t.status === 'completed')
-      .reduce((sum, t) => sum + t.total.priceInUserCurrency, 0)
-  
-    return {
-      total,
-      completed,
-      pending,
-      failed,
-      totalAmount
-    }
-  })
-  
-  const filteredTransactions = computed(() => {
-    let filtered = [...transactions.value]
-  
-    // Apply search query
-    if (searchQuery?.value) {
-      const query = searchQuery?.value?.toLowerCase()
-      filtered = filtered.filter(transaction =>
-        transaction?.description?.toLowerCase()?.includes(query) ||
-        transaction?.ref?.toLowerCase()?.includes(query) ||
-        transaction?.userId?.toLowerCase()?.includes(query) ||
-        transaction?.status?.toLowerCase()?.includes(query) ||
-        transaction?.type?.toLowerCase()?.includes(query)
-      )
-    }
-  
-    // Apply filters
-    if (filters.value.type) {
-      filtered = filtered.filter(t => t?.type === filters?.value?.type)
-    }
-  
-    if (filters.value.status) {
-      filtered = filtered.filter(t => t?.status === filters?.value?.status)
-    }
-  
-    if (filters.value.currency) {
-      filtered = filtered.filter(t => t?.amount?.currencySymbol === filters?.value?.currency)
-    }
-  
-    if (filters.value.dateRange) {
-      const now = new Date()
-      const filterDate = new Date()
-  
-      switch (filters.value.dateRange) {
-        case 'today':
-          filterDate.setHours(0, 0, 0, 0)
-          break
-        case 'week':
-          filterDate.setDate(now.getDate() - 7)
-          break
-        case 'month':
-          filterDate.setMonth(now.getMonth() - 1)
-          break
-        case 'quarter':
-          filterDate.setMonth(now.getMonth() - 3)
-          break
-        default:
-          filterDate.setFullYear(1970)
-      }
-  
-      filtered = filtered.filter(t => new Date(t.createdAt) >= filterDate)
-    }
-  
-    if (filters.value.amountRange) {
-      const [min, max] = filters.value.amountRange.split('-').map(v => 
-        v.includes('+') ? Infinity : parseInt(v)
-      )
-      
-      filtered = filtered.filter(t => {
-        const amount = t.total.priceInUserCurrency
-        return amount >= min && (max === Infinity || amount <= max)
-      })
-    }
-  
-    if (filters.value.ref) {
-      filtered = filtered.filter(t => 
-        t.ref.toLowerCase().includes(filters.value.ref.toLowerCase())
-      )
-    }
-  
-    if (filters.value.userId) {
-      filtered = filtered.filter(t => 
-        t.userId.toLowerCase().includes(filters.value.userId.toLowerCase())
-      )
-    }
-  
-    if (filters.value.description) {
-      filtered = filtered.filter(t => 
-        t.description.toLowerCase().includes(filters.value.description.toLowerCase())
-      )
-    }
-  
-    return filtered
-  })
-
-
-// Pagination handler
-const handlePageChange = async (page: number) => {
-  await changePage(page)
+  }
+  searchQuery.value = ''
 }
-  
-  // Methods
-  const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat('en-NG').format(amount / 100)
+
+const toggleAdvancedFilters = (): void => {
+  showAdvancedFilters.value = !showAdvancedFilters.value
+}
+
+const exportTransactions = (): void => {
+  const csvData = [
+    // Header row
+    [
+      'Reference ID',
+      'User ID',
+      'Description',
+      'Type',
+      'Status',
+      'Amount',
+      'Currency',
+      'Processor Fee',
+      'Discount',
+      'Tax',
+      'Total',
+      'Exchange Rate',
+      'CAD Amount',
+      'Created At',
+      'Updated At'
+    ],
+    // Data rows
+    ...filteredTransactions.value.map(transaction => [
+      transaction.ref,
+      transaction.userId,
+      transaction.description,
+      transaction.type,
+      transaction.status,
+      (transaction.amount.priceInUserCurrency / 100).toString(),
+      transaction.amount.currencySymbol,
+      (transaction.paymentProcessorFee.priceInUserCurrency / 100).toString(),
+      (transaction.discount.priceInUserCurrency / 100).toString(),
+      (transaction.tax.priceInUserCurrency / 100).toString(),
+      (transaction.total.priceInUserCurrency / 100).toString(),
+      transaction.amount.rate.toString(),
+      (transaction.total.priceInCAD / 100).toString(),
+      transaction.createdAt,
+      transaction.updatedAt
+    ])
+  ]
+
+  const csvContent = csvData.map(row =>
+    row.map(cell => `"${cell}"`).join(',')
+  ).join('\n')
+
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+  const link = document.createElement('a')
+
+  if (link.download !== undefined) {
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    link.setAttribute('download', `transactions_${new Date().toISOString().split('T')[0]}.csv`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
   }
-  
-  const formatDate = (dateString: string): string => {
-    return new Date(dateString).toLocaleDateString('en-NG', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  }
-  
-  const getStatusClass = (status: string): string => {
-    const statusClasses = {
-      completed: 'bg-green-100 text-green-800',
-      pending: 'bg-yellow-100 text-yellow-800',
-      failed: 'bg-red-100 text-red-800',
-      cancelled: 'bg-gray-100 text-gray-800'
-    }
-    return statusClasses[status as keyof typeof statusClasses] || 'bg-gray-100 text-gray-800'
-  }
-  
-  const viewTransaction = (transaction: Transaction): void => {
-    selectedTransaction.value = transaction
-  }
-  
-  const closeModal = (): void => {
-    selectedTransaction.value = null
-  }
-  
-  const resetFilters = (): void => {
-    filters.value = {
-      type: '',
-      status: '',
-      dateRange: '',
-      amountRange: '',
-      currency: '',
-      ref: '',
-      userId: '',
-      description: ''
-    }
-    searchQuery.value = ''
-  }
-  
-  const toggleAdvancedFilters = (): void => {
-    showAdvancedFilters.value = !showAdvancedFilters.value
-  }
-  
-  const exportTransactions = (): void => {
-    const csvData = [
-      // Header row
-      [
-        'Reference ID',
-        'User ID',
-        'Description',
-        'Type',
-        'Status',
-        'Amount',
-        'Currency',
-        'Processor Fee',
-        'Discount',
-        'Tax',
-        'Total',
-        'Exchange Rate',
-        'CAD Amount',
-        'Created At',
-        'Updated At'
-      ],
-      // Data rows
-      ...filteredTransactions.value.map(transaction => [
-        transaction.ref,
-        transaction.userId,
-        transaction.description,
-        transaction.type,
-        transaction.status,
-        (transaction.amount.priceInUserCurrency / 100).toString(),
-        transaction.amount.currencySymbol,
-        (transaction.paymentProcessorFee.priceInUserCurrency / 100).toString(),
-        (transaction.discount.priceInUserCurrency / 100).toString(),
-        (transaction.tax.priceInUserCurrency / 100).toString(),
-        (transaction.total.priceInUserCurrency / 100).toString(),
-        transaction.amount.rate.toString(),
-        (transaction.total.priceInCAD / 100).toString(),
-        transaction.createdAt,
-        transaction.updatedAt
-      ])
-    ]
-  
-    const csvContent = csvData.map(row => 
-      row.map(cell => `"${cell}"`).join(',')
-    ).join('\n')
-  
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-    const link = document.createElement('a')
-    
-    if (link.download !== undefined) {
-      const url = URL.createObjectURL(blob)
-      link.setAttribute('href', url)
-      link.setAttribute('download', `transactions_${new Date().toISOString().split('T')[0]}.csv`)
-      link.style.visibility = 'hidden'
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-    }
-  }
-  
-  // Lifecycle
-  onMounted(() => {
-    // Initialize any required data or API calls here
-    console.log('Transaction Manager initialized with', transactions.value.length, 'transactions')
-  })
-  </script>
+}
+
+// Lifecycle
+onMounted(() => {
+  console.log('Transaction Manager initialized with', props.transactions.length, 'transactions')
+})
+</script>

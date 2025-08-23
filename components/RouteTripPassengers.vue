@@ -6,7 +6,7 @@
         class="group relative bg-white rounded-2xl border border-gray-200 hover:border-indigo-300 hover:shadow-xl transition-all duration-300 overflow-hidden"
       >
         <!-- Header Card -->
-        <div class="bg-gradient-to-r from-indigo-500 to-purple-600 p-6 text-white">
+        <div class="bg-primary p-6 text-white">
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-4">
               <div class="flex-shrink-0">
@@ -55,21 +55,21 @@
                 class="p-2 text-white hover:bg-white/20 rounded-lg transition-colors"
                 title="Notify Passenger"
               >
-                <IconBell class="h-5 w-5" />
+                <Bell class="h-5 w-5" />
               </button>
               <button 
                 @click="$emit('message-passenger', passenger.passengerId)"
                 class="p-2 text-white hover:bg-white/20 rounded-lg transition-colors"
                 title="Message Passenger"
               >
-                <IconMessageSquare class="h-5 w-5" />
+                <MessageSquare class="h-5 w-5" />
               </button>
               <button 
                 @click="$emit('show-passenger-menu', passenger.passengerId)"
                 class="p-2 text-white hover:bg-white/20 rounded-lg transition-colors"
                 title="More Options"
               >
-                <IconMoreVertical class="h-5 w-5" />
+                <MoreVertical class="h-5 w-5" />
               </button>
             </div>
           </div>
@@ -80,7 +80,7 @@
           <!-- Route Information with Map Preview -->
           <div class="mb-8">
             <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
-              <IconRoute class="h-5 w-5 mr-2 text-indigo-600" />
+              <Route class="h-5 w-5 mr-2 text-indigo-600" />
               Trip Route Details
             </h3>
             
@@ -93,7 +93,7 @@
                   </div>
                   <div class="ml-3 flex-1">
                     <p class="text-sm font-bold text-green-700 uppercase tracking-wide mb-2">
-                      <IconMapPin class="inline h-4 w-4 mr-1" />
+                      <MapPin class="inline h-4 w-4 mr-1" />
                       Pickup Location
                     </p>
                     <p class="text-gray-900 font-semibold mb-2">
@@ -124,7 +124,7 @@
                   </div>
                   <div class="ml-3 flex-1">
                     <p class="text-sm font-bold text-red-700 uppercase tracking-wide mb-2">
-                      <IconFlag class="inline h-4 w-4 mr-1" />
+                      <Flag class="inline h-4 w-4 mr-1" />
                       Drop-off Location
                     </p>
                     <p class="text-gray-900 font-semibold mb-2">
@@ -174,7 +174,7 @@
           <!-- Comprehensive Fare Breakdown -->
           <div class="mb-8">
             <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
-              <IconCreditCard class="h-5 w-5 mr-2 text-indigo-600" />
+              <CreditCard class="h-5 w-5 mr-2 text-indigo-600" />
               Financial Details
             </h3>
             
@@ -239,7 +239,7 @@
               <!-- Total & Exchange Info -->
               <div class="space-y-4">
                 <!-- Total Fare -->
-                <div class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg p-6 text-white">
+                <div class="bg-primary rounded-lg p-6 text-white">
                   <div class="text-center">
                     <h4 class="text-sm font-medium text-indigo-100 uppercase tracking-wide mb-2">Total Amount</h4>
                     <div class="text-4xl font-bold mb-2">
@@ -280,14 +280,14 @@
           <!-- Trip Metadata & System Information -->
           <div class="mb-6">
             <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
-              <IconInfo class="h-5 w-5 mr-2 text-indigo-600" />
+              <Info class="h-5 w-5 mr-2 text-indigo-600" />
               Trip Metadata
             </h3>
             
             <div class="grid md:grid-cols-3 gap-4">
               <div class="bg-gray-50 rounded-lg p-4">
                 <div class="flex items-center mb-2">
-                  <IconClock class="h-4 w-4 text-gray-500 mr-2" />
+                  <Clock class="h-4 w-4 text-gray-500 mr-2" />
                   <span class="text-sm font-medium text-gray-700">Timing Information</span>
                 </div>
                 <div class="space-y-1 text-xs text-gray-600">
@@ -299,7 +299,7 @@
   
               <div class="bg-gray-50 rounded-lg p-4">
                 <div class="flex items-center mb-2">
-                  <IconDatabase class="h-4 w-4 text-gray-500 mr-2" />
+                  <Database class="h-4 w-4 text-gray-500 mr-2" />
                   <span class="text-sm font-medium text-gray-700">System Data</span>
                 </div>
                 <div class="space-y-1 text-xs text-gray-600">
@@ -311,7 +311,7 @@
   
               <div class="bg-gray-50 rounded-lg p-4">
                 <div class="flex items-center mb-2">
-                  <IconShield class="h-4 w-4 text-gray-500 mr-2" />
+                  <Shield class="h-4 w-4 text-gray-500 mr-2" />
                   <span class="text-sm font-medium text-gray-700">Data Integrity</span>
                 </div>
                 <div class="space-y-1 text-xs text-gray-600">
@@ -324,36 +324,36 @@
           </div>
   
           <!-- Action Buttons -->
-          <div class="flex flex-wrap gap-3 pt-4 border-t border-gray-200">
+          <!-- <div class="flex flex-wrap gap-3 pt-4 border-t border-gray-200">
             <button 
               @click="$emit('view-route', passenger)"
               class="flex-1 min-w-0 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center"
             >
-              <IconMap class="h-4 w-4 mr-2" />
+              <Map class="h-4 w-4 mr-2" />
               View Route
             </button>
             <button 
               @click="$emit('contact-passenger', passenger.passengerId)"
               class="flex-1 min-w-0 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center"
             >
-              <IconPhone class="h-4 w-4 mr-2" />
+              <Phone class="h-4 w-4 mr-2" />
               Contact
             </button>
             <button 
               @click="$emit('update-status', passenger.passengerId)"
               class="flex-1 min-w-0 bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition-colors flex items-center justify-center"
             >
-              <IconEdit class="h-4 w-4 mr-2" />
+              <Edit class="h-4 w-4 mr-2" />
               Update
             </button>
             <button 
               @click="$emit('export-data', passenger)"
               class="flex-1 min-w-0 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center"
             >
-              <IconDownload class="h-4 w-4 mr-2" />
+              <Download class="h-4 w-4 mr-2" />
               Export
             </button>
-          </div>
+          </div> -->
         </div>
       </div>
       
@@ -361,11 +361,11 @@
       <div v-if="!currentLocationPassengers?.length" class="text-center py-16">
         <div class="relative inline-block">
           <div class="h-32 w-32 mx-auto rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center mb-6 shadow-inner">
-            <IconUsers class="h-16 w-16 text-gray-400" />
+            <Users class="h-16 w-16 text-gray-400" />
           </div>
           <div class="absolute -top-2 -right-2">
             <div class="h-10 w-10 rounded-full bg-yellow-200 flex items-center justify-center border-4 border-white shadow-lg">
-              <IconSearch class="h-5 w-5 text-yellow-600" />
+              <Search class="h-5 w-5 text-yellow-600" />
             </div>
           </div>
         </div>
@@ -378,14 +378,14 @@
             @click="$emit('refresh-passengers')"
             class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors flex items-center"
           >
-            <IconRefreshCw class="h-4 w-4 mr-2" />
+            <RefreshCw class="h-4 w-4 mr-2" />
             Refresh
           </button>
           <button 
             @click="$emit('change-location')"
             class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition-colors flex items-center"
           >
-            <IconMapPin class="h-4 w-4 mr-2" />
+            <MapPin class="h-4 w-4 mr-2" />
             Change Location
           </button>
         </div>
@@ -395,6 +395,11 @@
   
   <script setup>
   import { ref, watch } from 'vue'
+import {
+  Bell, MessageSquare, MoreVertical, Route, MapPin, Flag, CreditCard,
+  Info, Clock, Database, Shield, Users, Search, RefreshCw,
+  Map, Phone, Edit, Download
+} from 'lucide-vue-next'
   
   // Props
   const props = defineProps({

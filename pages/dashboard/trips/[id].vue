@@ -471,7 +471,7 @@
         </div>
       </div>
       
-      <div v-else-if="activeTab === 'issues'" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div v-else-if="activeTab === 'issues'" class="py-6">
         <div class="bg-white shadow rounded-lg overflow-hidden">
           <div class="p-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
             <div class="relative w-full sm:w-64">
@@ -586,7 +586,7 @@
         </div>
       </div>
       
-      <div v-else-if="activeTab === 'ratings'" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div v-else-if="activeTab === 'ratings'" class="py-6">
         <div class="bg-white shadow rounded-lg p-6">
           <h3 class="text-lg font-medium text-gray-900 mb-4">Ratings & Reviews</h3>
           

@@ -72,18 +72,25 @@
             </div>
                         
             <div class="mt-4 md:mt-0 md:ml-auto flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
-              <button 
+                <button 
+                  @click="callDriver(driver)"
+                  class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-150"
+                >
+                  <Phone class="mr-2 h-4 w-4" />
+                  Call Driver
+                </button>
+              <!-- <button 
                 class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-150"
               >
                 <Phone class="mr-2 h-4 w-4" />
                 Call Driver
-              </button>
-              <button 
+              </button> -->
+              <!-- <button 
                 class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-150"
               >
                 <Edit class="mr-2 h-4 w-4" />
                 Edit Profile
-              </button>
+              </button> -->
             </div>
           </div>
         </div>
@@ -96,7 +103,7 @@
       >
 
         <div v-if="activeTab === 'details'" class="animate-fadeIn">
-          <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          <div class="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 xl:grid-cols-3 gap-6">
             <!-- Personal Information -->
             <div class="bg-white shadow rounded-lg overflow-hidden">
               <div class="px-6 py-4 border-b border-gray-200">
@@ -907,10 +914,10 @@
                         <td class="px-6 py-4 whitespace-nowrap">
                           <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
                                 :class="{
-                                  'bg-green-100 text-green-800': referral.referree.userType === 'driver',
-                                  'bg-blue-100 text-blue-800': referral.referree.userType === 'passenger'
+                                  'bg-green-100 text-green-800': referral.referree.hasDriverAccount,
+                                  'bg-blue-100 text-blue-800': !referral.referree.hasDriverAccount
                                 }">
-                            {{ referral.referree.userType }}
+                            {{ referral.referree.hasDriverAccount ? 'Driver' : 'Passenger' }}
                           </span>
                         </td>
 
@@ -1510,35 +1517,388 @@ const paymentFields = [
   { key: 'totalFare', label: 'Total Fare' }
 ];
 
-// Function to calculate credential completion percentage
+// // Function to calculate credential completion percentage
+// const calculateCredentialCompletion = (user: any) => {
+//   if (!user) return 0
+  
+//   const requiredFields = ['firstName', 'lastName', 'email', 'phone']
+//   const completedFields = requiredFields.filter(field => user[field] && user[field].trim() !== '')
+  
+//   return Math.round((completedFields.length / requiredFields.length) * 100)
+// }
+
+// // Function to fetch detailed referral information
+// const fetchReferralDetails = async () => {
+//   if (!referrals.value || referrals.value.length === 0) return
+  
+//   fetchingReferralDetails.value = true
+//   try {
+//     // In a real app, you'd fetch additional details for each referee
+//     // For now, we'll use the existing data and calculate completion
+//     referralDetails.value = referrals.value.map((referral: any) => ({
+//       ...referral,
+//       refereeCompletion: calculateCredentialCompletion(referral.referree),
+//       referrerCompletion: calculateCredentialCompletion(referral.referrer)
+//     }))
+//   } catch (error) {
+//     console.error('Error fetching referral details:', error)
+//   } finally {
+//     fetchingReferralDetails.value = false
+//   }
+// }
+
+const callDriver = (driver: Record<string,any>) => {
+  // Remove spaces from the phone number
+  const cleanedNumber = driver?.phone?.replace(/\s+/g, "");
+  // Redirect to phone dialer
+  window.location.href = `tel:${cleanedNumber}`;
+};
+
+// Enhanced function to calculate credential completion percentage
 const calculateCredentialCompletion = (user: any) => {
   if (!user) return 0
   
-  const requiredFields = ['firstName', 'lastName', 'email', 'phone']
-  const completedFields = requiredFields.filter(field => user[field] && user[field].trim() !== '')
+  let totalScore = 0
+  let maxScore = 0
   
-  return Math.round((completedFields.length / requiredFields.length) * 100)
+  // Basic Profile Information (30% weight)
+  const basicFields = ['firstName', 'lastName', 'email', 'phone', 'dob']
+  const basicFieldsWeight = 30
+  let basicScore = 0
+  
+  basicFields.forEach(field => {
+    if (user[field] && user[field].toString().trim() !== '') {
+      basicScore += 1
+    }
+  })
+  totalScore += (basicScore / basicFields.length) * basicFieldsWeight
+  maxScore += basicFieldsWeight
+  
+  // Verification Status (25% weight)
+  const verificationWeight = 25
+  let verificationScore = 0
+  
+  // Email verification (5%)
+  if (user.emailIsVerified) verificationScore += 5
+  
+  // Phone verification (10%)
+  if (user.phoneIsVerified) verificationScore += 10
+  
+  // ID verification (10%)
+  if (user.IDIsVerified || user.IdIsVerified) verificationScore += 10
+  
+  totalScore += verificationScore
+  maxScore += verificationWeight
+  
+  // Profile Completeness (15% weight)
+  const profileWeight = 15
+  let profileScore = 0
+  
+  // Photo upload (5%)
+  if (user.photoURL && user.photoURL.trim() !== '') profileScore += 5
+  
+  // Country and timezone (5%)
+  if (user.countryCode && user.timeZone) profileScore += 5
+  
+  // Transaction PIN (5%)
+  if (user.hasTransactionPin) profileScore += 5
+  
+  totalScore += profileScore
+  maxScore += profileWeight
+  
+  // Registration Progress (10% weight)
+  const registrationWeight = 10
+  let registrationScore = 0
+  
+  if (user.currentRegistrationStep) {
+    // Assuming max registration step is 5
+    const maxRegistrationStep = 5
+    registrationScore = Math.min(user.currentRegistrationStep / maxRegistrationStep, 1) * registrationWeight
+  }
+  
+  totalScore += registrationScore
+  maxScore += registrationWeight
+  
+  // Driver-specific completion (20% weight) - only if user has driver account
+  const driverWeight = 20
+  let driverScore = 0
+  
+  if (user.hasDriverAccount && user.driverData) {
+    const driverData = user.driverData
+    
+    // Vehicle details completion (8%)
+    const vehicleFields = ['carBrand', 'carModel', 'carColor', 'plateNumber', 'seats']
+    let vehicleFieldsComplete = 0
+    
+    vehicleFields.forEach(field => {
+      if (driverData[field] && driverData[field].toString().trim() !== '' && driverData[field] !== 0) {
+        vehicleFieldsComplete += 1
+      }
+    })
+    
+    if (driverData.carDetailsComplete) {
+      driverScore += 8
+    } else {
+      driverScore += (vehicleFieldsComplete / vehicleFields.length) * 8
+    }
+    
+    // License verification (6%)
+    if (driverData.licenseIsVerified) {
+      driverScore += 6
+    }
+    
+    // Insurance verification (3%)
+    if (driverData.proofOfInsuranceVerified && driverData.proofOfInsuranceURL && driverData.proofOfInsuranceURL.trim() !== '') {
+      driverScore += 3
+    }
+    
+    // Country specific documents (3%)
+    if (driverData.countrySpecificDocuments && driverData.countrySpecificDocuments.length > 0) {
+      const verifiedDocs = driverData.countrySpecificDocuments.filter((doc: any) => doc.verified)
+      const requiredDocs = driverData.countrySpecificDocuments.filter((doc: any) => doc.required)
+      
+      if (requiredDocs.length > 0) {
+        driverScore += (verifiedDocs.length / requiredDocs.length) * 3
+      }
+    }
+    
+    totalScore += driverScore
+  }
+  
+  maxScore += driverWeight
+  
+  // Calculate final percentage
+  const completionPercentage = Math.round((totalScore / maxScore) * 100)
+  
+  return Math.min(completionPercentage, 100)
 }
 
-// Function to fetch detailed referral information
+// Enhanced function to get completion details for debugging/display
+const getCompletionDetails = (user: any) => {
+  if (!user) return null
+  
+  const details = {
+    basicProfile: {
+      score: 0,
+      maxScore: 30,
+      completed: [] as string[],
+      missing: [] as string[]
+    },
+    verification: {
+      score: 0,
+      maxScore: 25,
+      completed: [] as string[],
+      missing: [] as string[]
+    },
+    profile: {
+      score: 0,
+      maxScore: 15,
+      completed: [] as string[],
+      missing: [] as string[]
+    },
+    registration: {
+      score: 0,
+      maxScore: 10,
+      step: user.currentRegistrationStep || 0
+    },
+    driver: {
+      score: 0,
+      maxScore: 20,
+      completed: [] as string[],
+      missing: [] as string[],
+      applicable: user.hasDriverAccount
+    }
+  }
+  
+  // Basic Profile
+  const basicFields = [
+    { key: 'firstName', label: 'First Name' },
+    { key: 'lastName', label: 'Last Name' },
+    { key: 'email', label: 'Email' },
+    { key: 'phone', label: 'Phone' },
+    { key: 'dob', label: 'Date of Birth' }
+  ]
+  
+  basicFields.forEach(field => {
+    if (user[field.key] && user[field.key].toString().trim() !== '') {
+      details.basicProfile.completed.push(field.label)
+      details.basicProfile.score += 6 // 30/5 = 6 points each
+    } else {
+      details.basicProfile.missing.push(field.label)
+    }
+  })
+  
+  // Verification
+  if (user.emailIsVerified) {
+    details.verification.completed.push('Email Verified')
+    details.verification.score += 5
+  } else {
+    details.verification.missing.push('Email Verification')
+  }
+  
+  if (user.phoneIsVerified) {
+    details.verification.completed.push('Phone Verified')
+    details.verification.score += 10
+  } else {
+    details.verification.missing.push('Phone Verification')
+  }
+  
+  if (user.IDIsVerified || user.IdIsVerified) {
+    details.verification.completed.push('ID Verified')
+    details.verification.score += 10
+  } else {
+    details.verification.missing.push('ID Verification')
+  }
+  
+  // Profile
+  if (user.photoURL && user.photoURL.trim() !== '') {
+    details.profile.completed.push('Profile Photo')
+    details.profile.score += 5
+  } else {
+    details.profile.missing.push('Profile Photo')
+  }
+  
+  if (user.countryCode && user.timeZone) {
+    details.profile.completed.push('Location Details')
+    details.profile.score += 5
+  } else {
+    details.profile.missing.push('Location Details')
+  }
+  
+  if (user.hasTransactionPin) {
+    details.profile.completed.push('Transaction PIN')
+    details.profile.score += 5
+  } else {
+    details.profile.missing.push('Transaction PIN')
+  }
+  
+  // Registration
+  if (user.currentRegistrationStep) {
+    const maxStep = 5
+    details.registration.score = Math.min(user.currentRegistrationStep / maxStep, 1) * 10
+  }
+  
+  // Driver specific
+  if (user.hasDriverAccount && user.driverData) {
+    const driverData = user.driverData
+    
+    if (driverData.carDetailsComplete) {
+      details.driver.completed.push('Vehicle Details')
+      details.driver.score += 8
+    } else {
+      details.driver.missing.push('Vehicle Details')
+    }
+    
+    if (driverData.licenseIsVerified) {
+      details.driver.completed.push('License Verified')
+      details.driver.score += 6
+    } else {
+      details.driver.missing.push('License Verification')
+    }
+    
+    if (driverData.proofOfInsuranceVerified && driverData.proofOfInsuranceURL?.trim()) {
+      details.driver.completed.push('Insurance Verified')
+      details.driver.score += 3
+    } else {
+      details.driver.missing.push('Insurance Verification')
+    }
+    
+    if (driverData.countrySpecificDocuments?.length > 0) {
+      const verifiedDocs = driverData.countrySpecificDocuments.filter((doc: any) => doc.verified)
+      const requiredDocs = driverData.countrySpecificDocuments.filter((doc: any) => doc.required)
+      
+      if (requiredDocs.length > 0 && verifiedDocs.length === requiredDocs.length) {
+        details.driver.completed.push('Required Documents')
+        details.driver.score += 3
+      } else {
+        details.driver.missing.push('Required Documents')
+      }
+    } else {
+      details.driver.missing.push('Required Documents')
+    }
+  }
+  
+  return details
+}
+
+// Enhanced function to get completion status with categories
+const getCompletionStatus = (percentage: number) => {
+  if (percentage >= 95) return { status: 'complete', color: 'green', label: 'Complete' }
+  if (percentage >= 80) return { status: 'high', color: 'green', label: 'Nearly Complete' }
+  if (percentage >= 60) return { status: 'medium', color: 'yellow', label: 'In Progress' }
+  if (percentage >= 30) return { status: 'low', color: 'orange', label: 'Getting Started' }
+  return { status: 'minimal', color: 'red', label: 'Just Started' }
+}
+
+// Helper function to calculate days ago
+const getDaysAgo = (dateString: string) => {
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffTime = Math.abs(now.getTime() - date.getTime())
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  return diffDays
+}
+
+// View referral details function
+const viewReferralDetails = (referral: any) => {
+  const details = getCompletionDetails(referral.referree)
+  
+  console.log('Referral Details:', {
+    referral,
+    completionDetails: details,
+    completionPercentage: referral.refereeCompletion
+  })
+  
+  // You can implement navigation to detailed view or show a modal
+  // router.push(`/dashboard/users/${referral.referree._id}`)
+}
+
+// Enhanced fetchReferralDetails function
 const fetchReferralDetails = async () => {
   if (!referrals.value || referrals.value.length === 0) return
   
   fetchingReferralDetails.value = true
   try {
-    // In a real app, you'd fetch additional details for each referee
-    // For now, we'll use the existing data and calculate completion
-    referralDetails.value = referrals.value.map((referral: any) => ({
-      ...referral,
-      refereeCompletion: calculateCredentialCompletion(referral.referree),
-      referrerCompletion: calculateCredentialCompletion(referral.referrer)
-    }))
+    referralDetails.value = referrals.value.map((referral: any) => {
+      const refereeCompletion = calculateCredentialCompletion(referral.referree)
+      const completionDetails = getCompletionDetails(referral.referree)
+      
+      return {
+        ...referral,
+        refereeCompletion,
+        completionDetails,
+        referrerCompletion: calculateCredentialCompletion(referral.referrer)
+      }
+    })
   } catch (error) {
     console.error('Error fetching referral details:', error)
   } finally {
     fetchingReferralDetails.value = false
   }
 }
+
+// Function to get completion category stats
+const getCompletionStats = computed(() => {
+  if (!referralDetails.value || referralDetails.value.length === 0) {
+    return {
+      complete: 0,
+      high: 0,
+      medium: 0,
+      low: 0,
+      total: 0
+    }
+  }
+  
+  const stats = {
+    complete: referralDetails.value.filter(r => r.refereeCompletion >= 95).length,
+    high: referralDetails.value.filter(r => r.refereeCompletion >= 80 && r.refereeCompletion < 95).length,
+    medium: referralDetails.value.filter(r => r.refereeCompletion >= 60 && r.refereeCompletion < 80).length,
+    low: referralDetails.value.filter(r => r.refereeCompletion < 60).length,
+    total: referralDetails.value.length
+  }
+  
+  return stats
+})
 
 // Document helper functions
 const getPersonalDocumentsCount = () => {
@@ -1571,45 +1931,7 @@ const getDocumentType = (url: string) => {
 // Document approval/rejection handlers
 const handleApproveDocument = (documentCode: string) => {
   approveDocument()
-  // const document = driver.value?.driverData?.countrySpecificDocuments?.find(
-  //   doc => doc.documentCode === documentCode
-  // );
-  // if (document) {
-  //   selectedDocument.value = document;
-  //   showApprovalModal.value = true;
-  // }
 };
-
-// // Function to calculate credential completion percentage
-// const calculateCredentialCompletion = (user: any) => {
-//   if (!user) return 0
-  
-//   const requiredFields = ['firstName', 'lastName', 'email', 'phone']
-//   const completedFields = requiredFields.filter(field => user[field] && user[field].trim() !== '')
-  
-//   return Math.round((completedFields.length / requiredFields.length) * 100)
-// }
-
-// // Function to fetch detailed referral information
-// const fetchReferralDetails = async () => {
-//   if (!referrals.value || referrals.value.length === 0) return
-  
-//   fetchingReferralDetails.value = true
-//   try {
-//     // In a real app, you'd fetch additional details for each referee
-//     // For now, we'll use the existing data and calculate completion
-//     referralDetails.value = referrals.value.map((referral: any) => ({
-//       ...referral,
-//       refereeCompletion: calculateCredentialCompletion(referral.referree),
-//       referrerCompletion: calculateCredentialCompletion(referral.referrer)
-//     }))
-//   } catch (error) {
-//     console.error('Error fetching referral details:', error)
-//   } finally {
-//     fetchingReferralDetails.value = false
-//   }
-// }
-
 
 const handleRejectDocument = (documentCode: string) => {
   const document = driver.value?.driverData?.countrySpecificDocuments?.find(

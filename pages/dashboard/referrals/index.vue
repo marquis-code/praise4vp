@@ -205,7 +205,7 @@
                   </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <NuxtLink :to="referral.referrer.userType === 'driver' ? `/dashboard/drivers/${referral.referrer._id}` : `/dashboard/passengers/${referral.referrer._id}`" class="flex items-center">
+                  <NuxtLink :to="referral.referrer.hasDriverAccount  ? `/dashboard/drivers/${referral.referrer._id}` : `/dashboard/passengers/${referral.referrer._id}`" class="flex items-center">
                     <div class="flex-shrink-0 h-8 w-8">
                       <div class="h-8 w-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
                         <span class="text-sm font-medium text-white">
@@ -223,7 +223,7 @@
                   </NuxtLink>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <NuxtLink :to="referral.referree.userType === 'driver' ? `/dashboard/drivers/${referral.referree._id}` : `/dashboard/passengers/${referral.referree._id}`" class="flex items-center">
+                  <NuxtLink :to="referral.referree.hasDriverAccount ? `/dashboard/drivers/${referral.referree._id}` : `/dashboard/passengers/${referral.referree._id}`" class="flex items-center">
                     <div class="flex-shrink-0 h-8 w-8">
                       <div class="h-8 w-8 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
                         <span class="text-sm font-medium text-white">
