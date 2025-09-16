@@ -14,7 +14,7 @@ import PersonalityQuiz from '~/components/PersonalityQuiz.vue';
         <Mission id="vision" />
         <!-- <Election /> -->
     <!-- <Highlights /> -->
-    <Statistics />
+    <!-- <Statistics /> -->
         <!-- <CampaignSpeech /> -->
     </main>
 </template>

@@ -31,7 +31,7 @@
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         
         <!-- Left Content - Mission Points -->
-        <div class="lg:col-span-7 space-y-12">
+        <div class="lg:col-span-7 order-2 lg:order-1 space-y-12">
           <!-- Section header -->
           <div class="space-y-6 animate-fadeInLeft">
             <div class="inline-flex items-center space-x-2 text-blue-300 text-sm font-medium">
@@ -72,58 +72,120 @@
                 <h3 class="text-xl lg:text-2xl font-bold text-white group-hover:text-blue-300 transition-colors duration-300">
                   {{ mission.title }}
                 </h3>
-                <p class="text-gray-300 text-base lg:text-lg leading-relaxed">
+                <p class="text-gray-300 max-w-sm lg:max-w-max text-base lg:text-lg leading-relaxed">
                   {{ mission.description }}
                 </p>
               </div>
             </div>
           </div>
-
-          <!-- Call to action -->
-          <!-- <div class="animate-fadeInLeft animation-delay-1000">
-            <button class="group bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center space-x-3">
-              <span>Learn More About Our Vision</span>
-              <svg class="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-              </svg>
-            </button>
-          </div> -->
         </div>
 
-        <!-- Right Content - Featured Image -->
-        <div class="lg:col-span-5 relative animate-fadeInRight">
-          <div class="relative group">
+        <!-- Right Content - Image Carousel -->
+        <div class="lg:col-span-5 order-1 lg:order-2 relative animate-fadeInRight">
+          <div class="relative group" @mouseenter="pauseCarousel" @mouseleave="resumeCarousel">
             <!-- Main image container -->
             <div class="relative bg-white rounded-2xl shadow-2xl overflow-hidden transform transition-transform duration-500 group-hover:scale-105">
-              <img 
-                :src="activistImage" 
-                :alt="activistAlt"
-                class="w-full h-80 lg:h-96 xl:h-[500px] object-cover"
-              />
-              
-              <!-- Gradient overlay -->
-              <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-40"></div>
-              
-              <!-- Content overlay -->
-              <div class="absolute bottom-6 left-6 right-6 text-white">
-                <p class="text-sm opacity-90 mb-2">Student Leader</p>
-                <h3 class="text-xl font-bold">Olawuyi Praise Deborah</h3>
-                <p class="text-sm opacity-80">Vice President Candidate</p>
+              <!-- Carousel Images -->
+              <div class="relative w-full h-80 lg:h-96 xl:h-[500px]">
+                <TransitionGroup
+                  name="carousel-fade"
+                  tag="div"
+                  class="relative w-full h-full"
+                >
+                  <div
+                    v-for="(candidate, index) in candidates"
+                    v-show="index === currentSlide"
+                    :key="candidate.id"
+                    class="absolute inset-0 w-full h-full"
+                  >
+                    <img 
+                      :src="candidate.image" 
+                      :alt="candidate.alt"
+                      class="w-full h-full object-cover"
+                    />
+                    
+                    <!-- Gradient overlay -->
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-40"></div>
+                    
+                    <!-- Content overlay -->
+                    <div class="absolute bottom-6 left-6 right-6 text-white">
+                      <p class="text-sm opacity-90 mb-2">{{ candidate.role }}</p>
+                      <h3 class="text-xl font-bold">{{ candidate.name }}</h3>
+                      <p class="text-sm opacity-80">{{ candidate.position }}</p>
+                    </div>
+
+                    <!-- Hover Election Info -->
+                    <Transition name="hover-info">
+                      <div 
+                        v-show="isHovered"
+                        class="absolute inset-0 bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900 bg-opacity-95 flex items-center justify-center p-6"
+                      >
+                        <div class="text-center text-white max-w-sm">
+                          <div class="flex items-center justify-center mb-4">
+                            <div class="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center mr-3">
+                              <span class="text-white font-bold text-lg">{{ candidate.campaign.title.charAt(0) }}</span>
+                            </div>
+                            <div class="text-left">
+                              <div class="text-lg font-bold text-blue-300">{{ candidate.campaign.title }}</div>
+                              <div class="text-xs text-gray-300">FLAME Vision Plan</div>
+                            </div>
+                          </div>
+                          <p class="text-sm leading-relaxed mb-4 text-gray-200">{{ candidate.campaign.message }}</p>
+                          <div class="text-xs opacity-90 italic text-blue-200">{{ candidate.campaign.slogan }}</div>
+                          <div class="mt-4 text-xs text-center">
+                            <span class="bg-red-500 text-white px-3 py-1 rounded-full font-semibold">PRAISE4VP</span>
+                          </div>
+                        </div>
+                      </div>
+                    </Transition>
+                  </div>
+                </TransitionGroup>
               </div>
 
               <!-- Border accent -->
               <div class="absolute inset-0 border-4 border-white border-opacity-20 rounded-2xl"></div>
+              
+              <!-- Carousel indicators -->
+              <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                <button
+                  v-for="(candidate, index) in candidates"
+                  :key="index"
+                  @click="goToSlide(index)"
+                  class="w-2 h-2 rounded-full transition-all duration-300"
+                  :class="index === currentSlide ? 'bg-white' : 'bg-white bg-opacity-50'"
+                ></button>
+              </div>
+
+              <!-- Navigation arrows -->
+              <button
+                @click="previousSlide"
+                class="absolute left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-black bg-opacity-30 hover:bg-opacity-50 rounded-full flex items-center justify-center text-white transition-all duration-300 opacity-0 group-hover:opacity-100"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+              </button>
+
+              <button
+                @click="nextSlide"
+                class="absolute right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-black bg-opacity-30 hover:bg-opacity-50 rounded-full flex items-center justify-center text-white transition-all duration-300 opacity-0 group-hover:opacity-100"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </button>
             </div>
 
             <!-- Decorative elements -->
             <div class="absolute -top-6 -right-6 w-12 h-12 border-4 border-blue-300 rounded-full opacity-60 animate-pulse"></div>
             <div class="absolute -bottom-6 -left-6 w-8 h-8 bg-red-500 rounded-full opacity-80 animate-bounce"></div>
             
-            <!-- Quote bubble -->
-            <div class="absolute -left-4 top-1/4 bg-white rounded-full p-3 shadow-xl opacity-90 animate-pulse animation-delay-2000">
-              <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V7a1 1 0 112 0v3.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
-              </svg>
+            <!-- Campaign badge -->
+            <div class="absolute -left-4 top-1/4 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-full px-4 py-2 shadow-xl opacity-95 animate-pulse animation-delay-2000">
+              <div class="text-center">
+                <div class="text-xs font-bold">PRAISE4VP</div>
+                <div class="text-xs opacity-90">2025</div>
+              </div>
             </div>
           </div>
 
@@ -156,10 +218,54 @@
 </template>
 
 <script setup lang="ts">
-import { ref, h } from 'vue'
-import user1 from '@/assets/img/personal/user1.jpg'
-import user2 from '@/assets/img/personal/user2.jpg'
-import user3 from '@/assets/img/personal/user3.jpg'
+import { ref, h, onMounted, onUnmounted } from 'vue'
+import serviceDot30 from "@/assets/img/service.30.jpg"
+import serviceMain from "@/assets/img/service.jpg"
+import service1 from "@/assets/img/service1.jpeg"
+import service2 from "@/assets/img/service2.jpeg"
+import service3 from "@/assets/img/service3.jpeg"
+import service4 from "@/assets/img/service4.jpeg"
+import service5 from "@/assets/img/service5.jpeg"
+import service6 from "@/assets/img/service6.jpeg"
+import service7 from "@/assets/img/service7.jpeg"
+import service8 from "@/assets/img/service8.jpeg"
+import service9 from "@/assets/img/service9.jpeg"
+import service10 from "@/assets/img/service10.jpeg"
+import service11 from "@/assets/img/service11.jpeg"
+import service12 from "@/assets/img/service12.jpeg"
+import service13 from "@/assets/img/service13.jpeg"
+import service14 from "@/assets/img/service14.jpeg"
+import service15 from "@/assets/img/service15.jpeg"
+import service16 from "@/assets/img/service16.jpg"
+import service17 from "@/assets/img/service17.jpg"
+import service18 from "@/assets/img/service18.jpg"
+import service19 from "@/assets/img/service19.jpg"
+import service20 from "@/assets/img/service20.jpg"
+import service21 from "@/assets/img/service21.jpg"
+import service22 from "@/assets/img/service22.jpg"
+import service23 from "@/assets/img/service23.jpg"
+import service25 from "@/assets/img/service25.jpg"
+import service26 from "@/assets/img/service26.jpg"
+import service27 from "@/assets/img/service27.jpg"
+import service28 from "@/assets/img/service28.jpg"
+import service29 from "@/assets/img/service29.jpg"
+import service31 from "@/assets/img/service31.jpeg"
+import service32 from "@/assets/img/service32.jpg"
+import service33 from "@/assets/img/service33.jpg"
+import service34 from "@/assets/img/service34.jpg"
+import service35 from "@/assets/img/service35.jpg"
+import service36 from "@/assets/img/service36.png"
+import service37 from "@/assets/img/service37.png"
+import service38 from "@/assets/img/service38.jpg"
+import service39 from "@/assets/img/service39.jpg"
+import service40 from "@/assets/img/service40.jpg"
+import service41 from "@/assets/img/service41.png"
+import service42 from "@/assets/img/service42.jpg"
+import service43 from "@/assets/img/service43.jpg"
+import service44 from "@/assets/img/service44.jpg"
+import service45 from "@/assets/img/service45.jpg"
+import service46 from "@/assets/img/service46.jpg"
+import srvice24 from "@/assets/img/srvice24.jpg"
 
 interface Mission {
   title: string
@@ -168,25 +274,224 @@ interface Mission {
   iconBg: string
 }
 
-// Images - replace with your actual images
-const activistImage = ref(user1)
-const activistAlt = ref('Olawuyi Praise speaking at a rally')
+interface Candidate {
+  id: number
+  name: string
+  role: string
+  position: string
+  image: string
+  alt: string
+  campaign: {
+    title: string
+    message: string
+    slogan: string
+  }
+}
 
-// Mission data based on the FLAME vision from the document
+// Carousel state
+const currentSlide = ref(0)
+const isHovered = ref(false)
+const carouselInterval = ref<NodeJS.Timeout | null>(null)
+const isPaused = ref(false)
+
+// Candidates data for carousel with expanded images
+const candidates: Candidate[] = [
+  {
+    id: 1,
+    name: 'Olawuyi Praise Deborah',
+    role: 'Student Leader & VP Candidate',
+    position: 'Vice President NUNSA Unilag',
+    image: service40,
+    alt: 'Olawuyi Praise - COMPSSA VP Candidate',
+    campaign: {
+      title: 'F - Foster Collaboration',
+      message: 'Building interdepartmental unity where every student values their colleagues\' courses without any department feeling superior or inferior.',
+      slogan: '"Inspiring Impacts, Building Bridges"'
+    }
+  },
+  {
+    id: 2,
+    name: 'Olawuyi Praise Deborah',
+    role: 'Community Service Leader',
+    position: 'Medical Outreach Coordinator',
+    image: service39,
+    alt: 'Praise during medical outreach activities',
+    campaign: {
+      title: 'L - Life & Wellbeing',
+      message: 'Ensuring academics remain a priority while creating balance because medical students deserve to live beyond the books.',
+      slogan: '"Wholesome Student Wellbeing"'
+    }
+  },
+  {
+    id: 3,
+    name: 'Olawuyi Praise Deborah',
+    role: 'Academic Excellence Advocate',
+    position: 'Nursing Science Representative',
+    image: service38,
+    alt: 'Praise at academic forum',
+    campaign: {
+      title: 'A - Academics & Beyond',
+      message: 'Advocating for improved learning resources, better facilities, and enhanced student welfare programs for academic support.',
+      slogan: '"Academic Support & Professional Growth"'
+    }
+  },
+  {
+    id: 4,
+    name: 'Olawuyi Praise Deborah',
+    role: 'Mentorship & Leadership',
+    position: 'Student Development Coordinator',
+    image: service37,
+    alt: 'Praise mentoring fellow students',
+    campaign: {
+      title: 'M - Mentorship & Leadership',
+      message: 'Creating opportunities for leadership development and skill-building programs that prepare students for professional excellence.',
+      slogan: '"Leadership, Skills & Opportunities"'
+    }
+  },
+  {
+    id: 5,
+    name: 'Olawuyi Praise Deborah',
+    role: 'Impact-Driven Leader',
+    position: 'Community Welfare Advocate',
+    image: service36,
+    alt: 'Praise at charity drive event',
+    campaign: {
+      title: 'E - Excellence Through Impact',
+      message: 'Building a service-oriented COMPSSA that creates lasting positive impact on students and the broader community.',
+      slogan: '"Service & Impact-Driven COMPSSA"'
+    }
+  },
+  {
+    id: 6,
+    name: 'Olawuyi Praise Deborah',
+    role: 'Health Week Coordinator',
+    position: 'NUNSA Health Initiatives',
+    image: service35,
+    alt: 'Praise organizing health week activities',
+    campaign: {
+      title: 'Health & Wellness Focus',
+      message: 'Leading comprehensive health initiatives including medical outreaches, mental health awareness, and student wellness programs.',
+      slogan: '"Caring Beyond the Classroom"'
+    }
+  },
+  {
+    id: 7,
+    name: 'Olawuyi Praise Deborah',
+    role: 'Sports & Recreation Leader',
+    position: 'NUNSA Sports Committee',
+    image: service34,
+    alt: 'Praise at sports week event',
+    campaign: {
+      title: 'Student Life Balance',
+      message: 'Promoting work-life balance through sports, recreation, and wellness activities that complement academic excellence.',
+      slogan: '"Active Bodies, Sharp Minds"'
+    }
+  },
+  {
+    id: 8,
+    name: 'Olawuyi Praise Deborah',
+    role: 'Welfare Committee Chair',
+    position: 'Student Welfare Advocate',
+    image: service33,
+    alt: 'Praise during welfare committee meeting',
+    campaign: {
+      title: 'Student Welfare Priority',
+      message: 'Championing student welfare initiatives, mental health support, and creating safe spaces for all COMPSSA students.',
+      slogan: '"Every Student Matters"'
+    }
+  },
+  {
+    id: 9,
+    name: 'Olawuyi Praise Deborah',
+    role: 'Event Planning Expert',
+    position: 'COMPSSA Week Organizer',
+    image: service32,
+    alt: 'Praise coordinating COMPSSA week events',
+    campaign: {
+      title: 'Excellence in Organization',
+      message: 'Bringing organizational excellence to student events, ensuring memorable and impactful experiences for all participants.',
+      slogan: '"Creating Memorable Moments"'
+    }
+  },
+  {
+    id: 10,
+    name: 'Olawuyi Praise Deborah',
+    role: 'Public Health Advocate',
+    position: 'COMPSSA Public Health Committee',
+    image: service31,
+    alt: 'Praise at public health awareness event',
+    campaign: {
+      title: 'Community Health Focus',
+      message: 'Leading public health initiatives and community awareness programs that extend COMPSSA\'s impact beyond the campus.',
+      slogan: '"Health for All, Care for Community"'
+    }
+  }
+]
+
+// Mission data based on the FLAME vision
 const missions: Mission[] = [
   {
     title: 'Foster Collaboration',
     description: 'Building interdepartmental unity where every student values their colleagues\' courses without any department feeling superior or inferior.',
-    icon: 'svg',
+    icon: 'HandshakeIcon',
     iconBg: 'bg-red-500 border-red-400'
   },
   {
     title: 'Life & Wellbeing',
     description: 'Ensuring academics remain a priority while creating balance because medical students deserve to live beyond the books.',
-    icon: 'svg',
+    icon: 'HeartIcon',
     iconBg: 'bg-blue-500 border-blue-400'
   }
 ]
+
+// Carousel functions
+const nextSlide = () => {
+  currentSlide.value = (currentSlide.value + 1) % candidates.length
+}
+
+const previousSlide = () => {
+  currentSlide.value = currentSlide.value === 0 ? candidates.length - 1 : currentSlide.value - 1
+}
+
+const goToSlide = (index: number) => {
+  currentSlide.value = index
+}
+
+const startCarousel = () => {
+  if (!isPaused.value) {
+    carouselInterval.value = setInterval(() => {
+      nextSlide()
+    }, 3500) // Change slide every 3.5 seconds for more images
+  }
+}
+
+const stopCarousel = () => {
+  if (carouselInterval.value) {
+    clearInterval(carouselInterval.value)
+    carouselInterval.value = null
+  }
+}
+
+const pauseCarousel = () => {
+  isPaused.value = true
+  isHovered.value = true
+  stopCarousel()
+}
+
+const resumeCarousel = () => {
+  isPaused.value = false
+  isHovered.value = false
+  startCarousel()
+}
+
+// Lifecycle hooks
+onMounted(() => {
+  startCarousel()
+})
+
+onUnmounted(() => {
+  stopCarousel()
+})
 
 // Create SVG icons as render functions
 const HandshakeIcon = () => h('svg', {
@@ -219,6 +524,29 @@ missions[1].icon = HeartIcon
 </script>
 
 <style scoped>
+/* Carousel transitions */
+.carousel-fade-enter-active,
+.carousel-fade-leave-active {
+  transition: opacity 0.8s ease-in-out;
+}
+
+.carousel-fade-enter-from,
+.carousel-fade-leave-to {
+  opacity: 0;
+}
+
+/* Hover info transitions */
+.hover-info-enter-active,
+.hover-info-leave-active {
+  transition: all 0.3s ease-in-out;
+}
+
+.hover-info-enter-from,
+.hover-info-leave-to {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
 /* Custom animations */
 @keyframes fadeInLeft {
   from {
@@ -282,6 +610,10 @@ missions[1].icon = HeartIcon
   transform: scale(1.05);
 }
 
+.group:hover .group-hover\:opacity-100 {
+  opacity: 1;
+}
+
 /* Container max width */
 .container {
   max-width: 1200px;
@@ -341,6 +673,11 @@ missions[1].icon = HeartIcon
   .lg\:col-span-7,
   .lg\:col-span-5 {
     grid-column: span 12;
+  }
+
+  /* Hide navigation arrows on mobile */
+  .group:hover .group-hover\:opacity-100 {
+    opacity: 0;
   }
 }
 </style>

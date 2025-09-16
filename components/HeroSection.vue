@@ -8,7 +8,7 @@
       <!-- Australian Flag -->
       <div class="absolute top-6 left-6 z-20">
         <div class="flex items-center space-x-4">
-            <img src="@/assets/img/compassa-logo.jpeg" class="h-20 w-20 rounded-full" />
+            <img src="@/assets/img/compassa-logo.jpeg" class="h-16 w-16 rounded-full" />
         </div>
       </div>
 
@@ -18,10 +18,10 @@
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center h-full">
             
             <!-- Left Content -->
-            <div class="lg:col-span-7 text-white space-y-8 animate-fadeInLeft">
+            <div class="lg:col-span-7 text-white space-y-8 mt-20 lg:mt-0 animate-fadeInLeft">
               <!-- Badge with star -->
               <div class="flex items-center space-x-3 text-sm opacity-90">
-                <div class="flex items-center space-x-2 bg-white bg-opacity-10 px-3 py-1 rounded-full backdrop-blur-sm">
+                <div class="flex items-center space-x-2 bg-opacity-10 px-3 py-1 rounded-full backdrop-blur-sm">
                   <span class="text-yellow-400 animate-pulse">⭐</span>
                   <span class="font-medium">{{ slides[currentSlide].badge }}</span>
                 </div>
@@ -184,7 +184,7 @@ import user4 from '@/assets/img/personal/user4.jpg'
 import user5 from '@/assets/img/personal/user5.jpg'
 import user6 from '@/assets/img/personal/user6.jpg'
 import user7 from '@/assets/img/personal/user7.jpg'
-import user8 from '@/assets/img/personal/user8.jpg'
+import user8 from '@/assets/img/cover.jpg'
 import user9 from '@/assets/img/personal/user9.jpg'
 import user10 from '@/assets/img/personal/user10.jpg'
 import user11 from '@/assets/img/personal/user11.jpg'
