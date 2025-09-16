@@ -94,7 +94,7 @@
     </div>
 
     <!-- Navigation Dots -->
-    <!-- <div class="flex justify-center space-x-1 mt-8 max-w-4xl mx-auto flex-wrap">
+    <div class="flex justify-center space-x-1 mt-8 max-w-4xl mx-auto flex-wrap">
       <button
         v-for="(achievement, index) in achievements"
         :key="index"
@@ -108,7 +108,7 @@
       <p class="text-gray-700">
         <span class="font-bold">{{ activeIndex + 1 }}</span> of <span class="font-bold">{{ achievements.length }}</span> achievements
       </p>
-    </div> -->
+    </div>
   </div>
 </template>
 
