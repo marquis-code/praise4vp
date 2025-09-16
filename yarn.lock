@@ -886,11 +886,6 @@
     unimport "^3.13.1"
     untyped "^1.5.1"
 
-"@nuxt/nitro@^0.10.0":
-  version "0.10.0"
-  resolved "https://registry.npmjs.org/@nuxt/nitro/-/nitro-0.10.0.tgz"
-  integrity sha512-3ffdZMD0WK7UNgrkBhOyPr3fyOfmy2nPMxDOaX6eUCamr5NuY7cHQhWnum/BwSm1vIOm4b9/rnd/cgYcg9qiag==
-
 "@nuxt/schema@3.14.159":
   version "3.14.159"
   resolved "https://registry.npmjs.org/@nuxt/schema/-/schema-3.14.159.tgz"
