@@ -1,7 +1,2 @@
 export * from './auth'
-export * from './drivers'
-export * from './passengers'
-export * from './trips'
-export * from './dashboard'
-export * from './deliveries'
 export * from '../axios.config'
